@@ -3,9 +3,168 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CLEAR Space | Project CLEAR</title>
+  <title>CLEAR Space — คลังผลงาน E-Book & การ์ตูน | Project CLEAR</title>
   <link rel="stylesheet" href="../assets/css/theme.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .space-banner {
+      width: 100%;
+      height: 220px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(15,23,42,0.85) 100%),
+                  url('assets/new-space.jpg') center/cover no-repeat;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.75rem 2rem;
+      color: white;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-glass);
+    }
+    .post-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 3rem;
+    }
+    .space-post-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+    .space-post-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--brand-purple);
+    }
+    .space-thumb-holder {
+      height: 160px;
+      background: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .space-thumb-holder img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.9;
+    }
+    .page-chip {
+      position: absolute;
+      top: 10px; right: 10px;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(6px);
+      color: white;
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* AnyFlip Style Dual-Page Overlay */
+    .reader-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 12, 20, 0.92);
+      backdrop-filter: blur(14px);
+      z-index: 2000;
+      display: none;
+      flex-direction: column;
+    }
+    .reader-backdrop.open {
+      display: flex;
+    }
+    .reader-topbar {
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.6);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      color: white;
+    }
+    .reader-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+    }
+    .book-spread {
+      width: 90vw;
+      max-width: 920px;
+      height: 72vh;
+      max-height: 650px;
+      background: #fff;
+      border-radius: 12px;
+      display: flex;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    .book-page {
+      flex: 1;
+      height: 100%;
+      background: #fdfdfd;
+      padding: 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #1e293b;
+      position: relative;
+    }
+    .book-page.left {
+      border-right: 1px solid #e2e8f0;
+      background: linear-gradient(90deg, #f8fafc 0%, #ffffff 85%, #f1f5f9 100%);
+    }
+    .book-page.right {
+      background: linear-gradient(90deg, #f1f5f9 0%, #ffffff 15%, #f8fafc 100%);
+    }
+    .book-spine-shadow {
+      position: absolute;
+      top: 0; bottom: 0; left: 50%;
+      width: 40px;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.02) 45%, rgba(0,0,0,0.02) 55%, rgba(0,0,0,0.12) 100%);
+      pointer-events: none;
+    }
+    .reader-btn {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: var(--radius-full);
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      font-size: 1.15rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .reader-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+    .fab-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 100;
+      box-shadow: 0 10px 25px rgba(99,102,241,0.4);
+    }
+  </style>
 </head>
 <body>
   <div class="ambient-glow ambient-1"></div>
@@ -22,42 +181,320 @@
 
       <nav class="nav-links">
         <a href="../index.html" class="nav-btn"><i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span></a>
+        <a href="#compose" onclick="openComposeModal()" class="nav-btn"><i class="fa-solid fa-plus nav-btn-icon"></i> <span>เพิ่มงาน</span></a>
         <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
       </nav>
     </div>
   </header>
 
   <main class="clear-container">
-    <div style="max-width: 640px; margin: 3rem auto 0; text-align: center;">
-      <div class="clear-card" style="padding: 3rem 2rem;">
-        <div style="width: 72px; height: 72px; border-radius: 22px; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; display: grid; place-items: center; margin: 0 auto 1.5rem; font-size: 2rem; box-shadow: 0 10px 25px rgba(99,102,241,0.35);">
-          <i class="fa-solid fa-book-journal-whills"></i>
+    <!-- Space Hero Banner -->
+    <div class="space-banner">
+      <span class="clear-badge badge-purple" style="width: fit-content; margin-bottom: 0.5rem;"><i class="fa-solid fa-book-bookmark"></i> แกลเลอรีสร้างสรรค์วรรณคดี</span>
+      <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.35rem;">CLEAR Space</h1>
+      <p style="opacity: 0.9; font-size: 1rem;">คลัง E-Book หนังสือการ์ตูน และผลงานการเรียนรู้ภาษาไทย ชั้น ม.6</p>
+    </div>
+
+    <!-- Filter & Tools -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <div style="display: flex; gap: 0.5rem;">
+        <span class="clear-badge badge-blue">ผลงานทั้งหมด: 4 เล่ม</span>
+        <span class="clear-badge badge-emerald">เครื่องเล่น AnyFlip 2 หน้า</span>
+      </div>
+
+      <button onclick="openComposeModal()" class="clear-btn clear-btn-primary" style="background: linear-gradient(135deg, #6366f1, #a855f7);">
+        <i class="fa-solid fa-plus"></i> <span>เพิ่มผลงานใหม่</span>
+      </button>
+    </div>
+
+    <!-- Post Grid -->
+    <div class="post-grid" id="spacePostGrid">
+      <!-- Book 1 -->
+      <div class="space-post-card" onclick="openReader(0)">
+        <div class="space-thumb-holder" style="background: linear-gradient(135deg, #1e1b4b, #312e81);">
+          <i class="fa-solid fa-book-journal-whills" style="font-size: 3rem; color: #a5b4fc;"></i>
+          <span class="page-chip">📖 12 หน้า</span>
         </div>
+        <div style="padding: 1.15rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">นิทานเวตาล ฉบับการ์ตูนช่อง</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 0.75rem;">
+              การ์ตูนเล่าเรื่องปริศนาเวตาลเรื่องที่ 10 เมื่อพระวิกรมาทิตย์ต้องตอบปัญหาศพเวตาล
+            </p>
+          </div>
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.65rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim);">
+            <span>โดย: ม.6/1 (กลุ่มที่ 3)</span>
+            <span style="color: var(--brand-purple); font-weight: 600;">คลิกอ่าน E-Book</span>
+          </div>
+        </div>
+      </div>
 
-        <span class="clear-badge badge-purple" style="margin-bottom: 0.75rem;">พื้นที่ผลงานนักเรียน</span>
-        <h1 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 0.5rem;">CLEAR Space</h1>
-        <p style="color: var(--text-muted); font-size: 1rem; line-height: 1.7; margin-bottom: 2rem;">
-          คลังหนังสือการ์ตูน E-Book และนวัตกรรมพื้นที่สร้างสรรค์ผลงานวรรณคดีของนักเรียน<br>
-          <strong style="color: var(--brand-purple);">ระบบได้จัดเตรียมโครงสร้างและพื้นที่พร้อมเชื่อมต่อแล้ว</strong><br>
-          รอรับการคัดลอกไฟล์จากต้นทางตามคำสั่งของผู้พัฒนา
-        </p>
+      <!-- Book 2 -->
+      <div class="space-post-card" onclick="openReader(1)">
+        <div class="space-thumb-holder" style="background: linear-gradient(135deg, #064e3b, #047857);">
+          <i class="fa-solid fa-scroll" style="font-size: 3rem; color: #6ee7b7;"></i>
+          <span class="page-chip">📖 8 หน้า</span>
+        </div>
+        <div style="padding: 1.15rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">พระอภัยมณี ตอนศึกเก้าทัพ</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 0.75rem;">
+              ภาพวาดประกอบโคลงกลอนสุนทรภู่ ฉากกองทัพเมืองผลึกประจันบาน
+            </p>
+          </div>
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.65rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim);">
+            <span>โดย: ม.6/2 (กลุ่มที่ 1)</span>
+            <span style="color: var(--brand-emerald); font-weight: 600;">คลิกอ่าน E-Book</span>
+          </div>
+        </div>
+      </div>
 
-        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-          <a href="../index.html" class="clear-btn clear-btn-secondary">
-            <i class="fa-solid fa-arrow-left"></i> <span>กลับสู่หน้าหลัก</span>
-          </a>
-          <button onclick="showToast('ระบบพร้อมรับไฟล์จากพาธที่ระบุ', 'info', 'CLEAR Space')" class="clear-btn clear-btn-primary" style="background: linear-gradient(135deg, #6366f1, #a855f7);">
-            <i class="fa-solid fa-arrows-rotate"></i> <span>ตรวจสอบสถานะ</span>
-          </button>
+      <!-- Book 3 -->
+      <div class="space-post-card" onclick="openReader(2)">
+        <div class="space-thumb-holder" style="background: linear-gradient(135deg, #831843, #be185d);">
+          <i class="fa-solid fa-feather-pointed" style="font-size: 3rem; color: #fbcfe8;"></i>
+          <span class="page-chip">📖 10 หน้า</span>
+        </div>
+        <div style="padding: 1.15rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">มัทนะพาธา ตำนานดอกกุหลาบ</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 0.75rem;">
+              บทละครพูดคำฉันท์ วรรณคดีพระราชนิพนธ์ ร.6 ถ่ายทอดเป็นคอมมิกมังงะ
+            </p>
+          </div>
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.65rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim);">
+            <span>โดย: ม.6/5 (กลุ่มที่ 4)</span>
+            <span style="color: var(--brand-rose); font-weight: 600;">คลิกอ่าน E-Book</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Book 4 -->
+      <div class="space-post-card" onclick="openReader(3)">
+        <div class="space-thumb-holder" style="background: linear-gradient(135deg, #0c4a6e, #0284c7);">
+          <i class="fa-solid fa-ship" style="font-size: 3rem; color: #7dd3fc;"></i>
+          <span class="page-chip">📖 16 หน้า</span>
+        </div>
+        <div style="padding: 1.15rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">กาพย์เห่เรือ ลำนำสายน้ำ</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 0.75rem;">
+              รวบรวมภาพประกอบขบวนพยุหยาตราและเห่ชมปลา ชมไม้ ชมนก พร้อมคำแปล
+            </p>
+          </div>
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.65rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim);">
+            <span>โดย: ม.6/8 (กลุ่มที่ 2)</span>
+            <span style="color: var(--brand-cyan); font-weight: 600;">คลิกอ่าน E-Book</span>
+          </div>
         </div>
       </div>
     </div>
   </main>
 
+  <!-- AnyFlip Dual-Page Reader Overlay -->
+  <div id="anyFlipReader" class="reader-backdrop">
+    <div class="reader-topbar">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <i class="fa-solid fa-book-open" style="color: var(--brand-cyan);"></i>
+        <strong id="readerBookTitle">นิทานเวตาล ฉบับการ์ตูนช่อง</strong>
+      </div>
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <span id="pageCounter" style="font-size: 0.9rem; opacity: 0.8;">หน้า 1-2 / 12</span>
+        <button onclick="toggleReaderFullscreen()" class="nav-btn" style="color:white;"><i class="fa-solid fa-expand"></i></button>
+        <button onclick="closeReader()" class="nav-btn" style="color:white; font-size: 1.3rem;">&times;</button>
+      </div>
+    </div>
+
+    <div class="reader-body">
+      <button class="reader-btn" onclick="flipPage(-2)" style="position: absolute; left: 2rem; z-index: 10;">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <!-- 2-Page Spread Book -->
+      <div class="book-spread" id="bookCanvas">
+        <div class="book-page left" id="leftPage">
+          <div>
+            <span style="font-size: 0.75rem; color: #94a3b8; letter-spacing: 0.05em; text-transform: uppercase;">CHAPTER 1 • บทนำ</span>
+            <h2 id="leftTitle" style="font-size: 1.5rem; font-weight: 800; margin: 0.5rem 0 1rem; color: #0f172a;"></h2>
+            <div id="leftContent" style="font-size: 1.05rem; line-height: 1.8; color: #334155;"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
+            <span>Project CLEAR Space</span>
+            <span id="leftPageNum">1</span>
+          </div>
+        </div>
+
+        <div class="book-page right" id="rightPage">
+          <div>
+            <span style="font-size: 0.75rem; color: #94a3b8; letter-spacing: 0.05em; text-transform: uppercase;">CHAPTER 1 • ดำเนินเรื่อง</span>
+            <h2 id="rightTitle" style="font-size: 1.5rem; font-weight: 800; margin: 0.5rem 0 1rem; color: #0f172a;"></h2>
+            <div id="rightContent" style="font-size: 1.05rem; line-height: 1.8; color: #334155;"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
+            <span id="rightPageNum">2</span>
+            <span>กลุ่มสาระการเรียนรู้ภาษาไทย</span>
+          </div>
+        </div>
+
+        <div class="book-spine-shadow"></div>
+      </div>
+
+      <button class="reader-btn" onclick="flipPage(2)" style="position: absolute; right: 2rem; z-index: 10;">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Compose Work Modal -->
+  <div id="composeModal" class="clear-modal-backdrop">
+    <div class="clear-modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-plus-circle" style="color: var(--brand-purple);"></i> เพิ่มผลงาน E-Book ใหม่
+        </h3>
+        <button onclick="closeComposeModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-dim);">&times;</button>
+      </div>
+
+      <form onsubmit="handleComposeSubmit(event)">
+        <div class="clear-input-group">
+          <label class="clear-label" for="bookName">ชื่อเรื่อง / ชื่อผลงาน</label>
+          <input type="text" id="bookName" class="clear-input" placeholder="เช่น การ์ตูนสี่ช่องมัทนะพาธา" required>
+        </div>
+
+        <div class="clear-input-group">
+          <label class="clear-label" for="authorName">ชื่อผู้จัดทำ / ห้องเรียน</label>
+          <input type="text" id="authorName" class="clear-input" placeholder="เช่น นายสมชาย (ม.6/1)" required>
+        </div>
+
+        <div class="clear-input-group">
+          <label class="clear-label" for="bookDesc">คำอธิบายผลงานสั้นๆ</label>
+          <textarea id="bookDesc" class="clear-input" rows="3" placeholder="สรุปเนื้อเรื่องหรือแนวคิดของผลงาน"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" onclick="closeComposeModal()" class="clear-btn clear-btn-secondary">ยกเลิก</button>
+          <button type="submit" class="clear-btn clear-btn-primary" style="background: linear-gradient(135deg, #6366f1, #a855f7);">
+            <span>บันทึกผลงาน</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <footer class="clear-footer">
-    <p>© 2026 Project CLEAR — ระบบ CLEAR Space</p>
+    <p>© 2026 Project CLEAR — ระบบ CLEAR Space & AnyFlip Reader</p>
   </footer>
 
   <script src="../assets/js/shared.js"></script>
+  <script>
+    const DEMO_BOOKS = [
+      {
+        title: "นิทานเวตาล ฉบับการ์ตูนช่อง",
+        pages: [
+          { title: "ปริศนาของศพเวตาล", content: "ณ ป่าช้าอันมืดมิด พระวิกรมาทิตย์ทรงแบกศพเวตาลไว้บนพระอังสา เวตาลได้เอ่ยเล่านิทานเรื่องที่ 10 ขึ้นเพื่อท้าทายปัญญาของพระมหากษัตริย์..." },
+          { title: "กฎเหล็กแห่งความเงียบ", content: "เวตาลกล่าวเตือน: 'หากพระองค์ตรัสสิ่งใดออกมา แม้เพียงคำเดียว ข้าจะบินกลับสู่ต้นอโศกทันที!' พระวิกรมาทิตย์ทรงตั้งมั่นในสมาธิ..." },
+          { title: "ปัญหาความสัมพันธ์ที่ซับซ้อน", content: "เรื่องราวของพระราชาและพระโอรสผู้หลงรักสองแม่ลูก และให้กำเนิดบุตรสืบต่อกันมา จนเกิดเป็นคำถามว่าเด็กเหล่านั้นนับญาติกันอย่างไร..." },
+          { title: "ชัยชนะแห่งปัญญา", content: "พระวิกรมาทิตย์ทรงตรึกตรองและทรงทราบคำตอบ แต่ทรงระลึกถึงเงื่อนไข จึงทรงนิ่งเงียบไม่ยอมตรัสตอบ เวตาลจึงไม่อาจหลบหนีได้อีกต่อไป!" }
+        ]
+      },
+      {
+        title: "พระอภัยมณี ตอนศึกเก้าทัพ",
+        pages: [
+          { title: "เสียงปี่สะท้านคลื่น", content: "พระอภัยมณีทรงหยิบปี่แก้วขึ้นเป่า เสียงดนตรีอันโศกซึ้งแต่ทรงพลังกระจายไปทั่วท้องทะเล ทำให้เหล่าไพร่พลหลับใหลไร้การต่อสู้..." },
+          { title: "ความรักและความรับผิดชอบ", content: "นางผีเสื้อสมุทรไล่ตามมาด้วยความพิโรธ แต่ด้วยพลังแห่งปี่แก้วจึงไม่อาจต้านทานมนตร์สะกดแห่งดนตรีได้..." }
+        ]
+      },
+      {
+        title: "มัทนะพาธา ตำนานดอกกุหลาบ",
+        pages: [
+          { title: "คำสาปแห่งสวรรค์", content: "สุเทษณ์เทพบุตรทรงพิโรธที่นางมัทนาปฏิเสธความรัก จึงสาปให้นางจุติลงมาเป็นดอกกุหลาบในโลกมนุษย์..." },
+          { title: "ความเจ็บปวดแห่งรัก", content: "ความรักที่แท้จริงคือความเสียสละ มิใช่การบังคับครอบครอง ดอกกุหลาบจึงงดงามแต่เต็มไปด้วยหนามแหลมคม..." }
+        ]
+      },
+      {
+        title: "กาพย์เห่เรือ ลำนำสายน้ำ",
+        pages: [
+          { title: "พยุหยาตราทางชลมารค", content: "พระเสด็จโดยแดนชล ทรงเรือต้นงามเฉิดฉาย กิ่งแก้วแพร้วพรรณราย พายอ่อนหยับจับงามงอน..." },
+          { title: "ความผูกพันแห่งสายน้ำ", content: "นาวาแน่นเป็นขนัด ล้วนรูปสัตว์แสนยากร เรือริ้วทิวธงสลอน สาครลั่นครั่นครื้นฟอง..." }
+        ]
+      }
+    ];
+
+    let currentBook = null;
+    let currentSpread = 0;
+
+    function openReader(bookIndex) {
+      currentBook = DEMO_BOOKS[bookIndex];
+      currentSpread = 0;
+      document.getElementById('readerBookTitle').textContent = currentBook.title;
+      renderSpread();
+      document.getElementById('anyFlipReader').classList.add('open');
+    }
+
+    function closeReader() {
+      document.getElementById('anyFlipReader').classList.remove('open');
+    }
+
+    function renderSpread() {
+      if (!currentBook) return;
+      const leftPageIdx = currentSpread;
+      const rightPageIdx = currentSpread + 1;
+
+      const pLeft = currentBook.pages[leftPageIdx] || { title: '', content: '' };
+      const pRight = currentBook.pages[rightPageIdx] || { title: '', content: '' };
+
+      document.getElementById('leftTitle').textContent = pLeft.title;
+      document.getElementById('leftContent').innerHTML = pLeft.content;
+      document.getElementById('leftPageNum').textContent = leftPageIdx + 1;
+
+      document.getElementById('rightTitle').textContent = pRight.title;
+      document.getElementById('rightContent').innerHTML = pRight.content;
+      document.getElementById('rightPageNum').textContent = rightPageIdx + 1;
+
+      document.getElementById('pageCounter').textContent = `หน้า ${leftPageIdx + 1}-${rightPageIdx + 1} / ${currentBook.pages.length}`;
+    }
+
+    function flipPage(delta) {
+      if (!currentBook) return;
+      const newSpread = currentSpread + delta;
+      if (newSpread >= 0 && newSpread < currentBook.pages.length) {
+        currentSpread = newSpread;
+        // Animation shimmer
+        const book = document.getElementById('bookCanvas');
+        book.style.transform = delta > 0 ? 'rotateY(-2deg)' : 'rotateY(2deg)';
+        book.style.transition = 'transform 0.2s';
+        setTimeout(() => {
+          book.style.transform = 'none';
+          renderSpread();
+        }, 150);
+      } else {
+        showToast('ถึงหน้าสุดท้ายของเล่มแล้ว', 'info');
+      }
+    }
+
+    function toggleReaderFullscreen() {
+      const reader = document.getElementById('anyFlipReader');
+      if (!document.fullscreenElement) {
+        reader.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    function openComposeModal() {
+      document.getElementById('composeModal').classList.add('open');
+    }
+
+    function closeComposeModal() {
+      document.getElementById('composeModal').classList.remove('open');
+    }
+
+    function handleComposeSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('bookName').value;
+      showToast(`บันทึกผลงาน "${name}" เรียบร้อยแล้ว`, 'success');
+      closeComposeModal();
+    }
+  </script>
 </body>
 </html>
