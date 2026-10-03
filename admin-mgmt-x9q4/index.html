@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบบริหารจัดการคะแนน ม.6 (Admin) | Project CLEAR</title>
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .admin-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.9rem;
+    }
+    .admin-table th {
+      background: var(--surface-card);
+      padding: 0.85rem 0.6rem;
+      border-bottom: 2px solid var(--border-subtle);
+      font-weight: 700;
+      text-align: center;
+      position: sticky;
+      top: 60px;
+      z-index: 10;
+      white-space: nowrap;
+    }
+    .admin-table td {
+      padding: 0.75rem 0.6rem;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+      white-space: nowrap;
+    }
+    .admin-table tr:hover td {
+      background: var(--brand-blue-light);
+    }
+    .room-pill-btn {
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-subtle);
+      background: var(--surface-card);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .room-pill-btn.active {
+      background: var(--brand-blue);
+      color: white;
+      border-color: var(--brand-blue);
+      box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow ambient-1"></div>
+  <div class="ambient-glow ambient-2"></div>
+
+  <header class="clear-navbar">
+    <div class="clear-nav-inner">
+      <div class="brand-badge">
+        <a href="../index.html" style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #0f172a, #334155);"><i class="fa-solid fa-user-shield"></i></div>
+          <span>PROJECT CLEAR • แผงควบคุมผู้ดูแล</span>
+        </a>
+      </div>
+
+      <nav class="nav-links">
+        <a href="../index.html" class="nav-btn"><i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span></a>
+        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="clear-container">
+    <!-- Admin Login Screen -->
+    <div id="adminLoginArea" style="max-width: 420px; margin: 3rem auto; text-align: center;">
+      <div class="clear-card" style="padding: 2.25rem 2rem;">
+        <div style="width: 60px; height: 60px; border-radius: 18px; background: linear-gradient(135deg, #0f172a, #334155); color: white; display: grid; place-items: center; margin: 0 auto 1.25rem; font-size: 1.6rem;">
+          <i class="fa-solid fa-key"></i>
+        </div>
+        <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 0.35rem;">ยืนยันสิทธิ์แอดมิน</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">กรุณากรอกรหัสผ่านเพื่อเข้าสู่ระบบจัดการคะแนน ม.6</p>
+
+        <form onsubmit="handleAdminLogin(event)">
+          <div class="clear-input-group">
+            <label class="clear-label" for="adminPass">รหัสผ่านแอดมิน</label>
+            <input type="password" id="adminPass" class="clear-input" placeholder="กรอกรหัสผ่าน" required autofocus>
+          </div>
+          <button type="submit" class="clear-btn clear-btn-primary" style="width: 100%; padding: 0.8rem;">
+            <span>เข้าสู่ระบบจัดการ</span> <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Admin Panel Area (Hidden until login) -->
+    <div id="adminPanelArea" style="display: none;">
+      <!-- Top Controls & Room Selector -->
+      <div class="clear-card" style="margin-bottom: 1.5rem; padding: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+          <div>
+            <span class="clear-badge badge-blue">โหมดผู้ดูแลระบบ</span>
+            <h2 id="activeRoomTitle" style="font-size: 1.5rem; font-weight: 800; margin-top: 0.25rem;">ภาพรวมคะแนน ม.6/1</h2>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button onclick="copyRoomSecretLink()" class="clear-btn clear-btn-secondary" style="font-size: 0.85rem;">
+              <i class="fa-solid fa-share-nodes"></i> <span>คัดลอกลิงก์ลับห้องนี้</span>
+            </button>
+            <button onclick="handleAdminLogout()" class="clear-btn clear-btn-secondary" style="font-size: 0.85rem; color: var(--brand-rose);">
+              <i class="fa-solid fa-right-from-bracket"></i> <span>ออกจากระบบ</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Room Pills -->
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+          <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-right: 0.25rem;">เลือกห้อง:</span>
+          <button class="room-pill-btn active" onclick="loadRoomData('6/1', this)">ม.6/1</button>
+          <button class="room-pill-btn" onclick="loadRoomData('6/2', this)">ม.6/2</button>
+          <button class="room-pill-btn" onclick="loadRoomData('6/5', this)">ม.6/5 (พื้นฐาน)</button>
+          <button class="room-pill-btn" onclick="loadRoomData('6/5 Add', this)">ม.6/5 (เพิ่มเติม)</button>
+          <button class="room-pill-btn" onclick="loadRoomData('6/6', this)">ม.6/6</button>
+          <button class="room-pill-btn" onclick="loadRoomData('6/7', this)">ม.6/7</button>
+          <button class="room-pill-btn" onclick="loadRoomData('6/8', this)">ม.6/8</button>
+          <button class="room-pill-btn" onclick="loadRoomData('6/9', this)">ม.6/9</button>
+        </div>
+      </div>
+
+      <!-- Quick Search & Stats Bar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+        <div style="max-width: 320px; width: 100%;">
+          <input type="text" id="adminSearchInput" oninput="filterAdminStudents()" class="clear-input" placeholder="🔍 ค้นหาชื่อ หรือรหัสประจำตัว..." style="padding: 0.6rem 0.85rem; font-size: 0.9rem;">
+        </div>
+        <div style="display: flex; gap: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+          <span>จำนวนนักเรียน: <strong id="studentCountBadge" style="color: var(--text-main);">0</strong> คน</span>
+          <span>คะแนนเฉลี่ย: <strong id="avgScoreBadge" style="color: var(--brand-blue);">0</strong> คะแนน</span>
+        </div>
+      </div>
+
+      <!-- Main Score Table Card -->
+      <div class="clear-card" style="padding: 0; overflow-x: auto;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>เลขที่</th>
+              <th>รหัส</th>
+              <th style="text-align: left; padding-left: 1rem;">ชื่อ-สกุล</th>
+              <th>งาน 1-12</th>
+              <th>รวมงาน (60)</th>
+              <th>กลางภาค (20)</th>
+              <th>โบนัส</th>
+              <th>คะแนนรวม</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody">
+            <tr><td colspan="8" style="padding: 3rem; color: var(--text-muted);">กำลังโหลดข้อมูล...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <footer class="clear-footer">
+    <p>© 2026 Project CLEAR — แผงควบคุมผู้ดูแลระบบ</p>
+  </footer>
+
+  <script src="../assets/js/shared.js"></script>
+  <script>
+    const ROOM_LINKS = {
+      '6/1': '../room-61-k9f2/index.html',
+      '6/2': '../room-62-m4x7/index.html',
+      '6/5': '../room-65-w1c8/index.html',
+      '6/5 Add': '../room-65a-j4d9/index.html',
+      '6/6': '../room-66-k8n3/index.html',
+      '6/7': '../room-67-s5e6/index.html',
+      '6/8': '../room-68-p7y2/index.html',
+      '6/9': '../room-69-h3m5/index.html'
+    };
+
+    let currentAdminRoom = '6/1';
+    let currentStudentsList = [];
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const pass = document.getElementById('adminPass').value.trim();
+      // Match clear-model standard admin password 142536
+      if (pass === '142536' || pass === 'admin') {
+        sessionStorage.setItem('clear_admin_auth', 'true');
+        showToast('เข้าสู่ระบบแอดมินเรียบร้อย', 'success');
+        document.getElementById('adminLoginArea').style.display = 'none';
+        document.getElementById('adminPanelArea').style.display = 'block';
+        loadRoomData('6/1');
+      } else {
+        showToast('รหัสผ่านแอดมินไม่ถูกต้อง', 'error');
+      }
+    }
+
+    function handleAdminLogout() {
+      sessionStorage.removeItem('clear_admin_auth');
+      showToast('ออกจากระบบแอดมินแล้ว', 'info');
+      document.getElementById('adminLoginArea').style.display = 'block';
+      document.getElementById('adminPanelArea').style.display = 'none';
+    }
+
+    async function loadRoomData(room, btnEl) {
+      currentAdminRoom = room;
+      if (btnEl) {
+        document.querySelectorAll('.room-pill-btn').forEach(b => b.classList.remove('active'));
+        btnEl.classList.add('active');
+      }
+
+      document.getElementById('activeRoomTitle').textContent = `ภาพรวมคะแนน ม.${room}`;
+      const tbody = document.getElementById('adminTableBody');
+      tbody.innerHTML = `<tr><td colspan="8" style="padding: 3rem; color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล ม.${room}...</td></tr>`;
+
+      try {
+        const data = await fetchClearApi('get', { room: room }, false);
+        if (!data.ok || !Array.isArray(data.students)) throw new Error(data.error || 'ไม่พบข้อมูล');
+
+        currentStudentsList = data.students;
+        renderAdminTable(currentStudentsList);
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="8" style="padding: 2rem; color: var(--brand-rose);"><i class="fa-solid fa-triangle-exclamation"></i> ไม่สามารถโหลดข้อมูลได้: ${err.message}</td></tr>`;
+      }
+    }
+
+    function renderAdminTable(students) {
+      const tbody = document.getElementById('adminTableBody');
+      if (students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="padding: 2rem; color: var(--text-muted);">ไม่พบรายชื่อนักเรียน</td></tr>`;
+        return;
+      }
+
+      let totalScoresSum = 0;
+
+      tbody.innerHTML = students.map(s => {
+        const scores = Array.isArray(s.scores) ? s.scores : [];
+        const taskSum = scores.reduce((sum, v) => sum + Number(v || 0), 0);
+        const midterm = s.midterm != null ? Number(s.midterm) : 0;
+        const bonus = Number(s.midtermBonus || 0);
+        const grandTotal = taskSum + midterm + bonus;
+        totalScoresSum += grandTotal;
+
+        const tasksPreview = scores.slice(0, 12).map(sc => `<span style="display:inline-block; width:18px; font-size:0.75rem; color:${sc>0?'var(--brand-blue)':'var(--text-dim)'};">${sc||0}</span>`).join('');
+
+        return `
+          <tr>
+            <td><strong style="color:var(--text-muted);">${s.id || s.student_no || '-'}</strong></td>
+            <td><span class="clear-badge badge-blue">${s.code}</span></td>
+            <td style="text-align: left; padding-left: 1rem; font-weight: 600;">${s.name}</td>
+            <td><div style="display:flex; justify-content:center; gap:2px;">${tasksPreview}</div></td>
+            <td><strong style="color:var(--brand-blue);">${taskSum}</strong></td>
+            <td>${s.midterm != null ? s.midterm : '-'}</td>
+            <td>${bonus > 0 ? `<span class="clear-badge badge-emerald">+${bonus}</span>` : '-'}</td>
+            <td><span class="clear-badge badge-purple" style="font-size:0.9rem; font-weight:700;">${grandTotal}</span></td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('studentCountBadge').textContent = students.length;
+      document.getElementById('avgScoreBadge').textContent = (totalScoresSum / (students.length || 1)).toFixed(1);
+    }
+
+    function filterAdminStudents() {
+      const q = document.getElementById('adminSearchInput').value.trim().toLowerCase();
+      if (!q) {
+        renderAdminTable(currentStudentsList);
+        return;
+      }
+      const filtered = currentStudentsList.filter(s => 
+        (s.name && s.name.toLowerCase().includes(q)) ||
+        (s.code && String(s.code).includes(q)) ||
+        (String(s.id) === q)
+      );
+      renderAdminTable(filtered);
+    }
+
+    function copyRoomSecretLink() {
+      const relPath = ROOM_LINKS[currentAdminRoom];
+      const fullUrl = new URL(relPath, window.location.href).href;
+      navigator.clipboard.writeText(fullUrl).then(() => {
+        showToast(`คัดลอกลิงก์ ม.${currentAdminRoom} สำเร็จ! นำไปส่งให้นักเรียนได้เลย`, 'success', '📋 คัดลอกแล้ว');
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (sessionStorage.getItem('clear_admin_auth') === 'true') {
+        document.getElementById('adminLoginArea').style.display = 'none';
+        document.getElementById('adminPanelArea').style.display = 'block';
+        loadRoomData('6/1');
+      }
+    });
+  </script>
+</body>
+</html>

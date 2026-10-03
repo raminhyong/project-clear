@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLEAR Space | Project CLEAR</title>
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="ambient-glow ambient-1"></div>
+  <div class="ambient-glow ambient-2"></div>
+
+  <header class="clear-navbar">
+    <div class="clear-nav-inner">
+      <div class="brand-badge">
+        <a href="../index.html" style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #6366f1, #a855f7);"><i class="fa-solid fa-book-open"></i></div>
+          <span>PROJECT CLEAR</span>
+        </a>
+      </div>
+
+      <nav class="nav-links">
+        <a href="../index.html" class="nav-btn"><i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span></a>
+        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="clear-container">
+    <div style="max-width: 640px; margin: 3rem auto 0; text-align: center;">
+      <div class="clear-card" style="padding: 3rem 2rem;">
+        <div style="width: 72px; height: 72px; border-radius: 22px; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; display: grid; place-items: center; margin: 0 auto 1.5rem; font-size: 2rem; box-shadow: 0 10px 25px rgba(99,102,241,0.35);">
+          <i class="fa-solid fa-book-journal-whills"></i>
+        </div>
+
+        <span class="clear-badge badge-purple" style="margin-bottom: 0.75rem;">พื้นที่ผลงานนักเรียน</span>
+        <h1 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 0.5rem;">CLEAR Space</h1>
+        <p style="color: var(--text-muted); font-size: 1rem; line-height: 1.7; margin-bottom: 2rem;">
+          คลังหนังสือการ์ตูน E-Book และนวัตกรรมพื้นที่สร้างสรรค์ผลงานวรรณคดีของนักเรียน<br>
+          <strong style="color: var(--brand-purple);">ระบบได้จัดเตรียมโครงสร้างและพื้นที่พร้อมเชื่อมต่อแล้ว</strong><br>
+          รอรับการคัดลอกไฟล์จากต้นทางตามคำสั่งของผู้พัฒนา
+        </p>
+
+        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+          <a href="../index.html" class="clear-btn clear-btn-secondary">
+            <i class="fa-solid fa-arrow-left"></i> <span>กลับสู่หน้าหลัก</span>
+          </a>
+          <button onclick="showToast('ระบบพร้อมรับไฟล์จากพาธที่ระบุ', 'info', 'CLEAR Space')" class="clear-btn clear-btn-primary" style="background: linear-gradient(135deg, #6366f1, #a855f7);">
+            <i class="fa-solid fa-arrows-rotate"></i> <span>ตรวจสอบสถานะ</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="clear-footer">
+    <p>© 2026 Project CLEAR — ระบบ CLEAR Space</p>
+  </footer>
+
+  <script src="../assets/js/shared.js"></script>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เสริมก่อนสอบ (Pre/Post-Test) | Project CLEAR</title>
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .quiz-container {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .question-box {
+      margin-bottom: 1.5rem;
+    }
+    .verse-quote {
+      background: var(--brand-amber-light);
+      border-left: 4px solid var(--brand-amber);
+      padding: 1rem 1.25rem;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-bottom: 1.25rem;
+      font-style: italic;
+      color: var(--text-main);
+      line-height: 1.8;
+    }
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      padding: 0.9rem 1.25rem;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border-subtle);
+      background: var(--surface-card);
+      color: var(--text-main);
+      font-family: var(--font-thai);
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s ease;
+    }
+    .option-btn:hover {
+      border-color: var(--brand-blue);
+      background: var(--brand-blue-light);
+      transform: translateX(4px);
+    }
+    .option-btn.selected {
+      border-color: var(--brand-blue);
+      background: var(--brand-blue-light);
+      font-weight: 600;
+      color: var(--brand-blue);
+      box-shadow: 0 0 0 2px var(--brand-blue);
+    }
+    .option-btn.correct {
+      border-color: var(--brand-emerald) !important;
+      background: var(--brand-emerald-light) !important;
+      color: var(--brand-emerald) !important;
+    }
+    .option-btn.wrong {
+      border-color: var(--brand-rose) !important;
+      background: var(--brand-rose-light) !important;
+      color: var(--brand-rose) !important;
+    }
+    .option-letter {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.06);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .nav-pill-grid {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      justify-content: center;
+    }
+    .q-pill {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      background: var(--surface-card);
+      display: grid;
+      place-items: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .q-pill.active {
+      border-color: var(--brand-blue);
+      background: var(--brand-blue);
+      color: white;
+    }
+    .q-pill.answered {
+      border-color: var(--brand-emerald);
+      background: var(--brand-emerald-light);
+      color: var(--brand-emerald);
+    }
+  </style>
+</head>
+<body>
+  <!-- Ambient background glow -->
+  <div class="ambient-glow ambient-1"></div>
+  <div class="ambient-glow ambient-2"></div>
+
+  <!-- Navbar -->
+  <header class="clear-navbar">
+    <div class="clear-nav-inner">
+      <div class="brand-badge">
+        <a href="../index.html" style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fa-solid fa-file-pen"></i></div>
+          <span>PROJECT CLEAR</span>
+        </a>
+      </div>
+
+      <nav class="nav-links">
+        <a href="../index.html" class="nav-btn"><i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span></a>
+        <a href="../traveler/index.html" class="nav-btn"><i class="fa-solid fa-compass nav-btn-icon"></i> <span>ไอเทม</span></a>
+        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="clear-container">
+    <div class="quiz-container">
+      <div style="margin-bottom: 1.5rem; text-align: center;">
+        <span class="clear-badge badge-amber" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-graduation-cap"></i> ข้อสอบจำลอง ท33101</span>
+        <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main);">เสริมก่อนสอบ (Pre/Post-Test)</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">แบบทดสอบเทียบเคียงวัดผลกลางภาคและปลายภาค พร้อมเฉลยและคำอธิบาย</p>
+      </div>
+
+      <!-- Set Selection Buttons -->
+      <div style="display: flex; gap: 0.75rem; justify-content: center; margin-bottom: 1.75rem; flex-wrap: wrap;">
+        <button id="set1Btn" onclick="selectSet(1)" class="clear-btn clear-btn-amber" style="font-size: 0.9rem;">
+          <i class="fa-solid fa-book-bookmark"></i> ชุดที่ 1: วรรณคดีกาพย์เห่เรือ
+        </button>
+        <button id="set2Btn" onclick="selectSet(2)" class="clear-btn clear-btn-secondary" style="font-size: 0.9rem;">
+          <i class="fa-solid fa-spell-check"></i> ชุดที่ 2: วรรณศิลป์และการวิเคราะห์
+        </button>
+      </div>
+
+      <!-- Question Number Navigator -->
+      <div id="qNavigator" class="nav-pill-grid"></div>
+
+      <!-- Main Question Card -->
+      <div class="clear-card" style="padding: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <span id="qCategory" class="clear-badge badge-blue">ระดับง่าย • ท่องจำและบอกคุณค่า</span>
+          <span id="qProgress" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">ข้อ 1 จาก 6</span>
+        </div>
+
+        <div id="qVerseBox" class="verse-quote" style="display: none;"></div>
+
+        <h3 id="qText" style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1.25rem; line-height: 1.5;"></h3>
+
+        <div id="qOptions"></div>
+
+        <div id="qFeedback" style="display: none; padding: 1rem; border-radius: var(--radius-md); margin-top: 1.25rem; font-size: 0.95rem;"></div>
+
+        <!-- Controls -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.75rem; border-top: 1px solid var(--border-subtle); padding-top: 1.25rem;">
+          <button id="prevBtn" onclick="changeQuestion(-1)" class="clear-btn clear-btn-secondary" style="font-size: 0.875rem;">
+            <i class="fa-solid fa-chevron-left"></i> <span>ข้อย้อนหลัง</span>
+          </button>
+          
+          <button id="checkBtn" onclick="checkCurrentAnswer()" class="clear-btn clear-btn-amber" style="font-size: 0.875rem;">
+            <i class="fa-solid fa-check"></i> <span>ตรวจคำตอบ</span>
+          </button>
+
+          <button id="nextBtn" onclick="changeQuestion(1)" class="clear-btn clear-btn-primary" style="font-size: 0.875rem;">
+            <span>ข้อถัดไป</span> <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="clear-footer">
+    <p>© 2026 Project CLEAR — ระบบเสริมก่อนสอบ วิชาภาษาไทย</p>
+  </footer>
+
+  <script src="../assets/js/shared.js"></script>
+  <script>
+    const QUESTIONS_SET1 = [
+      {
+        category: "🟢 ระดับง่าย • กาพย์เห่ชมกระบวนเรือ",
+        verse: "พระเสด็จโดยแดนชล ทรงเรือต้นงามเฉิดฉาย<br>กิ่งแก้วแพร้วพรรณราย ......................(ข้อ 1)......................<br>๏ นาวาแน่นเปนขนัด ล้วนรูปสัตว์แสนยากร<br>เรือริ้วทิวธงสลอน สาครลั่นครั่นครื้นฟอง",
+        question: "1. บาทที่หายไปจากบทประพันธ์ข้างต้นคือข้อใด",
+        options: [
+          "พายอ่อนยับจับงามงอน",
+          "พายอ่อนหยับจับงามงอน",
+          "พายอ่อนหยับจับงามอ่อน",
+          "พายอ่อนหยับจับพร่างงอน"
+        ],
+        answer: 1,
+        explain: "บทอาขยานกาพย์เห่เรือที่ถูกต้องคือ 'กิ่งแก้วแพร้วพรรณราย พายอ่อนหยับจับงามงอน' คำว่า 'หยับ' หมายถึง ขยับหรือพายพร้อมเพรียงกัน"
+      },
+      {
+        category: "🟢 ระดับง่าย • กาพย์เห่ชมกระบวนเรือ",
+        verse: "๏ เรือครุธยุดนาคหิ้ว ลิ่วลอยมาพาผันผยอง<br>พลพายกรายพายทอง ร้องโห่เห่โอ้เห่มา",
+        question: "2. 'เรือครุธยุดนาคหิ้ว' สื่อถึงลักษณะของเรือพระที่นั่งลำใด",
+        options: [
+          "เรือที่มีรูปนกในตำนาน",
+          "เรือที่มีโขนเรือเป็นรูปพญาครุฑกำลังยึดจับพญานาค",
+          "เรือที่มีรูปสัตว์น้ำ",
+          "เรือที่มีรูปมังกรเล่นน้ำ"
+        ],
+        answer: 1,
+        explain: "เรือครุฑยุดนาคหิ้ว คือเรือรูปสัตว์ที่มีโขนเรือจำหลักเป็นรูปพญาครุฑจับนาค ซึ่งเป็นสัญลักษณ์แห่งอำนาจและบารมีพระมหากษัตริย์"
+      },
+      {
+        category: "🟡 ระดับปานกลาง • กาพย์เห่ชมปลา",
+        verse: "นวลจันทร์เปนนวลจริง เจ้างามพริ้งยิ่งนวลปลา<br>คางเบือนเบือนหน้ามา ไม่งามเท่าเจ้าเบือนชาย<br>๏ เพียนทองงามดั่งทอง ไม่เหมือนน้องห่มตาดพราย",
+        question: "3. 'เพียนทองงามดั่งทอง' ใช้โวหารภาพพจน์ชนิดใด",
+        options: [
+          "อุปมา (เปรียบเทียบสิ่งหนึ่งเหมือนอีกสิ่ง)",
+          "อุปลักษณ์ (เปรียบสิ่งหนึ่งเป็นอีกสิ่ง)",
+          "สัทพจน์ (เลียนเสียงธรรมชาติ)",
+          "บุคคลวัต (สมมุติสิ่งไม่มีชีวิตให้มีกิริยาเหมือนคน)"
+        ],
+        answer: 0,
+        explain: "ใช้คำว่า 'ดั่ง' เป็นคำเชื่อมเปรียบเทียบ จึงจัดเป็นภาพพจน์ประเภท 'อุปมา' (Simile)"
+      },
+      {
+        category: "🟡 ระดับปานกลาง • กาพย์เห่ชมปลา",
+        verse: "กระแหแหห่างชาย ดังสายสวาดิคลาศจากสม",
+        question: "4. กวีใช้ชื่อปลา 'กระแห' สื่อถึงความหมายและอารมณ์ความรู้สึกใด",
+        options: [
+          "ความอุดมสมบูรณ์ของท้องน้ำ",
+          "ความรู้สึกคิดถึง พลัดพราก ห่างไกลจากคนรัก",
+          "ความสวยงามของธรรมชาติ",
+          "ความหลากหลายของพันธุ์สัตว์น้ำ"
+        ],
+        answer: 1,
+        explain: "กวีเล่นคำว่า 'แห' พ้องกับ 'ห่าง' เพื่อสื่อถึงความรู้สึกพลัดพรากและคิดถึงนางอันเป็นที่รัก"
+      },
+      {
+        category: "🔴 ระดับวิเคราะห์ • กาพย์เห่ชมนก",
+        verse: "นางนวลนวลน่ารัก ไม่นวลพักตร์เหมือนทรามสงวน<br>แก้วพี่นี้สุดนวล ดั่งนกแก้วแจ้วจำนรรจา",
+        question: "5. กลวิธีทางวรรณศิลป์ที่เด่นชัดที่สุดในบทนี้คือข้อใด",
+        options: [
+          "การเล่นคำพ้องรูปพ้องเสียง (นางนวล - นวลพักตร์)",
+          "การใช้สัมผัสสระทุกคำ",
+          "การอติพจน์เกินจริง",
+          "การบรรยายฉากหลัง"
+        ],
+        answer: 0,
+        explain: "กวีใช้ชื่อนก 'นางนวล' มาเล่นคำเชื่อมโยงกับคำว่า 'นวลพักตร์' (ผิวหน้าเนียนนวล) ของหญิงคนรัก"
+      },
+      {
+        category: "🔴 ระดับวิเคราะห์ • คุณค่าด้านวรรณศิลป์",
+        verse: "เรือริ้วทิวธงสลอน สาครลั่นครั่นครื้นฟอง",
+        question: "6. 'สาครลั่นครั่นครื้นฟอง' ใช้ภาพพจน์หรือพลังเสียงแบบใด",
+        options: [
+          "ภาพพจน์เลียนเสียงธรรมชาติ (สัทพจน์) สร้างจินตภาพเสียงคลื่นกระหึ่ม",
+          "การใช้คำศัพท์ภาษาต่างประเทศ",
+          "การเปรียบเทียบแบบบุคคลวัต",
+          "การเล่นคำผวน"
+        ],
+        answer: 0,
+        explain: "คำว่า 'ครั่นครื้น' เป็นคำเลียนเสียงธรรมชาติ (สัทพจน์) ทำให้ผู้อ่านได้ยินเสียงน้ำซัดกระแทกฟองคลื่นอย่างทรงพลัง"
+      }
+    ];
+
+    let currentSet = 1;
+    let questions = QUESTIONS_SET1;
+    let currentIndex = 0;
+    let userAnswers = {};
+
+    function selectSet(setNum) {
+      currentSet = setNum;
+      document.getElementById('set1Btn').className = setNum === 1 ? 'clear-btn clear-btn-amber' : 'clear-btn clear-btn-secondary';
+      document.getElementById('set2Btn').className = setNum === 2 ? 'clear-btn clear-btn-amber' : 'clear-btn clear-btn-secondary';
+      currentIndex = 0;
+      userAnswers = {};
+      renderNavigator();
+      renderQuestion();
+    }
+
+    function renderNavigator() {
+      const nav = document.getElementById('qNavigator');
+      nav.innerHTML = questions.map((q, idx) => `
+        <div class="q-pill ${idx === currentIndex ? 'active' : ''} ${userAnswers[idx] !== undefined ? 'answered' : ''}" onclick="goToQuestion(${idx})">
+          ${idx + 1}
+        </div>
+      `).join('');
+    }
+
+    function renderQuestion() {
+      const q = questions[currentIndex];
+      document.getElementById('qProgress').textContent = `ข้อ ${currentIndex + 1} จาก ${questions.length}`;
+      document.getElementById('qCategory').textContent = q.category;
+
+      const verseBox = document.getElementById('qVerseBox');
+      if (q.verse) {
+        verseBox.innerHTML = q.verse;
+        verseBox.style.display = 'block';
+      } else {
+        verseBox.style.display = 'none';
+      }
+
+      document.getElementById('qText').textContent = q.question;
+
+      const optionsDiv = document.getElementById('qOptions');
+      const letters = ['ก', 'ข', 'ค', 'ง'];
+      optionsDiv.innerHTML = q.options.map((opt, i) => `
+        <button class="option-btn ${userAnswers[currentIndex] === i ? 'selected' : ''}" onclick="selectOption(${i})">
+          <span class="option-letter">${letters[i]}</span>
+          <span>${opt}</span>
+        </button>
+      `).join('');
+
+      document.getElementById('qFeedback').style.display = 'none';
+
+      document.getElementById('prevBtn').disabled = currentIndex === 0;
+      document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
+
+      renderNavigator();
+    }
+
+    function selectOption(idx) {
+      userAnswers[currentIndex] = idx;
+      renderQuestion();
+    }
+
+    function checkCurrentAnswer() {
+      const q = questions[currentIndex];
+      const selected = userAnswers[currentIndex];
+      const feedback = document.getElementById('qFeedback');
+
+      if (selected === undefined) {
+        showToast('กรุณาเลือกคำตอบก่อนตรวจ', 'warning');
+        return;
+      }
+
+      const isCorrect = selected === q.answer;
+      feedback.style.display = 'block';
+
+      if (isCorrect) {
+        feedback.style.background = 'var(--brand-emerald-light)';
+        feedback.style.color = 'var(--brand-emerald)';
+        feedback.style.border = '1px solid rgba(16,185,129,0.3)';
+        feedback.innerHTML = `
+          <strong><i class="fa-solid fa-circle-check"></i> ถูกต้องยอดเยี่ยม!</strong>
+          <p style="margin-top: 0.35rem; color: var(--text-main); font-size: 0.9rem;">${q.explain}</p>
+        `;
+        showToast('ตอบถูก! รับคะแนนสะสม', 'success');
+      } else {
+        feedback.style.background = 'var(--brand-rose-light)';
+        feedback.style.color = 'var(--brand-rose)';
+        feedback.style.border = '1px solid rgba(244,63,94,0.3)';
+        feedback.innerHTML = `
+          <strong><i class="fa-solid fa-circle-xmark"></i> ยังไม่ถูกต้อง</strong>
+          <p style="margin-top: 0.35rem; color: var(--text-main); font-size: 0.9rem;"><strong>เฉลย:</strong> ${q.options[q.answer]}<br>${q.explain}</p>
+        `;
+        showToast('ยังไม่ถูก ลองศึกษาคำอธิบายเพิ่มเติมนะ', 'error');
+      }
+    }
+
+    function changeQuestion(delta) {
+      const newIdx = currentIndex + delta;
+      if (newIdx >= 0 && newIdx < questions.length) {
+        currentIndex = newIdx;
+        renderQuestion();
+      }
+    }
+
+    function goToQuestion(idx) {
+      currentIndex = idx;
+      renderQuestion();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderNavigator();
+      renderQuestion();
+    });
+  </script>
+</body>
+</html>

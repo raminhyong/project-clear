@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Self Point System | Project CLEAR</title>
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <style>
+    .scanner-box {
+      width: 100%;
+      max-width: 380px;
+      height: 280px;
+      margin: 0 auto 1.25rem;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      position: relative;
+      background: #000;
+      display: none;
+    }
+    .scanner-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .scanner-laser {
+      position: absolute;
+      top: 50%; left: 10%; right: 10%;
+      height: 2px;
+      background: var(--brand-emerald);
+      box-shadow: 0 0 12px var(--brand-emerald);
+      animation: laserScan 2s ease-in-out infinite alternate;
+    }
+    @keyframes laserScan {
+      0% { top: 15%; }
+      100% { top: 85%; }
+    }
+    .mode-tab {
+      flex: 1;
+      padding: 0.75rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 1px solid var(--border-subtle);
+      background: var(--surface-card);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+    .mode-tab.active {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border-color: #10b981;
+      box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+    }
+    .mode-tab.active.mode-pum {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border-color: #f59e0b;
+      box-shadow: 0 4px 12px rgba(245,158,11,0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow ambient-1"></div>
+  <div class="ambient-glow ambient-2"></div>
+
+  <header class="clear-navbar">
+    <div class="clear-nav-inner">
+      <div class="brand-badge">
+        <a href="../index.html" style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #10b981, #0ea5e9);"><i class="fa-solid fa-gem"></i></div>
+          <span>PROJECT CLEAR</span>
+        </a>
+      </div>
+
+      <nav class="nav-links">
+        <a href="../index.html" class="nav-btn"><i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span></a>
+        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="clear-container">
+    <div style="max-width: 520px; margin: 1rem auto 0; text-align: center;">
+      <span class="clear-badge badge-emerald" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-qrcode"></i> รับแต้มด้วยตนเอง</span>
+      <h1 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 0.35rem;">Self Point System</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.75rem;">กรอกรหัสคูปอง หรือสแกน QR Code เพื่อบันทึกแต้มคะแนน</p>
+
+      <!-- Mode Switcher -->
+      <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem;">
+        <button id="tabScore" class="mode-tab active" onclick="switchMode('score')">
+          <i class="fa-solid fa-ticket"></i> คูปองคะแนนงาน
+        </button>
+        <button id="tabPum" class="mode-tab" onclick="switchMode('pum')">
+          <i class="fa-solid fa-stamp"></i> แต้มปั๊ม (PUM)
+        </button>
+      </div>
+
+      <div class="clear-card" style="padding: 2rem;">
+        <!-- Camera Scanner Area -->
+        <div id="scannerArea" class="scanner-box">
+          <video id="videoFeed" class="scanner-video" playsinline></video>
+          <div class="scanner-laser"></div>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <button id="cameraToggleBtn" onclick="toggleCamera()" class="clear-btn clear-btn-secondary" style="width: 100%; margin-bottom: 1rem;">
+            <i class="fa-solid fa-camera"></i> <span id="cameraBtnText">เปิดกล้องสแกน QR Code</span>
+          </button>
+        </div>
+
+        <!-- Code Input Form -->
+        <form onsubmit="handleClaimCode(event)">
+          <div class="clear-input-group">
+            <label class="clear-label" for="claimCode">รหัสคูปอง / โค้ดปั๊ม</label>
+            <input type="text" id="claimCode" class="clear-input" placeholder="เช่น PUM-7890 หรือ CP-1234" style="text-align: center; font-size: 1.25rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;" required autofocus>
+          </div>
+
+          <div class="clear-input-group">
+            <label class="clear-label" for="claimStudentCode">รหัสประจำตัวนักเรียน (5 หลัก)</label>
+            <input type="text" id="claimStudentCode" class="clear-input" placeholder="เช่น 24252" maxlength="5" pattern="\\d{5}" style="text-align: center;" required>
+          </div>
+
+          <button type="submit" id="submitClaimBtn" class="clear-btn clear-btn-emerald" style="width: 100%; padding: 0.85rem; font-size: 1rem;">
+            <i class="fa-solid fa-check-to-slot"></i> <span>ยืนยันรับคะแนน</span>
+          </button>
+        </form>
+
+        <!-- Result Box -->
+        <div id="claimResult" style="display: none; margin-top: 1.5rem; padding: 1.25rem; border-radius: var(--radius-md); text-align: left;"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="clear-footer">
+    <p>© 2026 Project CLEAR — ระบบ Self Point</p>
+  </footer>
+
+  <script src="../assets/js/shared.js"></script>
+  <script>
+    let currentMode = 'score';
+    let scanning = false;
+    let videoStream = null;
+
+    function switchMode(mode) {
+      currentMode = mode;
+      const tabScore = document.getElementById('tabScore');
+      const tabPum = document.getElementById('tabPum');
+      const submitBtn = document.getElementById('submitClaimBtn');
+
+      if (mode === 'score') {
+        tabScore.className = 'mode-tab active';
+        tabPum.className = 'mode-tab';
+        submitBtn.className = 'clear-btn clear-btn-emerald';
+      } else {
+        tabScore.className = 'mode-tab';
+        tabPum.className = 'mode-tab active mode-pum';
+        submitBtn.className = 'clear-btn clear-btn-amber';
+      }
+    }
+
+    async function handleClaimCode(e) {
+      e.preventDefault();
+      const codeInput = document.getElementById('claimCode');
+      const studentInput = document.getElementById('claimStudentCode');
+      const resultBox = document.getElementById('claimResult');
+      const btn = document.getElementById('submitClaimBtn');
+
+      const code = codeInput.value.trim().toUpperCase();
+      const studentCode = studentInput.value.trim();
+
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบ...`;
+
+      try {
+        const action = currentMode === 'score' ? 'redeemCoupon' : 'redeemPum';
+        const res = await fetchClearApi(action, {
+          code: code,
+          studentCode: studentCode
+        }, false);
+
+        resultBox.style.display = 'block';
+
+        if (res.ok) {
+          resultBox.style.background = 'var(--brand-emerald-light)';
+          resultBox.style.color = 'var(--brand-emerald)';
+          resultBox.style.border = '1px solid rgba(16,185,129,0.3)';
+          resultBox.innerHTML = `
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+              <i class="fa-solid fa-circle-check" style="font-size: 1.5rem;"></i>
+              <div>
+                <strong>รับคะแนนสำเร็จ!</strong>
+                <p style="font-size: 0.9rem; color: var(--text-main); margin-top: 2px;">
+                  บันทึกคะแนน ${res.value || res.score || 1} แต้ม ให้กับรหัสนักเรียน ${studentCode} เรียบร้อยแล้ว
+                </p>
+              </div>
+            </div>
+          `;
+          showToast('รับแต้มสำเร็จ!', 'success');
+          codeInput.value = '';
+        } else {
+          throw new Error(res.error || 'รหัสไม่ถูกต้องหรือถูกใช้งานไปแล้ว');
+        }
+      } catch (err) {
+        resultBox.style.display = 'block';
+        resultBox.style.background = 'var(--brand-rose-light)';
+        resultBox.style.color = 'var(--brand-rose)';
+        resultBox.style.border = '1px solid rgba(244,63,94,0.3)';
+        resultBox.innerHTML = `
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.5rem;"></i>
+            <div>
+              <strong>ไม่สามารถรับคะแนนได้</strong>
+              <p style="font-size: 0.9rem; color: var(--text-main); margin-top: 2px;">${err.message}</p>
+            </div>
+          </div>
+        `;
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-check-to-slot"></i> <span>ยืนยันรับคะแนน</span>`;
+      }
+    }
+
+    async function toggleCamera() {
+      const scanner = document.getElementById('scannerArea');
+      const video = document.getElementById('videoFeed');
+      const btnText = document.getElementById('cameraBtnText');
+
+      if (scanning) {
+        if (videoStream) {
+          videoStream.getTracks().forEach(t => t.stop());
+        }
+        scanner.style.display = 'none';
+        btnText.textContent = 'เปิดกล้องสแกน QR Code';
+        scanning = false;
+        return;
+      }
+
+      try {
+        videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        video.srcObject = videoStream;
+        video.setAttribute('playsinline', true);
+        video.play();
+        scanner.style.display = 'block';
+        btnText.textContent = 'ปิดกล้องสแกน';
+        scanning = true;
+        requestAnimationFrame(tickScan);
+      } catch (err) {
+        showToast('ไม่สามารถเข้าถึงกล้องได้: ' + err.message, 'error');
+      }
+    }
+
+    function tickScan() {
+      if (!scanning) return;
+      const video = document.getElementById('videoFeed');
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imgData.data, imgData.width, imgData.height);
+        if (code && code.data) {
+          document.getElementById('claimCode').value = code.data.trim();
+          showToast('สแกน QR Code สำเร็จ!', 'success');
+          toggleCamera();
+          return;
+        }
+      }
+      requestAnimationFrame(tickScan);
+    }
+  </script>
+</body>
+</html>

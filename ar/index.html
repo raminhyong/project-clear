@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบสื่อ AR กาพย์เห่เรือ | Project CLEAR</title>
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .ar-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    .ar-visual-card {
+      border-radius: var(--radius-lg);
+      background: var(--surface-card);
+      border: 1px solid var(--border-glass);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .ar-visual-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--brand-cyan);
+    }
+    .ar-image-holder {
+      height: 180px;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 3rem;
+      position: relative;
+    }
+    .ar-image-holder img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .ar-badge-corner {
+      position: absolute;
+      top: 12px; right: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow ambient-1"></div>
+  <div class="ambient-glow ambient-2"></div>
+
+  <header class="clear-navbar">
+    <div class="clear-nav-inner">
+      <div class="brand-badge">
+        <a href="../index.html" style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #0284c7, #06b6d4);"><i class="fa-solid fa-cube"></i></div>
+          <span>PROJECT CLEAR</span>
+        </a>
+      </div>
+
+      <nav class="nav-links">
+        <a href="../index.html" class="nav-btn"><i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span></a>
+        <a href="../traveler/index.html" class="nav-btn"><i class="fa-solid fa-compass nav-btn-icon"></i> <span>ไอเทม</span></a>
+        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="clear-container">
+    <div style="margin-bottom: 2rem; text-align: center;">
+      <span class="clear-badge badge-blue" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-vr-cardboard"></i> เทคโนโลยีเสมือนจริง</span>
+      <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main);">สื่อนวัตกรรม AR กาพย์เห่เรือ</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">สำรวจเรือพระราชพิธีจำลอง 3D บัตรเบาะแสวรรณคดี และมินิเกมจิ๊กซอว์ปริศนา</p>
+    </div>
+
+    <!-- AR Filter Tabs -->
+    <div style="display: flex; justify-content: center; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap;">
+      <button class="clear-btn clear-btn-primary" onclick="filterAr('all')">ทั้งหมด</button>
+      <button class="clear-btn clear-btn-secondary" onclick="filterAr('boat')">เรือพระราชพิธี</button>
+      <button class="clear-btn clear-btn-secondary" onclick="filterAr('puzzle')">จิ๊กซอว์ปริศนา</button>
+      <button class="clear-btn clear-btn-secondary" onclick="filterAr('clue')">บัตรเบาะแส</button>
+    </div>
+
+    <div class="ar-card-grid">
+      <!-- Card 1 -->
+      <div class="ar-visual-card" data-category="boat">
+        <div class="ar-image-holder" style="background: linear-gradient(135deg, #0284c7, #2563eb);">
+          <i class="fa-solid fa-ship"></i>
+          <span class="clear-badge badge-amber ar-badge-corner">AR 3D Model</span>
+        </div>
+        <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">เรือพระที่นั่งสุวรรณหงส์</h3>
+            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
+              "สุวรรณหงส์ทรงพู่ห้อย งามชดช้อยลอยหลังสินธุ์" ส่องกล้อง AR สัมผัสความงามโขนเรือรูปหงส์ทอง 3 มิติ
+            </p>
+          </div>
+          <button onclick="launchArViewer('เรือพระที่นั่งสุวรรณหงส์')" class="clear-btn clear-btn-primary" style="width: 100%;">
+            <i class="fa-solid fa-camera"></i> <span>เปิดกล้องสแกน AR</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="ar-visual-card" data-category="boat">
+        <div class="ar-image-holder" style="background: linear-gradient(135deg, #b45309, #d97706);">
+          <i class="fa-solid fa-dragon"></i>
+          <span class="clear-badge badge-amber ar-badge-corner">AR 3D Model</span>
+        </div>
+        <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">เรือครุฑยุดนาค</h3>
+            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
+              "เรือครุฑยุดนาคหิ้ว ลิ่วลอยมาพาผันผยอง" ชมโขนเรือพญาครุฑกางปีกยุดจับนาคา ทรงอานุภาพ
+            </p>
+          </div>
+          <button onclick="launchArViewer('เรือครุฑยุดนาค')" class="clear-btn clear-btn-amber" style="width: 100%;">
+            <i class="fa-solid fa-camera"></i> <span>เปิดกล้องสแกน AR</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="ar-visual-card" data-category="puzzle">
+        <div class="ar-image-holder" style="background: linear-gradient(135deg, #10b981, #059669);">
+          <i class="fa-solid fa-puzzle-piece"></i>
+          <span class="clear-badge badge-emerald ar-badge-corner">มินิเกม</span>
+        </div>
+        <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">จิ๊กซอว์ปริศนาแห่งสายน้ำ</h3>
+            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
+              ต่อชิ้นส่วนภาพกระบวนพยุหยาตราทางชลมารค 3 ระดับความยาก เพื่อปลดล็อกโค้ดคะแนนลับ
+            </p>
+          </div>
+          <button onclick="launchPuzzle()" class="clear-btn clear-btn-emerald" style="width: 100%;">
+            <i class="fa-solid fa-gamepad"></i> <span>เล่นเกมจิ๊กซอว์</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="ar-visual-card" data-category="clue">
+        <div class="ar-image-holder" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span class="clear-badge badge-purple ar-badge-corner">บัตรเบาะแส</span>
+        </div>
+        <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">บัตรเบาะแสวรรณคดี CLEAR AR</h3>
+            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
+              ไขรหัสคำใบ้ ถอดความบทเห่ชมปลา ชมไม้ และชมนก พร้อมสแกนเบาะแสที่ซ่อนอยู่ตามห้องเรียน
+            </p>
+          </div>
+          <button onclick="launchClueCard()" class="clear-btn clear-btn-secondary" style="width: 100%;">
+            <i class="fa-solid fa-eye"></i> <span>เปิดบัตรเบาะแส</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="clear-footer">
+    <p>© 2026 Project CLEAR — ระบบสื่อ AR และเกมวรรณคดี</p>
+  </footer>
+
+  <script src="../assets/js/shared.js"></script>
+  <script>
+    function filterAr(category) {
+      document.querySelectorAll('.ar-visual-card').forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function launchArViewer(title) {
+      showToast(`กำลังเตรียมกล้อง AR สำหรับ ${title}... นำกล้องส่องที่การ์ดได้เลย`, 'info', '📱 AR Ready');
+    }
+
+    function launchPuzzle() {
+      showToast('เปิดเกมจิ๊กซอว์ปริศนา เรียงภาพให้สมบูรณ์เพื่อรับแต้ม', 'success', '🧩 มินิเกม');
+    }
+
+    function launchClueCard() {
+      showToast('กำลังโหลดบัตรเบาะแสกาพย์เห่เรือชุดที่ 1', 'info', '🔍 บัตรเบาะแส');
+    }
+  </script>
+</body>
+</html>

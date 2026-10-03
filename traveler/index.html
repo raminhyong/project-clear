@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>นักเดินทางแห่งกาพย์เห่เรือ (Traveler) | Project CLEAR</title>
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .traveler-shell {
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+      background: var(--surface-card);
+      border: 1px solid var(--border-glass);
+    }
+    .map-stage {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      background: #17324b;
+    }
+    .map-image {
+      display: block;
+      width: 100%;
+      height: auto;
+      user-select: none;
+    }
+    .inventory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 0.85rem;
+      padding: 1rem 0;
+    }
+    .item-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 0.5rem;
+      text-align: center;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .item-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--brand-emerald);
+      box-shadow: 0 6px 16px rgba(16,185,129,0.15);
+    }
+    .item-card img {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      margin-bottom: 0.4rem;
+    }
+    .category-pill {
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid var(--border-subtle);
+      background: var(--surface-card);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .category-pill.active {
+      background: var(--brand-emerald);
+      color: white;
+      border-color: var(--brand-emerald);
+    }
+  </style>
+</head>
+<body>
+  <!-- Ambient background glow -->
+  <div class="ambient-glow ambient-1"></div>
+  <div class="ambient-glow ambient-2"></div>
+
+  <!-- Navbar -->
+  <header class="clear-navbar">
+    <div class="clear-nav-inner">
+      <div class="brand-badge">
+        <a href="../index.html" style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-compass"></i></div>
+          <span>PROJECT CLEAR</span>
+        </a>
+      </div>
+
+      <nav class="nav-links">
+        <a href="../index.html" class="nav-btn"><i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span></a>
+        <a href="#inventory" onclick="openInventoryModal()" class="nav-btn active"><i class="fa-solid fa-box-archive nav-btn-icon"></i> <span>คลังไอเทม</span></a>
+        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="clear-container">
+    <div style="margin-bottom: 1.5rem; text-align: center;">
+      <span class="clear-badge badge-emerald" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-trophy"></i> เกมมิฟิเคชันวรรณคดี</span>
+      <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main);">นักเดินทางแห่งกาพย์เห่เรือ</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">สะสมไอเทมนก ปลา ดอกไม้ และเรือพระราชพิธี เพื่อรับแต้มพิเศษ</p>
+    </div>
+
+    <!-- Quick Stats Bar -->
+    <div style="max-width: 680px; margin: 0 auto 1.5rem; display: flex; justify-content: space-between; align-items: center; background: var(--surface-glass); backdrop-filter: blur(16px); padding: 0.85rem 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <i class="fa-solid fa-coins" style="color: var(--brand-amber); font-size: 1.25rem;"></i>
+        <div>
+          <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">ไอเทมที่สะสมได้</span>
+          <strong id="collectedCount" style="font-size: 1.1rem; color: var(--text-main);">20 / 20 ชนิด</strong>
+        </div>
+      </div>
+
+      <button onclick="openInventoryModal()" class="clear-btn clear-btn-emerald" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+        <i class="fa-solid fa-sack-dollar"></i> <span>เปิดกระเป๋า</span>
+      </button>
+    </div>
+
+    <!-- Traveler Stage Shell -->
+    <div class="traveler-shell">
+      <div class="map-stage">
+        <img src="assets/full-map.webp" onerror="this.src='assets/FULL MAP.png'" alt="แผนที่การเดินทาง" class="map-image">
+      </div>
+    </div>
+  </main>
+
+  <!-- Inventory Modal -->
+  <div id="inventoryModal" class="clear-modal-backdrop">
+    <div class="clear-modal-content" style="max-width: 600px; max-height: 85vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1.35rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-box-open" style="color: var(--brand-emerald);"></i> คลังไอเทมวรรณคดี
+        </h3>
+        <button onclick="closeInventoryModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-dim);">&times;</button>
+      </div>
+
+      <!-- Category Filter -->
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+        <button class="category-pill active" onclick="filterItems('all', this)">ทั้งหมด</button>
+        <button class="category-pill" onclick="filterItems('bird', this)">หมวดนก</button>
+        <button class="category-pill" onclick="filterItems('fish', this)">หมวดปลา</button>
+        <button class="category-pill" onclick="filterItems('flower', this)">หมวดดอกไม้</button>
+        <button class="category-pill" onclick="filterItems('boat', this)">หมวดเรือ</button>
+      </div>
+
+      <div id="inventoryGrid" class="inventory-grid"></div>
+
+      <div style="margin-top: 1.5rem; text-align: right;">
+        <button onclick="closeInventoryModal()" class="clear-btn clear-btn-secondary">ปิดหน้าต่าง</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="clear-footer">
+    <p>© 2026 Project CLEAR — ระบบสะสมไอเทม กาพย์เห่เรือ</p>
+  </footer>
+
+  <script src="../assets/js/shared.js"></script>
+  <script>
+    const ITEMS_DATA = [
+      { id: 'bird_01', type: 'bird', name: 'นกยูง', file: 'assets/bird_01-cutout.webp', desc: 'ขนหางงามวิจิตร เปรียบดั่งความสง่างามของสายน้ำ' },
+      { id: 'bird_02', type: 'bird', name: 'นกดุเหว่า', file: 'assets/bird_02-cutout.webp', desc: 'เสียงร้องก้องไพเราะยามเช้าตรู่' },
+      { id: 'bird_03', type: 'bird', name: 'นกสร้อยทอง', file: 'assets/bird_03-cutout.webp', desc: 'คอคล้องสร้อยดั่งประกายทองคำ' },
+      { id: 'bird_04', type: 'bird', name: 'นกสาริกา', file: 'assets/bird_04-cutout.webp', desc: 'นกสาริการ้องเจื้อยแจ้วจำนรรจา' },
+      { id: 'bird_05', type: 'bird', name: 'นกนางนวล', file: 'assets/bird_05-cutout.webp', desc: 'โบยบินเหนือระลอกคลื่นแห่งเจ้าพระยา' },
+      { id: 'fish_01', type: 'fish', name: 'ปลานวลจันทร์', file: 'assets/fish_01-cutout.webp', desc: 'เกล็ดสีเงินนวลผ่องสะท้อนแสงจันทร์' },
+      { id: 'fish_02', type: 'fish', name: 'ปลาคางเบือน', file: 'assets/fish_02-cutout.webp', desc: 'เบือนหน้าชะแง้แลหาดั่งคนึงถึงยอดดวงใจ' },
+      { id: 'fish_03', type: 'fish', name: 'ปลาตะเพียนทอง', file: 'assets/fish_03-cutout.webp', desc: 'แหวกว่ายตามสายธาราประกายระยับ' },
+      { id: 'fish_04', type: 'fish', name: 'ปลากราย', file: 'assets/fish_04-cutout.webp', desc: 'ว่ายกรายเคลียคลอคู่กันมิห่าง' },
+      { id: 'fish_05', type: 'fish', name: 'ปลาแก้มช้ำ', file: 'assets/fish_05-cutout.webp', desc: 'แก้มช้ำเปรียบประดุจต้องช้ำใจ' },
+      { id: 'flower_01', type: 'flower', name: 'ดอกลำดวน', file: 'assets/flower_01-cutout.webp', desc: 'กลิ่นหอมเย็นรวยรื่นชื่นนาสา' },
+      { id: 'flower_02', type: 'flower', name: 'ดอกจำปา', file: 'assets/flower_02-cutout.webp', desc: 'สีเหลืองทองหอมขจรไกล' },
+      { id: 'flower_03', type: 'flower', name: 'ดอกพิกุล', file: 'assets/flower_03-cutout.webp', desc: 'ดอกแก้วพิกุลหอมอบอวลทั่วไพร' },
+      { id: 'flower_04', type: 'flower', name: 'ดอกมะลิวัลย์', file: 'assets/flower_04-cutout.webp', desc: 'ขาวบริสุทธิ์หอมตรึงใจ' },
+      { id: 'flower_05', type: 'flower', name: 'ดอกสาวหยุด', file: 'assets/flower_05-cutout.webp', desc: 'ยามสายหยุดหอมแต่รักมิรู้คลาย' },
+      { id: 'boat_01', type: 'boat', name: 'เรือสุวรรณหงส์', file: 'assets/boat_01-cutout.webp', desc: 'เรือพระที่นั่งสง่างาม ลอยลำดั่งหงส์เหิน' },
+      { id: 'boat_02', type: 'boat', name: 'เรือครุฑยุดนาค', file: 'assets/boat_02-cutout.webp', desc: 'โผนผยองจับนาคา ทรงอานุภาพเกรียงไกร' },
+      { id: 'boat_03', type: 'boat', name: 'เรือมังกร', file: 'assets/boat_03-cutout.webp', desc: 'มังกรผงาดเล่นคลื่นกลางสายชล' },
+      { id: 'boat_04', type: 'boat', name: 'เรือคชสีห์', file: 'assets/boat_04-cutout.webp', desc: 'ราชสีห์หัวช้าง ดั่งราชรถสะท้านแดน' },
+      { id: 'boat_05', type: 'boat', name: 'เรือนาคา', file: 'assets/boat_05-cutout.webp', desc: 'พญานาคแผ่พังพานพิทักษ์สายธารา' }
+    ];
+
+    function renderInventory(filterType = 'all') {
+      const grid = document.getElementById('inventoryGrid');
+      const filtered = filterType === 'all' ? ITEMS_DATA : ITEMS_DATA.filter(i => i.type === filterType);
+
+      grid.innerHTML = filtered.map(item => `
+        <div class="item-card" onclick="showItemDetail('${item.name}', '${item.desc}')">
+          <img src="${item.file}" onerror="this.src='../assets/images/placeholder.png'" alt="${item.name}">
+          <strong style="display:block; font-size: 0.85rem; margin-bottom: 2px;">${item.name}</strong>
+          <span class="clear-badge badge-emerald" style="font-size: 0.7rem;">สะสมแล้ว</span>
+        </div>
+      `).join('');
+    }
+
+    function filterItems(type, el) {
+      document.querySelectorAll('.category-pill').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      renderInventory(type);
+    }
+
+    function openInventoryModal() {
+      document.getElementById('inventoryModal').classList.add('open');
+      renderInventory('all');
+    }
+
+    function closeInventoryModal() {
+      document.getElementById('inventoryModal').classList.remove('open');
+    }
+
+    function showItemDetail(name, desc) {
+      showToast(desc, 'info', `✨ ${name}`);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderInventory('all');
+    });
+  </script>
+</body>
+</html>

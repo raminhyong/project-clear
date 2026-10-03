@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ม.6/6 ภาษาไทยพื้นฐาน (ท33101) | Project CLEAR</title>
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Ambient background glow -->
+  <div class="ambient-glow ambient-1"></div>
+  <div class="ambient-glow ambient-2"></div>
+
+  <!-- Navbar -->
+  <header class="clear-navbar">
+    <div class="clear-nav-inner">
+      <div class="brand-badge">
+        <a href="../index.html" style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="brand-logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+          <span>PROJECT CLEAR</span>
+        </a>
+      </div>
+
+      <nav class="nav-links">
+        <a href="../index.html" class="nav-btn"><i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span></a>
+        <a href="../traveler/index.html" class="nav-btn"><i class="fa-solid fa-compass nav-btn-icon"></i> <span>ไอเทม</span></a>
+        <a href="../exam-prep/index.html" class="nav-btn"><i class="fa-solid fa-file-pen nav-btn-icon"></i> <span>เสริมก่อนสอบ</span></a>
+        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="clear-container">
+    <div style="margin-bottom: 1.5rem;">
+      <a href="../index.html" style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+        <i class="fa-solid fa-arrow-left"></i> กลับสู่หน้าหลัก Project CLEAR
+      </a>
+      <h1 id="roomTitle" style="font-size: 1.75rem; font-weight: 800; color: var(--text-main);">ม.6/6 ภาษาไทยพื้นฐาน (ท33101)</h1>
+    </div>
+
+    <!-- Dynamic App Area -->
+    <div id="classroomApp"></div>
+  </main>
+
+  <footer class="clear-footer">
+    <p>© 2026 Project CLEAR — นวัตกรรมห้องเรียนภาษาไทยระดับชั้น ม.6</p>
+  </footer>
+
+  <script>
+    window.CLEAR_ROOM_CONFIG = {
+      room: "6/6",
+      title: "ม.6/6 ภาษาไทยพื้นฐาน (ท33101)"
+    };
+  </script>
+  <script src="../assets/js/shared.js"></script>
+  <script src="../assets/js/classroom-core.js"></script>
+</body>
+</html>

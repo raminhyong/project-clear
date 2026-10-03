@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PROJECT CLEAR — ศูนย์รวมนวัตกรรมห้องเรียนภาษาไทย ม.6</title>
+  <link rel="stylesheet" href="assets/css/theme.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .classroom-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+    .stat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: var(--brand-blue-light);
+      color: var(--brand-blue);
+    }
+    .icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 1.4rem;
+      color: white;
+      margin-bottom: 1rem;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+  </style>
+</head>
+<body>
+  <!-- Ambient background glow -->
+  <div class="ambient-glow ambient-1"></div>
+  <div class="ambient-glow ambient-2"></div>
+
+  <!-- Navbar -->
+  <header class="clear-navbar">
+    <div class="clear-nav-inner">
+      <div class="brand-badge">
+        <a href="index.html" style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="brand-logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+          <span>PROJECT CLEAR</span>
+        </a>
+      </div>
+
+      <nav class="nav-links">
+        <a href="#classrooms" class="nav-btn"><i class="fa-solid fa-chalkboard-user nav-btn-icon"></i> <span>ห้องเรียน</span></a>
+        <a href="traveler/index.html" class="nav-btn"><i class="fa-solid fa-compass nav-btn-icon"></i> <span>ไอเทม</span></a>
+        <a href="exam-prep/index.html" class="nav-btn"><i class="fa-solid fa-file-pen nav-btn-icon"></i> <span>เสริมก่อนสอบ</span></a>
+        <a href="ar/index.html" class="nav-btn"><i class="fa-solid fa-cube nav-btn-icon"></i> <span>สื่อ AR</span></a>
+        <a href="voice/index.html" class="nav-btn"><i class="fa-solid fa-comment-dots nav-btn-icon"></i> <span>ประเมินครู</span></a>
+        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="clear-container">
+    <!-- Hero Section -->
+    <section style="text-align: center; padding: 2.5rem 0 3.5rem;">
+      <div class="stat-chip" style="margin-bottom: 1.25rem;">
+        <i class="fa-solid fa-sparkles"></i> สถาปัตยกรรมใหม่ • รวมระบบเป็นหนึ่งเดียว
+      </div>
+      <h1 class="hero-title">PROJECT CLEAR</h1>
+      <p class="hero-subtitle" style="margin: 0 auto 2rem;">
+        ศูนย์รวมนวัตกรรมการจัดการเรียนรู้ภาษาไทย ระดับชั้นมัธยมศึกษาปีที่ 6<br>
+        รวบรวมระบบห้องเรียน ผลคะแนนรายบุคคล สื่อการเรียนรู้เชิงโต้ตอบ และการประเมินผลไว้ในที่เดียว
+      </p>
+
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="#classrooms" class="clear-btn clear-btn-primary">
+          <i class="fa-solid fa-door-open"></i>
+          <span>เข้าห้องเรียน ม.6</span>
+        </a>
+        <a href="traveler/index.html" class="clear-btn clear-btn-emerald">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <span>สะสมไอเทมกาพย์เห่เรือ</span>
+        </a>
+        <a href="exam-prep/index.html" class="clear-btn clear-btn-secondary">
+          <i class="fa-solid fa-pencil"></i>
+          <span>เสริมก่อนสอบ</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Classroom Gateways Section -->
+    <section id="classrooms" style="margin-bottom: 3.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <h2 class="section-title" style="margin-bottom: 0.25rem;">
+            <i class="fa-solid fa-school" style="color: var(--brand-blue);"></i>
+            <span>ห้องเรียน ม.6 (ตรวจสอบคะแนนรายบุคคล)</span>
+          </h2>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">เลือกระดับห้องเพื่อเข้าสู่ระบบด้วยรหัสประจำตัว 5 หลักและรหัส 4 ตัวท้าย</p>
+        </div>
+        <span class="clear-badge badge-blue"><i class="fa-solid fa-shield-halved"></i> ลิงก์เฉพาะห้อง ปลอดภัย 100%</span>
+      </div>
+
+      <div class="classroom-grid">
+        <!-- 6/1 -->
+        <a href="room-61-k9f2/index.html" class="clear-card hover-lift" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span class="clear-badge badge-blue">ห้อง 6/1</span>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">ท33101</span>
+            </div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">ม.6/1 ภาษาไทยพื้นฐาน</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">ตรวจคะแนนงาน 12 ชิ้น, กลางภาค และแต้มปั๊ม</p>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+            <span style="font-size: 0.8rem; color: var(--brand-blue); font-weight: 600;"><i class="fa-solid fa-lock" style="font-size: 0.75rem;"></i> ล็อกอิน 5 หลัก</span>
+            <i class="fa-solid fa-chevron-right" style="color: var(--brand-blue); font-size: 0.85rem;"></i>
+          </div>
+        </a>
+
+        <!-- 6/2 -->
+        <a href="room-62-m4x7/index.html" class="clear-card hover-lift" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span class="clear-badge badge-blue">ห้อง 6/2</span>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">ท33101</span>
+            </div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">ม.6/2 ภาษาไทยพื้นฐาน</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">ตรวจคะแนนงาน 12 ชิ้น, กลางภาค และแต้มปั๊ม</p>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+            <span style="font-size: 0.8rem; color: var(--brand-blue); font-weight: 600;"><i class="fa-solid fa-lock" style="font-size: 0.75rem;"></i> ล็อกอิน 5 หลัก</span>
+            <i class="fa-solid fa-chevron-right" style="color: var(--brand-blue); font-size: 0.85rem;"></i>
+          </div>
+        </a>
+
+        <!-- 6/5 Basic -->
+        <a href="room-65-w1c8/index.html" class="clear-card hover-lift" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span class="clear-badge badge-blue">ห้อง 6/5</span>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">ท33101</span>
+            </div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">ม.6/5 ภาษาไทยพื้นฐาน</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">ตรวจคะแนนงาน 12 ชิ้น, กลางภาค และแต้มปั๊ม</p>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+            <span style="font-size: 0.8rem; color: var(--brand-blue); font-weight: 600;"><i class="fa-solid fa-lock" style="font-size: 0.75rem;"></i> ล็อกอิน 5 หลัก</span>
+            <i class="fa-solid fa-chevron-right" style="color: var(--brand-blue); font-size: 0.85rem;"></i>
+          </div>
+        </a>
+
+        <!-- 6/5 Add -->
+        <a href="room-65a-j4d9/index.html" class="clear-card hover-lift" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span class="clear-badge badge-purple">ห้อง 6/5 เพิ่มเติม</span>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">ท33201</span>
+            </div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">ม.6/5 ภาษาไทยเพิ่มเติม</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">ตรวจคะแนนงาน 12 ชิ้น, กลางภาค และแต้มปั๊ม</p>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+            <span style="font-size: 0.8rem; color: var(--brand-purple); font-weight: 600;"><i class="fa-solid fa-lock" style="font-size: 0.75rem;"></i> ล็อกอิน 5 หลัก</span>
+            <i class="fa-solid fa-chevron-right" style="color: var(--brand-purple); font-size: 0.85rem;"></i>
+          </div>
+        </a>
+
+        <!-- 6/6 -->
+        <a href="room-66-k8n3/index.html" class="clear-card hover-lift" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span class="clear-badge badge-blue">ห้อง 6/6</span>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">ท33101</span>
+            </div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">ม.6/6 ภาษาไทยพื้นฐาน</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">ตรวจคะแนนงาน 12 ชิ้น, กลางภาค และแต้มปั๊ม</p>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+            <span style="font-size: 0.8rem; color: var(--brand-blue); font-weight: 600;"><i class="fa-solid fa-lock" style="font-size: 0.75rem;"></i> ล็อกอิน 5 หลัก</span>
+            <i class="fa-solid fa-chevron-right" style="color: var(--brand-blue); font-size: 0.85rem;"></i>
+          </div>
+        </a>
+
+        <!-- 6/7 -->
+        <a href="room-67-s5e6/index.html" class="clear-card hover-lift" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span class="clear-badge badge-blue">ห้อง 6/7</span>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">ท33101</span>
+            </div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">ม.6/7 ภาษาไทยพื้นฐาน</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">ตรวจคะแนนงาน 12 ชิ้น, กลางภาค และแต้มปั๊ม</p>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+            <span style="font-size: 0.8rem; color: var(--brand-blue); font-weight: 600;"><i class="fa-solid fa-lock" style="font-size: 0.75rem;"></i> ล็อกอิน 5 หลัก</span>
+            <i class="fa-solid fa-chevron-right" style="color: var(--brand-blue); font-size: 0.85rem;"></i>
+          </div>
+        </a>
+
+        <!-- 6/8 -->
+        <a href="room-68-p7y2/index.html" class="clear-card hover-lift" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span class="clear-badge badge-blue">ห้อง 6/8</span>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">ท33101</span>
+            </div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">ม.6/8 ภาษาไทยพื้นฐาน</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">ตรวจคะแนนงาน 12 ชิ้น, กลางภาค และแต้มปั๊ม</p>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+            <span style="font-size: 0.8rem; color: var(--brand-blue); font-weight: 600;"><i class="fa-solid fa-lock" style="font-size: 0.75rem;"></i> ล็อกอิน 5 หลัก</span>
+            <i class="fa-solid fa-chevron-right" style="color: var(--brand-blue); font-size: 0.85rem;"></i>
+          </div>
+        </a>
+
+        <!-- 6/9 -->
+        <a href="room-69-h3m5/index.html" class="clear-card hover-lift" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span class="clear-badge badge-blue">ห้อง 6/9</span>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">ท33101</span>
+            </div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">ม.6/9 ภาษาไทยพื้นฐาน</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">ตรวจคะแนนงาน 12 ชิ้น, กลางภาค และแต้มปั๊ม</p>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+            <span style="font-size: 0.8rem; color: var(--brand-blue); font-weight: 600;"><i class="fa-solid fa-lock" style="font-size: 0.75rem;"></i> ล็อกอิน 5 หลัก</span>
+            <i class="fa-solid fa-chevron-right" style="color: var(--brand-blue); font-size: 0.85rem;"></i>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Unified Modules Section -->
+    <section style="margin-bottom: 3rem;">
+      <h2 class="section-title">
+        <i class="fa-solid fa-cubes-stacked" style="color: var(--brand-cyan);"></i>
+        <span>ระบบและกิจกรรมการเรียนรู้ (Activities Ecosystem)</span>
+      </h2>
+
+      <div class="module-grid">
+        <!-- Traveler -->
+        <div class="clear-card hover-lift">
+          <div class="icon-box" style="background: linear-gradient(135deg, #10b981, #059669);">
+            <i class="fa-solid fa-compass"></i>
+          </div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">ระบบสะสมไอเทม (Traveler)</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+            เกมจำลองการเดินทางแห่งกาพย์เห่เรือ สะสมไอเทมนก ปลา ดอกไม้ และเรือพระราชพิธี เพื่อแลกแต้มคะแนนพิเศษ
+          </p>
+          <a href="traveler/index.html" class="clear-btn clear-btn-emerald" style="width: 100%;">
+            <span>เปิดแผนที่เดินทาง</span> <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- Exam-Prep -->
+        <div class="clear-card hover-lift">
+          <div class="icon-box" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+            <i class="fa-solid fa-file-pen"></i>
+          </div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">ระบบเสริมก่อนสอบ (Pre/Post-Test)</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+            แบบทดสอบเทียบเคียงวัดผลสัมฤทธิ์กลางภาคและปลายภาค ทำข้อสอบออนไลน์พร้อมเฉลยและวิเคราะห์คะแนนทันที
+          </p>
+          <a href="exam-prep/index.html" class="clear-btn clear-btn-amber" style="width: 100%;">
+            <span>ทำแบบทดสอบ</span> <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- CLEAR Voice -->
+        <div class="clear-card hover-lift">
+          <div class="icon-box" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+            <i class="fa-solid fa-comment-dots"></i>
+          </div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">ระบบประเมินครูผู้สอน (CLEAR Voice)</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+            สะท้อนความคิดเห็นและประเมินประสิทธิภาพการจัดการเรียนรู้ของครูผู้สอน เพื่อการพัฒนาการศึกษาอย่างต่อเนื่อง
+          </p>
+          <a href="voice/index.html" class="clear-btn clear-btn-primary" style="width: 100%;">
+            <span>ทำแบบประเมิน</span> <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- CLEAR AR -->
+        <div class="clear-card hover-lift">
+          <div class="icon-box" style="background: linear-gradient(135deg, #0284c7, #06b6d4);">
+            <i class="fa-solid fa-cube"></i>
+          </div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">ระบบสื่อ AR กาพย์เห่เรือ</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+            สื่อนวัตกรรมเสมือนจริง AR 3D สแกนการ์ดวรรณคดี ค้นหาบัตรเบาะแส และต่อจิ๊กซอว์ปริศนาแห่งสายน้ำ
+          </p>
+          <a href="ar/index.html" class="clear-btn clear-btn-primary" style="width: 100%; background: linear-gradient(135deg, #0284c7, #06b6d4);">
+            <span>เปิดสื่อ AR</span> <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- Self Point -->
+        <div class="clear-card hover-lift">
+          <div class="icon-box" style="background: linear-gradient(135deg, #10b981, #0ea5e9);">
+            <i class="fa-solid fa-gem"></i>
+          </div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">ระบบ Self Point</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+            ระบบบันทึกและรับคะแนนด้วยตนเองผ่านคูปองและ QR Code สะสมแต้มสมรรถนะและคุณลักษณะอันพึงประสงค์
+          </p>
+          <a href="self-point/index.html" class="clear-btn clear-btn-secondary" style="width: 100%;">
+            <span>รับแต้ม Self Point</span> <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- CLEAR Space -->
+        <div class="clear-card hover-lift">
+          <div class="icon-box" style="background: linear-gradient(135deg, #6366f1, #a855f7);">
+            <i class="fa-solid fa-book-open"></i>
+          </div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">ระบบ CLEAR Space</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+            คลังหนังสือการ์ตูน E-Book และพื้นที่แบ่งปันผลงานสร้างสรรค์ของนักเรียน (กำลังนำเข้าไฟล์จากต้นทาง)
+          </p>
+          <a href="space/index.html" class="clear-btn clear-btn-secondary" style="width: 100%;">
+            <span>เข้าสู่ Space</span> <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Admin Link Box -->
+    <section class="clear-card" style="text-align: center; padding: 2rem; background: rgba(15,23,42,0.03); border: 1px dashed var(--border-subtle);">
+      <i class="fa-solid fa-user-shield" style="font-size: 1.75rem; color: var(--text-dim); margin-bottom: 0.75rem;"></i>
+      <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.35rem;">สำหรับผู้ดูแลระบบและครูผู้สอน</h3>
+      <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">จัดการคะแนน บันทึกผลงาน พิมพ์คูปอง และตรวจสอบรายงานสถิติทั้ง 8 ห้อง</p>
+      <a href="admin-mgmt-x9q4/index.html" class="clear-btn clear-btn-secondary" style="font-size: 0.875rem;">
+        <i class="fa-solid fa-lock"></i> <span>เข้าสู่แผงควบคุมแอดมิน</span>
+      </a>
+    </section>
+  </main>
+
+  <footer class="clear-footer">
+    <div style="max-width: 1240px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <div class="brand-logo-icon" style="width: 28px; height: 28px; font-size: 0.85rem;"><i class="fa-solid fa-graduation-cap"></i></div>
+        <strong style="color: var(--text-main);">PROJECT CLEAR 2.0</strong>
+      </div>
+      <div>
+        <span>กลุ่มสาระการเรียนรู้ภาษาไทย • โรงเรียนเฉลิมพระเกียรติสมเด็จพระศรีนครินทร์ ภูเก็ต</span>
+      </div>
+      <div>
+        <a href="https://github.com/raminhyong/project-clear" target="_blank" rel="noopener noreferrer" style="color: var(--brand-blue); display: inline-flex; align-items: center; gap: 0.35rem;">
+          <i class="fa-brands fa-github"></i> GitHub
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/shared.js"></script>
+</body>
+</html>
