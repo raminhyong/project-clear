@@ -1,2 +1,1 @@
-# git-playground
-นี่เป็นการฝึกของฉัน
+for projectclear
