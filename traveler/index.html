@@ -388,22 +388,24 @@
     </div>
   </main>
 
-  <!-- Login Screen (shown when no ?code= is provided) -->
+  <!-- Locked Screen (when accessed directly without room session) -->
   <section class="login-screen" id="loginScreen">
     <div class="login-card">
-      <div class="login-emblem">🧭</div>
-      <div class="login-kicker">วรรณคดีไทย · เส้นทางแห่งสายน้ำ</div>
-      <h1>นักเดินทางแห่งกาพย์เห่เรือ</h1>
-      <p>ล่องตามสายน้ำจากอยุธยาสู่สระบุรี<br>สะสม 20 ไอเทม ด่านละ 10 ปั๊ม</p>
+      <div class="login-emblem" style="background: linear-gradient(145deg, #fef2f2, #ef4444 60%, #991b1b); box-shadow: 0 10px 24px rgba(239, 68, 68, 0.35);">🔒</div>
+      <div class="login-kicker" style="color: #fca5a5; background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4);">เฉพาะนักเรียนที่เข้าสู่ระบบแล้ว</div>
+      <h1 style="font-size: 22px;">เข้าใช้งานผ่านห้องเรียน</h1>
+      <p style="margin: 12px 0 22px; line-height: 1.7; font-size: 13.5px; color: #cbd5e1;">
+        ฟีเจอร์นักเดินทางแห่งกาพย์เห่เรือสงวนสิทธิ์เฉพาะนักเรียนที่เข้าสู่ระบบผ่านห้องเรียนของตนเองเท่านั้น เพื่อบันทึกแต้มและไอเทมลงสมุดพกส่วนบุคคล
+      </p>
       
-      <form id="loginForm">
-        <input id="studentCode" class="code-input" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="รหัส 5 หลัก" aria-label="รหัสนักเรียน 5 หลัก">
-        <button class="primary-btn" id="loginButton" type="submit">เริ่มออกเดินทาง</button>
-        <div class="form-error" id="loginError"></div>
-      </form>
+      <a href="../index.html" class="primary-btn" style="display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 14px; background: linear-gradient(135deg, #2563eb, #1d4ed8);">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <span>ไปยังหน้าหลักเพื่อเข้าสู่ห้องเรียน</span>
+      </a>
       
-      <button class="share-btn" id="shareTraveler" type="button">📤 แชร์เส้นทางนักเดินทาง</button>
-      <div class="preview-note">ระบบจะบันทึกความคืบหน้าทุกครั้งที่ปลดล็อกด่าน</div>
+      <div class="preview-note" style="margin-top: 18px;">
+        กรุณาเข้าสู่ระบบในห้องเรียน ม.6 ของคุณ แล้วกดเปิด Traveler จากหน้าคะแนนส่วนบุคคล
+      </div>
     </div>
   </section>
 
@@ -555,9 +557,6 @@
     }
 
     async function login(studentCode) {
-      const button = $('loginButton');
-      $('loginError').textContent = '';
-      setLoading(button, true, 'กำลังเชื่อมต่อ...');
       try {
         let data;
         if (PREVIEW_MODE) {
@@ -576,10 +575,8 @@
         state.items = ITEMS;
         openGame();
       } catch (err) {
-        $('loginError').textContent = err.message;
+        showToast(err.message || 'ไม่สามารถโหลดข้อมูลนักเรียนได้');
         $('loginScreen').classList.remove('hidden');
-      } finally {
-        setLoading(button, false);
       }
     }
 
@@ -805,38 +802,6 @@
     }
 
     // ── Events & Integration ──
-    $('loginForm').addEventListener('submit', event => {
-      event.preventDefault();
-      const code = $('studentCode').value.trim();
-      if (!PREVIEW_MODE && !/^\d{5}$/.test(code)) {
-        $('loginError').textContent = 'กรุณากรอกรหัสนักเรียน 5 หลัก';
-        return;
-      }
-      login(code || '00000');
-    });
-
-    $('studentCode').addEventListener('input', event => {
-      event.target.value = event.target.value.replace(/\D/g, '').slice(0, 5);
-    });
-
-    $('shareTraveler').addEventListener('click', async () => {
-      const shareData = {
-        title: 'นักเดินทางแห่งกาพย์เห่เรือ | Project CLEAR',
-        text: 'ร่วมออกเดินทางตามบทกาพย์เห่เรือและสะสม 20 ไอเทมล้ำค่า',
-        url: location.href
-      };
-      try {
-        if (navigator.share) {
-          await navigator.share(shareData);
-          return;
-        }
-        await navigator.clipboard.writeText(location.href);
-        showToast('คัดลอกลิงก์นักเดินทางแล้ว');
-      } catch (err) {
-        if (err.name !== 'AbortError') showToast('แชร์ไม่สำเร็จ กรุณาคัดลอกจากแถบที่อยู่');
-      }
-    });
-
     $('openInventory').addEventListener('click', () => $('inventoryModal').classList.remove('hidden'));
     $('confirmUnlock').addEventListener('click', unlockSelectedStep);
 
@@ -866,8 +831,10 @@
     if (PREVIEW_MODE) {
       login('00000');
     } else if (codeFromUrl && /^\d{5}$/.test(codeFromUrl)) {
-      $('studentCode').value = codeFromUrl;
       login(codeFromUrl);
+    } else {
+      // Direct access without login: show locked notice requiring room login
+      $('loginScreen').classList.remove('hidden');
     }
   </script>
 </body>
