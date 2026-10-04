@@ -54,8 +54,7 @@
 
 - **Frontend:** HTML5 Semantic + Modern Vanilla CSS (No build tools required)
 - **Typography:** Google Fonts `'Prompt'` (ภาษาไทย) และ `'Inter'` (ตัวเลข/โค้ด)
-- **Design System:** Glassmorphism, Responsive Mobile-friendly, Ambient Glowing Orbs, Dark/Light Mode Switcher
-- **Backend API:** Cloudflare Workers `thai-classroom-api` + D1 Database `thai-classroom-db`
+- **Backend API:** Cloudflare Workers `project-clear-api` (`https://project-clear-api.raminhyong.workers.dev`) + D1 Database `project-clear-db` (Clone จาก `thai-classroom-db` ประวัติครบ 100%)
 
 ---
 

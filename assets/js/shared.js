@@ -4,7 +4,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-const CLEAR_API_BASE = 'https://thai-classroom-api.raminhyong.workers.dev/';
+const CLEAR_API_BASE = 'https://project-clear-api.raminhyong.workers.dev/';
 
 // ── Toast Notification ──
 function showToast(message, type = 'info', title = '') {
