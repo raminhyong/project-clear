@@ -118,6 +118,33 @@
     .victory-stars { font-size: 3rem; letter-spacing: 0.2rem; margin-bottom: 0.5rem; }
     .victory-stars .off { opacity: 0.25; }
     .victory-pum { display: inline-flex; align-items: center; gap: 0.4rem; margin: 0.75rem 0 1.5rem; padding: 0.5rem 1.1rem; border-radius: 999px; background: linear-gradient(135deg,#f59e0b,#d97706); color: #fff; font-weight: 800; box-shadow: 0 8px 20px -8px rgba(245,158,11,0.8); }
+
+    /* Mystery Box — 3x3 image/word memory with bomb trap */
+    .mem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+    .mem-cell {
+      aspect-ratio: 1; border-radius: 14px; border: 1px solid rgba(255,255,255,0.4); cursor: pointer;
+      font-family: var(--font-thai); display: grid; place-items: center; text-align: center; padding: 0.35rem;
+      transition: transform 0.18s ease, background 0.2s ease;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -3px 0 rgba(0,0,0,0.28), 0 6px 16px rgba(0,0,0,0.18);
+    }
+    .mem-cell .mem-back { font-size: 1.6rem; color: #fff; }
+    .mem-cell.back { background: linear-gradient(145deg, #f59e0b, #d97706); }
+    .mem-cell.face { background: var(--surface-card); color: var(--text-main); }
+    .mem-cell.face .mem-emoji { font-size: 1.6rem; display: block; }
+    .mem-cell.face .mem-label { font-size: 0.72rem; font-weight: 700; line-height: 1.1; }
+    .mem-cell.matched { background: linear-gradient(145deg, #d1fae5, #a7f3d0); border-color: #10b981; animation: pop 0.35s ease; }
+    .mem-cell.bomb { background: #fee2e2; border-color: #ef4444; }
+    .mem-cell:active { transform: scale(0.96); }
+    .mem-grid.shake { animation: shake 0.4s ease; }
+
+    /* Sky Fall Catcher */
+    .sky-stage { position: relative; height: min(58vh, 460px); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-subtle); background: linear-gradient(180deg, #0ea5e9 0%, #0369a1 55%, #082f49 100%); touch-action: none; user-select: none; }
+    .sky-item { position: absolute; top: -60px; width: 60px; height: 60px; display: grid; place-items: center; font-size: 1.5rem; border-radius: 14px; background: rgba(255,255,255,0.92); box-shadow: 0 4px 12px rgba(0,0,0,0.3); will-change: transform; }
+    .sky-item .sky-item-label { position: absolute; bottom: -18px; font-size: 0.6rem; color: #fff; text-shadow: 0 1px 2px #000; white-space: nowrap; font-weight: 700; }
+    .sky-item.bomb { background: #111827; border: 2px solid #ef4444; }
+    .sky-boat { position: absolute; bottom: 8px; width: 72px; height: 52px; display: grid; place-items: center; font-size: 2rem; transform: translateX(-50%); will-change: transform; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4)); }
+    .sky-boat.stun { animation: shake 0.3s ease infinite; filter: drop-shadow(0 0 10px #ef4444); }
+    .sky-prompt { text-align: center; font-weight: 800; color: var(--text-main); background: var(--surface-glass); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 0.6rem; margin-bottom: 0.6rem; }
   </style>
 </head>
 <body>
