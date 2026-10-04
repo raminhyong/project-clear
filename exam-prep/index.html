@@ -61,15 +61,14 @@
     .subset-tab:hover { border-color: var(--prep-accent); }
     .subset-tab.active { background: linear-gradient(135deg, var(--prep-accent), var(--prep-accent-2)); color: #fff; border-color: transparent; box-shadow: 0 4px 14px var(--prep-soft); }
 
-    /* ── Question navigator pills ── */
-    .qnav-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.35rem; }
-    .qnav-pill {
-      width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border-subtle);
-      background: var(--surface-card); color: var(--text-muted); font-weight: 700; font-size: 0.82rem;
-      cursor: pointer; transition: all 0.18s ease; font-family: var(--font-thai);
+    /* ── Elegant progress bar ── */
+    .prep-progressbar { height: 6px; border-radius: 99px; background: var(--border-subtle); overflow: hidden; margin-bottom: 1.35rem; }
+    .prep-progressbar > div {
+      height: 100%; width: 0; border-radius: 99px;
+      background: linear-gradient(90deg, var(--prep-accent), var(--prep-accent-2));
+      transition: width 0.35s cubic-bezier(0.2, 0, 0, 1);
     }
-    .qnav-pill.answered { background: #dcfce7; border-color: #86efac; color: #166534; }
-    .qnav-pill.current { background: linear-gradient(135deg, var(--prep-accent), var(--prep-accent-2)); border-color: transparent; color: #fff; box-shadow: 0 4px 12px var(--prep-soft); }
+    .prep-progress .badge-metallic { font-size: 0.76rem; padding: 3px 10px; }
 
     /* ── Question card ── */
     .qcard { padding: 1.75rem; max-width: 900px; margin: 0 auto; }

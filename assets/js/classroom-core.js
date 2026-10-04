@@ -257,25 +257,28 @@ async function renderStudentDashboard(config, student, fullData) {
     const isSubmitted = score > 0;
 
     const badgeClass = isFull ? 'badge-emerald' : (isSubmitted ? 'badge-blue' : 'badge-amber');
-    const badgeText = isFull ? 'คะแนนเต็ม' : (isSubmitted ? 'ส่งแล้ว' : 'ยังไม่ส่ง / รอตรวจ');
+    const badgeText = isFull ? 'เต็ม' : (isSubmitted ? 'ส่งแล้ว' : 'รอส่ง');
+    const hasLink = Boolean(t.workUrl);
+
+    const tagOpen = hasLink
+      ? `<a href="${escapeHtml(t.workUrl)}" target="_blank" rel="noopener noreferrer" class="task-card-3d" title="แตะเพื่อเปิดโจทย์/ส่งงาน: ${escapeHtml(t.title)}">`
+      : `<div class="task-card-3d no-link">`;
+    const tagClose = hasLink ? `</a>` : `</div>`;
 
     return `
-      <div class="clear-card hover-lift" style="padding: 1.15rem; display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.6rem; gap: 0.5rem;">
-            <h4 style="font-size: 1rem; font-weight: 700;">${escapeHtml(t.title)}</h4>
-            <span class="clear-badge ${badgeClass}">${badgeText}</span>
-          </div>
-          <div style="display: flex; align-items: baseline; gap: 0.3rem; margin-bottom: 0.75rem;">
-            <span style="font-size: 1.75rem; font-weight: 800; color: ${isSubmitted ? 'var(--brand-blue)' : 'var(--text-dim)'};">${score}</span>
-            <span style="font-size: 0.95rem; color: var(--text-muted);">/ ${t.maxScore} คะแนน</span>
+      ${tagOpen}
+        <div class="task-card-head">
+          <span class="task-title-text">${escapeHtml(t.title)}</span>
+          <div style="display:flex; align-items:center; gap:4px;">
+            <span class="clear-badge ${badgeClass}" style="font-size:0.7rem; padding:2px 8px;">${badgeText}</span>
+            ${hasLink ? `<i class="fa-solid fa-arrow-up-right-from-square task-link-icon"></i>` : ''}
           </div>
         </div>
-        <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-size: 0.8rem; color: var(--text-dim);">ชิ้นงานที่ ${t.taskIndex + 1}</span>
-          ${t.workUrl ? `<a href="${escapeHtml(t.workUrl)}" target="_blank" rel="noopener noreferrer" style="font-size: 0.8rem; color: var(--brand-blue); font-weight: 600; display: inline-flex; align-items: center; gap: 0.25rem;">ส่งงาน / ดูโจทย์ <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i></a>` : ''}
+        <div class="task-score-row">
+          <span class="task-score-big ${isSubmitted ? 'score-active' : 'score-dim'}">${score}</span>
+          <span class="task-score-max">/ ${t.maxScore}</span>
         </div>
-      </div>
+      ${tagClose}
     `;
   }).join('');
 
@@ -329,7 +332,7 @@ async function renderStudentDashboard(config, student, fullData) {
     </div>
 
     <!-- Summary Metrics Grid -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.25rem; margin-bottom: 2.25rem;">
+    <div class="metric-grid-compact">
       <div class="clear-card metric-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
           <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">คะแนนงานสะสม</span>
@@ -407,7 +410,7 @@ async function renderStudentDashboard(config, student, fullData) {
         <span style="font-size: 0.9rem; color: var(--text-muted);">แสดงเฉพาะข้อมูลของคุณ</span>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem;">
+      <div class="task-grid-compact">
         ${taskRowsHtml}
       </div>
     </div>

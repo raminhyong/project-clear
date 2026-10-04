@@ -121,7 +121,7 @@
           <button class="subset-tab ${state.subsetId === 'all' ? 'active' : ''}" data-action="subset" data-subset="all">ทำทั้งหมดต่อเนื่อง (${state.exam.count} ข้อ)</button>
           ${state.exam.subsets.map(s => `<button class="subset-tab ${state.subsetId === s.id ? 'active' : ''}" data-action="subset" data-subset="${s.id}">${esc(s.title)} (${s.to - s.from + 1})</button>`).join('')}
         </div>
-        <div class="qnav-grid" id="qnavGrid"></div>
+        <div class="prep-progressbar"><div id="prepProgressBar"></div></div>
         <div class="clear-card qcard" id="qcard"></div>
         <div class="prep-submit">
           <button class="clear-btn clear-btn-primary btn-metallic" data-action="submit"><i class="fa-solid fa-flag-checkered"></i> ส่งคำตอบ / ดูสรุปคะแนน</button>
@@ -141,7 +141,6 @@
 
   function paint() {
     if (!state.list.length) {
-      root.querySelector('#qnavGrid').innerHTML = '';
       root.querySelector('#qcard').innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">ไม่มีข้อสอบในชุดนี้</p>';
       return;
     }
@@ -153,12 +152,9 @@
     });
 
     const progress = root.querySelector('#prepProgress');
-    if (progress) progress.textContent = `ตอบแล้ว ${answeredCount} จาก ${state.list.length} ข้อ`;
-
-    root.querySelector('#qnavGrid').innerHTML = state.list.map((item, i) => {
-      const cls = i === state.index ? 'current' : (state.answers[item.num] != null ? 'answered' : '');
-      return `<button class="qnav-pill ${cls}" data-action="goto" data-index="${i}" title="ข้อ ${item.num}">${item.num}</button>`;
-    }).join('');
+    if (progress) progress.innerHTML = `<span class="clear-badge badge-metallic">ข้อที่ ${state.index + 1} จาก ${state.list.length}</span> · ตอบแล้ว ${answeredCount} ข้อ`;
+    const bar = root.querySelector('#prepProgressBar');
+    if (bar) bar.style.width = Math.round((answeredCount / state.list.length) * 100) + '%';
 
     const revealed = !!state.revealed[q.num];
     const chosen = state.answers[q.num];

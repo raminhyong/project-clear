@@ -908,3 +908,153 @@ body[data-room] .clear-btn-metallic {
   .clear-activity-bar-title span { font-size: 0.9rem; }
   .clear-activity-close span { display: none; }
 }
+
+/* =========================================================
+   Compact 3D Metallic Task Tiles (student room dashboard)
+   ========================================================= */
+.task-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+@media (max-width: 640px) {
+  .task-grid-compact {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+.task-card-3d {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.95rem 1rem;
+  border-radius: var(--radius-md, 14px);
+  background: var(--surface-card);
+  border: 1px solid var(--border-glass, rgba(255, 255, 255, 0.2));
+  border-top: 1.5px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.25),
+    0 4px 14px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  min-height: 88px;
+}
+.task-card-3d:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.7),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.3),
+    0 8px 22px rgba(0, 0, 0, 0.16);
+  border-color: var(--room-accent, var(--brand-blue));
+}
+.task-card-3d:active {
+  transform: translateY(1.5px);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+.task-card-3d.no-link { cursor: default; }
+.task-card-3d.no-link:hover {
+  transform: none;
+  border-color: var(--border-glass);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), inset 0 -2px 0 rgba(0, 0, 0, 0.25), 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.task-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+.task-title-text {
+  font-size: 0.92rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.task-link-icon {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  opacity: 0.75;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+.task-card-3d:hover .task-link-icon {
+  color: var(--room-accent, var(--brand-blue));
+  transform: translate(1px, -1px);
+  opacity: 1;
+}
+.task-score-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+.task-score-big {
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+  font-family: var(--font-code, monospace);
+}
+.task-score-big.score-active { color: var(--room-accent, var(--brand-blue)); }
+.task-score-big.score-dim { color: var(--text-dim); }
+.task-score-max {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* --- Summary Metric Grid Responsive --- */
+.metric-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1.1rem;
+  margin-bottom: 2rem;
+}
+@media (max-width: 640px) {
+  .metric-grid-compact {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .metric-grid-compact .metric-card { padding: 1rem; }
+  .metric-grid-compact .metric-card span[style*="font-size: 2.25rem"] { font-size: 1.7rem !important; }
+  .metric-grid-compact .metric-card p { display: none; }
+}
+
+/* =========================================================
+   Mobile Safe Areas & Ergonomics (iOS Safari / Android)
+   ========================================================= */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+.clear-navbar {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+.clear-activity-bar {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+.clear-activity-overlay {
+  height: 100dvh;
+}
+.clear-footer {
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+}
+
+@media (max-width: 768px) {
+  /* Prevent iOS Safari auto-zoom on focus */
+  input, select, textarea, .clear-input {
+    font-size: 16px !important;
+  }
+  .clear-btn, .btn-metallic {
+    min-height: 44px;
+  }
+  .nav-btn {
+    min-height: 42px;
+    min-width: 42px;
+  }
+}
