@@ -158,6 +158,7 @@ async function handleLoginSubmit(event) {
 
     // Success login!
     sessionStorage.setItem(getSessionKey(config.room), JSON.stringify({ code: student.code, name: student.name }));
+    try { localStorage.setItem('clear_current_room', config.room); } catch (e) {}
     showToast(`ยินดีต้อนรับ ${student.name}`, 'success');
     await renderStudentDashboard(config, student, data);
   } catch (err) {
@@ -281,7 +282,7 @@ async function renderStudentDashboard(config, student, fullData) {
     { key: 'exam', title: 'ข้อสอบเสริมก่อนสอบ', desc: 'แบบทดสอบพร้อมเฉลยทันที', icon: 'fa-file-pen', grad: 'linear-gradient(135deg,#f59e0b,#d97706)', url: '../../exam-prep/index.html' },
     { key: 'selfpoint', title: 'Self Point', desc: 'รับแต้มและสแกน QR Code', icon: 'fa-gem', grad: 'linear-gradient(135deg,#10b981,#0ea5e9)', url: `../../self-point/index.html?code=${encodeURIComponent(code)}` },
     { key: 'ar', title: 'สื่อ AR กาพย์เห่เรือ', desc: 'สแกนการ์ด AR 3D', icon: 'fa-cube', grad: 'linear-gradient(135deg,#0284c7,#06b6d4)', url: '../../ar/index.html' },
-    { key: 'space', title: 'CLEAR Space', desc: 'คลัง E-Book และผลงาน', icon: 'fa-book-open', grad: 'linear-gradient(135deg,#6366f1,#a855f7)', url: '../../space/index.html' },
+    { key: 'space', title: 'CLEAR Space', desc: 'คลัง E-Book และผลงาน', icon: 'fa-book-open', grad: 'linear-gradient(135deg,#6366f1,#a855f7)', url: `../../space/index.html?room=${encodeURIComponent(config.room)}` },
     { key: 'voice', title: 'CLEAR Voice', desc: 'ประเมินครูผู้สอน', icon: 'fa-comment-dots', grad: 'linear-gradient(135deg,#8b5cf6,#7c3aed)', url: `../../voice/index.html?room=${encodeURIComponent(config.room)}` }
   ];
 
@@ -415,6 +416,10 @@ async function renderStudentDashboard(config, student, fullData) {
 
 function handleLogout(room) {
   sessionStorage.removeItem(getSessionKey(room));
+  try {
+    localStorage.removeItem('clear_current_room');
+    localStorage.removeItem('clear_auth_student');
+  } catch (e) {}
   showToast('ออกจากระบบเรียบร้อยแล้ว', 'info');
   renderLoginForm(window.CLEAR_ROOM_CONFIG);
 }

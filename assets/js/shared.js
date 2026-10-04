@@ -185,4 +185,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeClearActivityModal();
   });
+
+  // Embedded workspace pages (e.g. CLEAR Space) can ask to be closed.
+  window.addEventListener('message', (e) => {
+    if (e && e.data && e.data.type === 'CLOSE_WORKSPACE_MODAL') {
+      closeClearActivityModal();
+    }
+  });
 });

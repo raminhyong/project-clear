@@ -3,384 +3,262 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CLEAR Space — คลังผลงาน E-Book วรรณคดี 3D | Project CLEAR</title>
+  <title>CLEAR Space — โฟลเดอร์ผลงานและคลังอีบุ๊ก 3D | Project CLEAR</title>
   <link rel="stylesheet" href="../assets/css/theme.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* Space Hero Banner */
     .space-banner {
-      width: 100%;
-      min-height: 200px;
-      border-radius: var(--radius-lg, 16px);
-      background: linear-gradient(180deg, rgba(6, 30, 23, 0.4) 0%, rgba(13, 51, 40, 0.92) 100%),
-                  url('assets/new-space.jpg') center/cover no-repeat;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 1.75rem 2rem;
-      color: white;
-      margin-bottom: 2rem;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+      width: 100%; min-height: 180px; border-radius: var(--radius-lg, 16px);
+      background: linear-gradient(180deg, rgba(6, 30, 23, 0.35) 0%, rgba(13, 51, 40, 0.92) 100%);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 1.6rem 1.9rem; color: #fff; margin-bottom: 1.75rem;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.22);
       border: 1px solid rgba(16, 185, 129, 0.25);
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
     }
     .space-banner::before {
-      content: '';
-      position: absolute;
-      top: -50px; right: -50px;
-      width: 200px; height: 200px;
-      background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, transparent 70%);
-      pointer-events: none;
+      content: ''; position: absolute; top: -60px; right: -40px; width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.28) 0%, transparent 70%); pointer-events: none;
     }
 
-    /* Wall / Post-View Grid (182px minmax matching Raminest authentic spec) */
+    .guard-card { max-width: 520px; margin: 3rem auto; text-align: center; padding: 2.5rem 2rem; }
+    .guard-icon {
+      width: 68px; height: 68px; border-radius: 20px; margin: 0 auto 1.25rem;
+      display: grid; place-items: center; font-size: 1.8rem; color: #fff;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      box-shadow: 0 10px 26px -8px rgba(245, 158, 11, 0.6);
+    }
+
+    .space-breadcrumb {
+      display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.88rem; font-weight: 600;
+      color: var(--text-muted); background: var(--surface-glass); border: 1px solid var(--border-subtle);
+      padding: 0.45rem 0.9rem; border-radius: 999px; cursor: pointer; margin-bottom: 1.25rem;
+      transition: all 0.2s ease;
+    }
+    .space-breadcrumb:hover { color: var(--brand-blue); border-color: var(--brand-blue); }
+
+    .hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+    .folder-card {
+      display: flex; flex-direction: column; gap: 0.9rem; padding: 1.4rem;
+      border-radius: var(--radius-lg, 16px); background: var(--surface-glass);
+      border: 1px solid var(--border-glass); box-shadow: var(--shadow-md);
+      cursor: pointer; text-align: left; font-family: var(--font-thai);
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+      position: relative; overflow: hidden;
+    }
+    .folder-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: rgba(16, 185, 129, 0.4); }
+    .folder-icon {
+      width: 52px; height: 52px; border-radius: 15px; display: grid; place-items: center;
+      font-size: 1.4rem; color: #fff; box-shadow: 0 8px 18px -6px rgba(0, 0, 0, 0.4);
+    }
+    .folder-type-badge {
+      display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.22rem 0.65rem;
+      border-radius: 999px; font-size: 0.72rem; font-weight: 700;
+      background: var(--brand-emerald-light); color: var(--brand-emerald); width: fit-content;
+    }
+    .folder-meta { display: flex; gap: 1rem; font-size: 0.82rem; color: var(--text-muted); }
+
+    .board-toolbar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+      gap: 0.9rem; margin-bottom: 1.35rem;
+    }
+    .card-size-controls {
+      display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem;
+      border-radius: 999px; background: var(--surface-card); border: 1px solid var(--border-subtle);
+    }
+    .card-size-controls span.size-label { font-size: 0.78rem; color: var(--text-muted); padding: 0 0.5rem; }
+    .size-btn {
+      border: none; background: transparent; padding: 0.4rem 0.8rem; border-radius: 999px;
+      font-family: var(--font-thai); font-size: 0.8rem; font-weight: 600; color: var(--text-muted);
+      cursor: pointer; transition: all 0.18s ease; display: inline-flex; align-items: center; gap: 0.3rem;
+    }
+    .size-btn.active { background: var(--brand-emerald); color: #fff; box-shadow: 0 3px 10px rgba(16,185,129,0.35); }
+
     .post-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
-      gap: 16px;
-      align-items: start;
-      margin-bottom: 3rem;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px; align-items: start; margin-bottom: 3rem;
     }
+    .post-grid.size-compact { grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); }
+    .post-grid.size-normal  { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+    .post-grid.size-large   { grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); }
 
-    /* Compact Post Card */
     .space-post-card {
-      background: var(--surface-card, #1e293b);
-      border: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.1));
+      background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: 14px;
+      overflow: hidden; box-shadow: var(--shadow-sm); padding: 12px;
+      display: flex; flex-direction: column; gap: 9px;
       transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
     }
-    .space-post-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25);
-      border-color: var(--brand-emerald, #10b981);
+    .space-post-card:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2); border-color: var(--brand-emerald); }
+    .post-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .post-author { font-size: 0.82rem; font-weight: 700; }
+    .teacher-badge {
+      display: inline-flex; align-items: center; gap: 3px; font-size: 0.66rem; font-weight: 700;
+      padding: 1px 7px; border-radius: 999px; background: linear-gradient(135deg, #10b981, #f59e0b);
+      color: #fff; margin-left: 4px;
+    }
+    .post-time { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+
+    .post-image { width: 100%; border-radius: 10px; display: block; object-fit: cover; aspect-ratio: 4 / 3; background: #0f172a; }
+    .post-link {
+      display: block; font-size: 0.82rem; color: var(--brand-blue); font-weight: 600;
+      word-break: break-all; background: var(--brand-blue-light); padding: 0.6rem 0.75rem; border-radius: 10px;
     }
 
-    /* A4 Proportioned Book Cover Block */
     .book-cover {
-      position: relative;
-      display: block;
-      width: 100%;
-      padding: 0;
-      border: 0;
-      border-radius: 8px;
-      overflow: hidden;
-      cursor: pointer;
-      background: #0f172a;
-      aspect-ratio: 210 / 297;
-      text-align: left;
+      position: relative; display: block; width: 100%; padding: 0; border: 0; border-radius: 8px;
+      overflow: hidden; cursor: pointer; background: #0f172a; aspect-ratio: 210 / 297; text-align: left;
     }
-    .book-cover img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
-    }
-    .space-post-card:hover .book-cover img {
-      transform: scale(1.03);
-    }
+    .book-cover img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s cubic-bezier(0.2,0,0,1); }
+    .space-post-card:hover .book-cover img { transform: scale(1.03); }
     .book-cover-hint {
-      position: absolute;
-      left: 6px;
-      bottom: 6px;
-      padding: 3px 8px;
-      background: rgba(0, 0, 0, 0.72);
-      backdrop-filter: blur(5px);
-      border-radius: 999px;
-      color: #fff;
-      font-size: 0.72rem;
-      font-weight: 700;
-      line-height: 1.2;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      border: 1px solid rgba(255,255,255,0.12);
-      pointer-events: none;
+      position: absolute; left: 6px; bottom: 6px; padding: 3px 8px; background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(5px); border-radius: 999px; color: #fff; font-size: 0.72rem; font-weight: 700;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12); pointer-events: none;
     }
-
-    /* Card Details */
-    .card-meta-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.72rem;
-      color: var(--text-dim, #94a3b8);
-    }
-    .card-title {
-      font-size: 0.88rem;
-      font-weight: 700;
-      line-height: 1.3;
-      margin: 0;
-      color: var(--text-main, #f8fafc);
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
+    .card-title { font-size: 0.9rem; font-weight: 700; line-height: 1.3; margin: 0; color: var(--text-main); }
     .card-excerpt {
-      font-size: 0.75rem;
-      line-height: 1.35;
-      color: var(--text-muted, #94a3b8);
-      margin: 0;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      font-size: 0.76rem; line-height: 1.4; color: var(--text-muted); margin: 0;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-wrap;
     }
+
+    .reactions-bar { display: flex; gap: 4px; flex-wrap: wrap; }
+    .reaction-btn {
+      display: inline-flex; align-items: center; gap: 4px; padding: 0.28rem 0.6rem; border-radius: 999px;
+      border: 1px solid var(--border-subtle); background: var(--surface-card); font-size: 0.82rem;
+      font-family: var(--font-thai); cursor: pointer; transition: all 0.18s ease; color: var(--text-muted);
+    }
+    .reaction-btn:hover { border-color: var(--brand-emerald); transform: translateY(-1px); }
+    .reaction-btn.active { background: var(--brand-emerald-light); border-color: var(--brand-emerald); color: var(--brand-emerald); font-weight: 700; }
+    .reaction-btn .rcount { font-size: 0.74rem; font-weight: 700; }
+
     .card-footer-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 6px;
-      border-top: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
-      font-size: 0.75rem;
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 8px; border-top: 1px solid var(--border-subtle); gap: 8px; flex-wrap: wrap;
     }
-    .read-now-btn {
-      color: var(--brand-emerald, #10b981);
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 0;
-      font-size: 0.76rem;
+    .comment-toggle, .read-now-btn {
+      background: none; border: none; padding: 0; cursor: pointer; font-family: var(--font-thai);
+      font-size: 0.78rem; font-weight: 700; color: var(--brand-emerald);
+      display: inline-flex; align-items: center; gap: 5px;
     }
-    .read-now-btn:hover {
-      text-decoration: underline;
+    .comment-toggle:hover, .read-now-btn:hover { text-decoration: underline; }
+
+    .comments-section {
+      max-height: 0; overflow: hidden; opacity: 0;
+      transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.3s ease, padding-left 0.3s ease;
+      border-left: 2px solid var(--border-subtle); padding-left: 0; margin-top: 0;
+    }
+    .comments-section.open { max-height: 1100px; opacity: 1; padding-left: 12px; margin-top: 6px; }
+    .comment-item { display: flex; flex-direction: column; gap: 2px; margin-bottom: 10px; }
+    .comment-item .comment-head { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+    .comment-author { font-size: 0.8rem; font-weight: 700; }
+    .comment-text { font-size: 0.8rem; color: var(--text-main); white-space: pre-wrap; margin: 0; }
+    .comment-img { max-width: 180px; border-radius: 8px; display: block; margin-top: 3px; }
+    .comment-time { font-size: 0.7rem; color: var(--text-dim); }
+    .comment-delete { background: none; border: none; color: var(--brand-rose); font-size: 0.72rem; cursor: pointer; font-weight: 700; }
+    .comment-empty { font-size: 0.78rem; color: var(--text-dim); margin: 0 0 8px; }
+    .comment-form { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
+    .comment-form input[type="text"] {
+      flex: 1; min-width: 0; padding: 0.45rem 0.7rem; font-size: 0.8rem; border-radius: 999px;
+      border: 1px solid var(--border-subtle); background: var(--surface-card); color: var(--text-main); outline: none;
+    }
+    .comment-form input[type="text"]:focus { border-color: var(--brand-emerald); }
+    .comment-attach {
+      cursor: pointer; width: 34px; height: 34px; border-radius: 999px; display: grid; place-items: center;
+      background: var(--brand-blue-light); color: var(--brand-blue); flex-shrink: 0;
+    }
+    .comment-send {
+      border: none; border-radius: 999px; padding: 0.45rem 0.9rem; background: var(--brand-emerald);
+      color: #fff; font-family: var(--font-thai); font-weight: 700; font-size: 0.78rem; cursor: pointer; flex-shrink: 0;
     }
 
-    /* Pastel Card Options */
-    .space-post-card.card-pink { background: #fdf2f8 !important; border-color: #fbcfe8 !important; }
-    .space-post-card.card-blue { background: #eff6ff !important; border-color: #bfdbfe !important; }
-    .space-post-card.card-green { background: #ecfdf5 !important; border-color: #a7f3d0 !important; }
-    .space-post-card.card-yellow { background: #fefce8 !important; border-color: #fef08a !important; }
-    .space-post-card.card-purple { background: #faf5ff !important; border-color: #e9d5ff !important; }
+    .space-post-card.card-pink { background: #fdf2f8; border-color: #fbcfe8; }
+    .space-post-card.card-blue { background: #eff6ff; border-color: #bfdbfe; }
+    .space-post-card.card-green { background: #ecfdf5; border-color: #a7f3d0; }
+    .space-post-card.card-yellow { background: #fefce8; border-color: #fef08a; }
+    .space-post-card.card-purple { background: #faf5ff; border-color: #e9d5ff; }
     .space-post-card[class*="card-"] .card-title,
-    .space-post-card[class*="card-"] .card-meta-row,
-    .space-post-card[class*="card-"] .card-excerpt {
-      color: #0f172a !important;
-    }
+    .space-post-card[class*="card-"] .post-author,
+    .space-post-card[class*="card-"] .comment-text { color: #0f172a; }
     .space-post-card[class*="card-"] .card-excerpt,
-    .space-post-card[class*="card-"] .card-meta-row {
-      color: #475569 !important;
-    }
+    .space-post-card[class*="card-"] .post-time,
+    .space-post-card[class*="card-"] .comment-time { color: #475569; }
 
-    /* =========================================================
-       AnyFlip Real 3D Book Viewer Stage & Atmosphere (Raminest Port)
-       ========================================================= */
     .reader-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(6, 12, 20, 0.95);
-      backdrop-filter: blur(16px);
-      z-index: 2500;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 12px;
-      box-sizing: border-box;
-      opacity: 0;
-      transition: opacity 0.3s ease;
+      position: fixed; inset: 0; background: rgba(6, 12, 20, 0.95); backdrop-filter: blur(16px);
+      z-index: 2500; display: none; flex-direction: column; align-items: center; justify-content: center;
+      padding: 12px; box-sizing: border-box; opacity: 0; transition: opacity 0.3s ease;
     }
-    .reader-backdrop.open {
-      display: flex;
-      opacity: 1;
-    }
-
-    /* Reader Header Bar */
+    .reader-backdrop.open { display: flex; opacity: 1; }
     .reader-topbar {
-      width: 100%;
-      max-width: 920px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #fff;
-      padding: 6px 12px 10px;
-      z-index: 20;
+      width: 100%; max-width: 920px; display: flex; justify-content: space-between; align-items: center;
+      color: #fff; padding: 6px 12px 10px; z-index: 20;
     }
     .reader-topbar-title {
-      font-size: 1rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
+    .reader-close-round {
+      width: 38px; height: 38px; border-radius: 999px; flex-shrink: 0;
+      background: rgba(255,255,255,0.14); color: #fff; border: 1px solid rgba(255,255,255,0.18);
+      display: grid; place-items: center; cursor: pointer; font-size: 1.15rem; transition: all 0.2s ease;
+    }
+    .reader-close-round:hover { background: var(--brand-rose, #f43f5e); transform: scale(1.06); }
 
-    /* Deep Emerald Luxury Stage Frame */
     .book-viewer-stage-frame {
-      position: relative;
-      width: 100%;
-      max-width: 420px;
-      height: min(65vh, 600px);
-      aspect-ratio: 210 / 297;
-      margin: 0 auto;
-      padding: 24px;
-      box-sizing: border-box;
+      position: relative; width: 100%; max-width: 420px; height: min(65vh, 600px); aspect-ratio: 210 / 297;
+      margin: 0 auto; padding: 24px; box-sizing: border-box;
       background: radial-gradient(circle at 50% 30%, #174e3f 0%, #0d3328 60%, #061e17 100%);
-      border-radius: 18px;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border-radius: 18px; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), inset 0 0 0 1px rgba(255,255,255,0.12);
+      display: flex; align-items: center; justify-content: center;
     }
-    .book-viewer-stage-frame.spread {
-      max-width: 880px;
-      height: min(74vh, 620px);
-      aspect-ratio: 420 / 297;
-      padding: 14px;
-      overflow: hidden;
-    }
-    .book-viewer-stage {
-      position: absolute;
-      inset: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .book-viewer-stage-frame.spread .book-viewer-stage {
-      inset: 14px;
-    }
-
-    /* Center Fold Shadow down the middle of a 2-page spread */
+    .book-viewer-stage-frame.spread { max-width: 880px; height: min(74vh, 620px); aspect-ratio: 420 / 297; padding: 14px; overflow: hidden; }
+    .book-viewer-stage { position: absolute; inset: 24px; display: flex; align-items: center; justify-content: center; }
+    .book-viewer-stage-frame.spread .book-viewer-stage { inset: 14px; }
     .book-viewer-spine {
-      position: absolute;
-      top: 14px;
-      bottom: 14px;
-      left: 50%;
-      width: 68px;
-      transform: translateX(-50%);
-      background: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.22) 42%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.22) 58%, rgba(0, 0, 0, 0) 100%);
-      pointer-events: none;
-      z-index: 15;
+      position: absolute; top: 14px; bottom: 14px; left: 50%; width: 68px; transform: translateX(-50%);
+      background: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.22) 42%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.22) 58%, rgba(0,0,0,0) 100%);
+      pointer-events: none; z-index: 15;
     }
-
-    /* Loading placeholder */
     .book-viewer-loading {
-      position: absolute;
-      inset: 14px;
-      margin: 0;
-      display: grid;
-      place-items: center;
-      background: rgba(0, 0, 0, 0.45);
-      border-radius: 10px;
-      color: #fff;
-      font-size: 0.95rem;
-      z-index: 20;
+      position: absolute; inset: 14px; margin: 0; display: grid; place-items: center;
+      background: rgba(0,0,0,0.45); border-radius: 10px; color: #fff; font-size: 0.95rem; z-index: 20;
     }
-
-    /* Hand Swipe Hint at the right edge */
     .book-swipe-hint {
-      position: absolute;
-      right: 22px;
-      bottom: 30%;
-      z-index: 20;
-      pointer-events: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-      color: #ffffff;
-      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.7));
-      animation: swipeHandAnim 1.6s ease-in-out infinite;
-      transition: opacity 0.5s ease;
+      position: absolute; right: 22px; bottom: 30%; z-index: 20; pointer-events: none;
+      display: flex; flex-direction: column; align-items: center; gap: 5px; color: #fff;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.7)); animation: swipeHandAnim 1.6s ease-in-out infinite; transition: opacity 0.5s ease;
     }
-    .book-swipe-hint.fade-out {
-      opacity: 0;
-    }
-    .book-swipe-hint svg {
-      width: 38px;
-      height: 38px;
-      fill: #ffffff;
-      stroke: #0d3328;
-      stroke-width: 1.5;
-    }
+    .book-swipe-hint.fade-out { opacity: 0; }
+    .book-swipe-hint svg { width: 38px; height: 38px; fill: #fff; stroke: #0d3328; stroke-width: 1.5; }
     .book-swipe-hint span {
-      font-size: 0.72rem;
-      font-weight: 600;
-      background: rgba(0, 0, 0, 0.65);
-      padding: 3px 10px;
-      border-radius: 999px;
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 0.72rem; font-weight: 600; background: rgba(0,0,0,0.65); padding: 3px 10px;
+      border-radius: 999px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15);
     }
     @keyframes swipeHandAnim {
       0%, 100% { transform: translateX(0) rotate(0deg); opacity: 0.9; }
       50% { transform: translateX(-28px) rotate(-15deg); opacity: 1; }
     }
-
-    /* AnyFlip Floating Dark Capsule Controls Bar */
     .book-viewer-controls {
-      margin-top: 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 7px 14px;
-      border-radius: 999px;
-      background: rgba(20, 30, 24, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      color: #fff;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-      z-index: 25;
+      margin-top: 14px; display: flex; align-items: center; gap: 12px; padding: 7px 14px;
+      border-radius: 999px; background: rgba(20, 30, 24, 0.85); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.16); color: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 25;
     }
     .book-viewer-controls button {
-      width: 38px;
-      height: 38px;
-      min-height: 38px;
-      padding: 0;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.12);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 1.15rem;
+      width: 38px; height: 38px; min-height: 38px; padding: 0; border-radius: 999px;
+      background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.1);
+      display: grid; place-items: center; cursor: pointer; transition: all 0.2s ease; font-size: 1.15rem;
     }
-    .book-viewer-controls button:hover:not(:disabled) {
-      background: var(--brand-emerald, #10b981);
-      color: #fff;
-      transform: scale(1.06);
-    }
-    .book-viewer-controls button:disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-    }
-    .book-viewer-page-count {
-      font-size: 0.86rem;
-      color: #fff;
-      font-weight: 700;
-      min-width: 80px;
-      text-align: center;
-    }
-
-    /* Fullscreen Reading Support */
+    .book-viewer-controls button:hover:not(:disabled) { background: var(--brand-emerald, #10b981); transform: scale(1.06); }
+    .book-viewer-controls button:disabled { opacity: 0.35; cursor: not-allowed; }
+    .book-viewer-page-count { font-size: 0.86rem; color: #fff; font-weight: 700; min-width: 80px; text-align: center; }
     .reader-backdrop:fullscreen {
       background: radial-gradient(circle at 50% 30%, #174e3f 0%, #0d3328 60%, #061e17 100%);
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
+      width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px;
     }
-    .reader-backdrop:fullscreen .book-viewer-stage-frame.spread {
-      height: min(84vh, 760px);
-      max-width: 1120px;
-    }
+    .reader-backdrop:fullscreen .book-viewer-stage-frame.spread { height: min(84vh, 760px); max-width: 1120px; }
+
+    .empty-state { text-align: center; padding: 3rem 1.5rem; color: var(--text-muted); }
+    .empty-state i { font-size: 2.5rem; color: var(--text-dim); margin-bottom: 1rem; display: block; }
   </style>
 </head>
 <body>
@@ -390,69 +268,37 @@
   <header class="clear-navbar">
     <div class="clear-nav-inner">
       <div class="brand-badge">
-        <a href="../index.html" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+        <a href="#" onclick="goHome(); return false;" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
           <div class="brand-logo-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-book-open"></i></div>
-          <span>PROJECT CLEAR</span>
+          <span>CLEAR Space</span>
         </a>
       </div>
-
       <nav class="nav-links">
-        <a href="../index.html" class="nav-btn"><i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span></a>
-        <a href="#compose" onclick="openComposeModal()" class="nav-btn"><i class="fa-solid fa-plus nav-btn-icon"></i> <span>เพิ่มผลงาน</span></a>
-        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด" onclick="toggleTheme()"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+        <button class="nav-btn" onclick="goHome()" title="กลับหน้าคะแนนของฉัน">
+          <i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span>
+        </button>
+        <button class="nav-btn" onclick="logoutStudent()" title="ออกจากระบบ" style="color: var(--brand-rose);">
+          <i class="fa-solid fa-arrow-right-from-bracket nav-btn-icon"></i> <span>ออกจากระบบ</span>
+        </button>
+        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
       </nav>
     </div>
   </header>
 
   <main class="clear-container">
-    <!-- Space Hero Banner -->
-    <div class="space-banner">
-      <span class="clear-badge badge-emerald" style="width: fit-content; margin-bottom: 0.5rem;">
-        <i class="fa-solid fa-book-bookmark"></i> แกลเลอรีผลงานวรรณคดี 3D AnyFlip
-      </span>
-      <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.35rem;">CLEAR Space</h1>
-      <p style="opacity: 0.92; font-size: 1rem;">คลัง E-Book การ์ตูนวรรณคดี และสื่อการเรียนรู้ภาษาไทย ชั้น ม.6 สัมผัสเสมือนพลิกอ่านเล่มจริง</p>
-    </div>
-
-    <!-- Filter & Tool Bar -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-      <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
-        <span class="clear-badge badge-blue" id="bookCountBadge">ผลงานทั้งหมด: 4 เล่ม</span>
-        <span class="clear-badge badge-emerald"><i class="fa-solid fa-layer-group"></i> ระบบพลิก 3D A4 แท้</span>
-        <span class="clear-badge badge-purple"><i class="fa-solid fa-mobile-screen"></i> 2 หน้า Desktop / 1 หน้า Mobile</span>
-      </div>
-
-      <button onclick="openComposeModal()" class="clear-btn clear-btn-primary" style="background: linear-gradient(135deg, #10b981, #047857);">
-        <i class="fa-solid fa-plus"></i> <span>เพิ่มผลงานใหม่</span>
-      </button>
-    </div>
-
-    <!-- Post Grid (Wall) -->
-    <div class="post-grid" id="spacePostGrid">
-      <!-- Injected via JavaScript -->
-    </div>
+    <div id="spaceRoot"><!-- Injected: guard / hub / board view --></div>
   </main>
 
-  <!-- =========================================================
-       AnyFlip Real 3D Book Viewer Modal Overlay
-       ========================================================= -->
+  <!-- AnyFlip Real 3D Book Viewer (clean chrome: round X top-right + one bottom capsule) -->
   <div id="anyFlipReader" class="reader-backdrop" role="dialog" aria-modal="true">
     <div class="reader-topbar">
       <div class="reader-topbar-title">
         <i class="fa-solid fa-book-open" style="color: var(--brand-emerald, #10b981);"></i>
         <span id="readerBookTitle">ชื่อหนังสือ</span>
       </div>
-      <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <button onclick="toggleReaderFullscreen()" class="nav-btn" style="color:white; border-radius: 999px; width:34px; height:34px; min-height:34px; padding:0; display:grid; place-items:center;" title="อ่านเต็มจอ">
-          <i id="fsIcon" class="fa-solid fa-expand"></i>
-        </button>
-        <button onclick="closeReader()" class="nav-btn" style="color:white; border-radius: 999px; width:34px; height:34px; min-height:34px; padding:0; display:grid; place-items:center; font-size:1.1rem;" title="ปิดหน้าต่าง">
-          ✕
-        </button>
-      </div>
+      <button type="button" class="reader-close-round" onclick="closeReader()" aria-label="ปิด" title="ปิด">✕</button>
     </div>
 
-    <!-- Luxury Emerald Stage Frame -->
     <div class="book-viewer-stage-frame spread" id="stageFrame">
       <div class="book-viewer-stage" id="flipContainer"></div>
       <div class="book-viewer-spine" id="spineShadow" aria-hidden="true"></div>
@@ -465,7 +311,6 @@
       </div>
     </div>
 
-    <!-- Floating AnyFlip Dark Capsule Controls Bar -->
     <div class="book-viewer-controls" id="readerControls">
       <button type="button" id="prevPageBtn" onclick="flipPrev()" aria-label="หน้าก่อนหน้า" title="หน้าก่อนหน้า">‹</button>
       <span class="book-viewer-page-count" id="readerPageCounter">หน้า 1 / 8</span>
@@ -477,62 +322,56 @@
     </div>
   </div>
 
-  <!-- Compose Work Modal -->
+  <!-- Compose work modal (adapts to board type) -->
   <div id="composeModal" class="clear-modal-backdrop">
-    <div class="clear-modal-content" style="max-width: 520px;">
+    <div class="clear-modal-content" style="max-width: 540px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-        <h3 style="font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; margin: 0;">
-          <i class="fa-solid fa-circle-plus" style="color: var(--brand-emerald, #10b981);"></i> เพิ่มผลงาน E-Book ใหม่
+        <h3 id="composeTitle" style="font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+          <i class="fa-solid fa-circle-plus" style="color: var(--brand-emerald, #10b981);"></i> เพิ่มผลงานใหม่
         </h3>
         <button onclick="closeComposeModal()" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-dim);">&times;</button>
       </div>
 
-      <form onsubmit="handleComposeSubmit(event)">
+      <form id="composeForm" onsubmit="handleComposeSubmit(event)" autocomplete="off">
         <div class="clear-input-group">
-          <label class="clear-label" for="bookName">ชื่อเรื่อง / ชื่อผลงานวรรณคดี</label>
-          <input type="text" id="bookName" class="clear-input" placeholder="เช่น การ์ตูนสี่ช่องมัทนะพาธา" required>
+          <label class="clear-label" for="workTopic">หัวข้อผลงาน</label>
+          <input type="text" id="workTopic" class="clear-input" placeholder="เช่น ภาพวาดสัตว์เลี้ยงของฉัน" maxlength="200" required>
         </div>
 
-        <div class="clear-input-group">
-          <label class="clear-label" for="authorName">ผู้จัดทำ / ห้องเรียน</label>
-          <input type="text" id="authorName" class="clear-input" placeholder="เช่น นายสมชาย สดใส (ม.6/1 กลุ่มที่ 2)" required>
+        <div class="clear-input-group" id="workAuthorGroup">
+          <label class="clear-label" for="workAuthor">ผู้จัดทำ</label>
+          <input type="text" id="workAuthor" class="clear-input" placeholder="ชื่อ-สกุล / กลุ่ม">
         </div>
 
-        <div class="clear-input-group">
-          <label class="clear-label" for="bookDesc">คำอธิบายผลงานโดยย่อ</label>
-          <textarea id="bookDesc" class="clear-input" rows="2" placeholder="สรุปเนื้อเรื่องหรือแนวคิดของผลงาน"></textarea>
-        </div>
-
-        <div class="clear-input-group">
-          <label class="clear-label" for="bookImages">แนบภาพหน้าหนังสือ (เลือกได้หลายภาพตามลำดับ)</label>
-          <input type="file" id="bookImages" class="clear-input" multiple accept="image/*">
-          <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; display: block;">
-            * หากไม่ได้แนบไฟล์ ระบบจะสร้างหน้าภาพวรรณคดี A4 จำลองที่สวยงามให้อัตโนมัติ
-          </small>
-        </div>
-
-        <div class="clear-input-group">
-          <label class="clear-label">โทนสีการ์ด</label>
-          <div style="display: flex; gap: 8px; margin-top: 4px;">
-            <label style="display: flex; align-items: center; gap: 4px; font-size: 0.82rem; cursor: pointer;">
-              <input type="radio" name="cardColor" value="" checked> ปกติ
-            </label>
-            <label style="display: flex; align-items: center; gap: 4px; font-size: 0.82rem; cursor: pointer;">
-              <input type="radio" name="cardColor" value="card-pink"> ชมพู
-            </label>
-            <label style="display: flex; align-items: center; gap: 4px; font-size: 0.82rem; cursor: pointer;">
-              <input type="radio" name="cardColor" value="card-blue"> ฟ้า
-            </label>
-            <label style="display: flex; align-items: center; gap: 4px; font-size: 0.82rem; cursor: pointer;">
-              <input type="radio" name="cardColor" value="card-green"> เขียว
-            </label>
-            <label style="display: flex; align-items: center; gap: 4px; font-size: 0.82rem; cursor: pointer;">
-              <input type="radio" name="cardColor" value="card-yellow"> เหลือง
-            </label>
-            <label style="display: flex; align-items: center; gap: 4px; font-size: 0.82rem; cursor: pointer;">
-              <input type="radio" name="cardColor" value="card-purple"> ม่วง
-            </label>
+        <div id="blogComposeFields">
+          <div class="clear-input-group">
+            <label class="clear-label">ประเภทผลงาน</label>
+            <div style="display: flex; gap: 0.6rem;">
+              <button type="button" id="workTypeImageBtn" class="clear-btn clear-btn-primary" style="flex:1;" onclick="setWorkType('image')">🖼️ ภาพ</button>
+              <button type="button" id="workTypeLinkBtn" class="clear-btn clear-btn-secondary" style="flex:1;" onclick="setWorkType('link')">🔗 ลิงก์</button>
+            </div>
           </div>
+          <div class="clear-input-group" id="singleImageGroup">
+            <label class="clear-label" for="workImage">แนบภาพผลงาน</label>
+            <input type="file" id="workImage" class="clear-input" accept="image/*">
+          </div>
+          <div class="clear-input-group" id="linkGroup" style="display:none;">
+            <label class="clear-label" for="workLink">ลิงก์ผลงาน (Canva / Google Docs / Padlet / YouTube)</label>
+            <input type="url" id="workLink" class="clear-input" placeholder="https://...">
+          </div>
+        </div>
+
+        <div id="bookComposeFields" style="display:none;">
+          <div class="clear-input-group">
+            <label class="clear-label" for="workBookPages">แนบภาพหน้าหนังสือ (หลายภาพตามลำดับ · สูงสุด 15 หน้า)</label>
+            <input type="file" id="workBookPages" class="clear-input" accept="image/*" multiple>
+            <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; display: block;">* หากไม่แนบไฟล์ ระบบจะสร้างหน้าหนังสือ A4 จำลองให้อัตโนมัติ</small>
+          </div>
+        </div>
+
+        <div class="clear-input-group">
+          <label class="clear-label" for="workDesc">คำอธิบายผลงาน</label>
+          <textarea id="workDesc" class="clear-input" rows="2" placeholder="เล่าเกี่ยวกับผลงานชิ้นนี้สั้น ๆ" required></textarea>
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
@@ -546,781 +385,13 @@
   </div>
 
   <footer class="clear-footer">
-    <p>© 2026 Project CLEAR — ระบบ CLEAR Space & AnyFlip 3D Reader</p>
+    <p>© 2026 Project CLEAR — CLEAR Space · โฟลเดอร์ผลงานและคลังอีบุ๊ก 3D</p>
   </footer>
 
-  <!-- Self-contained StPageFlip Engine -->
   <script src="../assets/js/page-flip.browser.js"></script>
+  <script src="../assets/js/student-map.js"></script>
   <script src="../assets/js/shared.js"></script>
-  <script>
-    /* =========================================================
-       A4 SVG Page Generator (Graphic-Novel Layout, 210 x 297 mm)
-       ========================================================= */
-    const A4_WIDTH_MM = 210;
-    const A4_HEIGHT_MM = 297;
-    const A4_RATIO = A4_WIDTH_MM / A4_HEIGHT_MM;
-
-    function createA4PageSVG({ isCover, title, subtitle, author, chapter, bodyTexts, verses, themeGrad, accentColor, pageNum, totalPages, iconFa }) {
-      const w = 840;
-      const h = 1188;
-
-      let content = '';
-      if (isCover) {
-        content = `
-          <rect width="${w}" height="${h}" fill="url(#coverGrad)" rx="8"/>
-          <!-- Ornate Border -->
-          <rect x="36" y="36" width="${w - 72}" height="${h - 72}" fill="none" stroke="${accentColor}" stroke-width="3" stroke-dasharray="12,6" opacity="0.45" rx="6"/>
-          <rect x="48" y="48" width="${w - 96}" height="${h - 96}" fill="none" stroke="${accentColor}" stroke-width="1.5" opacity="0.75" rx="4"/>
-          
-          <!-- Badge -->
-          <rect x="${w/2 - 130}" y="120" width="260" height="42" rx="21" fill="rgba(0,0,0,0.5)" stroke="${accentColor}" stroke-width="1.5"/>
-          <text x="${w/2}" y="147" font-family="'Sarabun', sans-serif" font-size="20" font-weight="700" fill="${accentColor}" text-anchor="middle">วรรณคดีวิจักษ์ ม.6</text>
-
-          <!-- Title -->
-          <text x="${w/2}" y="280" font-family="'Sarabun', sans-serif" font-size="52" font-weight="800" fill="#ffffff" text-anchor="middle" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.6))">${title}</text>
-          <text x="${w/2}" y="335" font-family="'Sarabun', sans-serif" font-size="26" font-weight="500" fill="#e2e8f0" text-anchor="middle">${subtitle}</text>
-
-          <!-- Center Medallion Art -->
-          <circle cx="${w/2}" cy="580" r="170" fill="rgba(0,0,0,0.4)" stroke="${accentColor}" stroke-width="4"/>
-          <circle cx="${w/2}" cy="580" r="156" fill="rgba(255,255,255,0.06)" stroke="${accentColor}" stroke-width="1" stroke-dasharray="6,4"/>
-          <text x="${w/2}" y="595" font-family="'Sarabun', sans-serif" font-size="78" fill="${accentColor}" text-anchor="middle" dominant-baseline="middle">${iconFa || '📖'}</text>
-
-          <!-- Quote Box -->
-          <rect x="100" y="800" width="${w - 200}" height="150" rx="14" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.15)"/>
-          <text x="${w/2}" y="845" font-family="'Sarabun', sans-serif" font-size="22" font-style="italic" fill="#f8fafc" text-anchor="middle">"${verses || 'ลำนำกวีสะท้อนภูมิปัญญา ถ่ายทอดสู่คอมมิกวรรณคดี'}"</text>
-          <text x="${w/2}" y="885" font-family="'Sarabun', sans-serif" font-size="18" fill="${accentColor}" text-anchor="middle">— สาระการเรียนรู้ภาษาไทย ชั้นมัธยมศึกษาปีที่ 6 —</text>
-
-          <!-- Author Info -->
-          <text x="${w/2}" y="1030" font-family="'Sarabun', sans-serif" font-size="22" font-weight="600" fill="#ffffff" text-anchor="middle">ผู้จัดทำ: ${author}</text>
-          <text x="${w/2}" y="1070" font-family="'Sarabun', sans-serif" font-size="18" fill="#94a3b8" text-anchor="middle">Project CLEAR Space • Digital Library</text>
-        `;
-      } else {
-        const bodyLines = (bodyTexts || []).map((txt, i) => `
-          <text x="75" y="${320 + (i * 44)}" font-family="'Sarabun', sans-serif" font-size="24" fill="#1e293b" line-height="1.8">${txt}</text>
-        `).join('');
-
-        const verseLines = verses ? `
-          <rect x="65" y="660" width="${w - 130}" height="240" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
-          <rect x="65" y="660" width="8" height="240" rx="4" fill="${accentColor}"/>
-          <text x="95" y="710" font-family="'Sarabun', sans-serif" font-size="22" font-weight="700" fill="${accentColor}">บทกวีและคำกลอนคัดสรร:</text>
-          <text x="95" y="760" font-family="'Sarabun', sans-serif" font-size="23" font-style="italic" fill="#0f172a">${verses}</text>
-        ` : '';
-
-        content = `
-          <rect width="${w}" height="${h}" fill="#ffffff"/>
-          <!-- Subtle Paper Texture Border -->
-          <rect x="25" y="25" width="${w - 50}" height="${h - 50}" fill="#fcfcfd" stroke="#e2e8f0" stroke-width="1.5" rx="6"/>
-          
-          <!-- Running Header -->
-          <text x="75" y="70" font-family="'Sarabun', sans-serif" font-size="17" font-weight="600" fill="#94a3b8" letter-spacing="1">PROJECT CLEAR • E-BOOK SPACE</text>
-          <text x="${w - 75}" y="70" font-family="'Sarabun', sans-serif" font-size="17" font-weight="600" fill="${accentColor}" text-anchor="end">${chapter || ''}</text>
-          <line x1="75" y1="88" x2="${w - 75}" y2="88" stroke="#e2e8f0" stroke-width="1.5"/>
-
-          <!-- Chapter Header -->
-          <rect x="75" y="130" width="8" height="48" rx="4" fill="${accentColor}"/>
-          <text x="98" y="170" font-family="'Sarabun', sans-serif" font-size="38" font-weight="800" fill="#0f172a">${title}</text>
-          <text x="98" y="215" font-family="'Sarabun', sans-serif" font-size="20" font-weight="500" fill="#64748b">${subtitle || ''}</text>
-
-          <!-- Content Body -->
-          ${bodyLines}
-          ${verseLines}
-
-          <!-- Footer / Page Number -->
-          <line x1="75" y1="${h - 85}" x2="${w - 75}" y2="${h - 85}" stroke="#e2e8f0" stroke-width="1.5"/>
-          <text x="75" y="${h - 50}" font-family="'Sarabun', sans-serif" font-size="18" fill="#94a3b8">${author}</text>
-          <text x="${w - 75}" y="${h - 50}" font-family="'Sarabun', sans-serif" font-size="19" font-weight="700" fill="#0f172a" text-anchor="end">${pageNum} / ${totalPages}</text>
-        `;
-      }
-
-      const svgString = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
-          <defs>
-            <linearGradient id="coverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              ${themeGrad}
-            </linearGradient>
-          </defs>
-          ${content}
-        </svg>
-      `;
-
-      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgString);
-    }
-
-    /* =========================================================
-       Curated Thai Literature Comic Books (8-12 Pages Each)
-       ========================================================= */
-    const BOOKS_DATA = [
-      {
-        id: 0,
-        title: "นิทานเวตาล ฉบับการ์ตูนช่อง",
-        subtitle: "ปริศนาเรื่องที่ 10 • บททดสอบปัญญาศพเวตาล",
-        author: "ม.6/1 (กลุ่มที่ 3)",
-        createdAt: "2026-10-02T10:00:00Z",
-        colorClass: "card-purple",
-        desc: "การ์ตูนเล่าเรื่องปริศนาเวตาลเรื่องที่ 10 เมื่อพระวิกรมาทิตย์ต้องตอบปัญหาศพเวตาลในป่าช้าอันมืดมิด",
-        pages: [
-          {
-            isCover: true,
-            title: "นิทานเวตาล",
-            subtitle: "ฉบับการ์ตูนช่อง • ปริศนาเรื่องที่ 10",
-            author: "ม.6/1 (กลุ่มที่ 3)",
-            themeGrad: '<stop offset="0%" stop-color="#1e1b4b"/><stop offset="60%" stop-color="#312e81"/><stop offset="100%" stop-color="#0f172a"/>',
-            accentColor: "#a5b4fc",
-            verses: "หากพระองค์ตรัสสิ่งใดออกมา แม้เพียงคำเดียว ข้าจะบินกลับสู่ต้นอโศกทันที!",
-            iconFa: "🦇"
-          },
-          {
-            title: "ตอนที่ 1: ณ ป่าช้าอันมืดมิด",
-            subtitle: "พระวิกรมาทิตย์และศพเวตาล",
-            chapter: "ฉากเปิดเรื่อง",
-            bodyTexts: [
-              "ในคืนเดือนมืดอันเงียบสงัด พระวิกรมาทิตย์และพระธรรมวัชเสด็จสู่ป่าช้า",
-              "เพื่อปลดศพเวตาลที่ห้อยอยู่บนต้นอโศกตามบัญชาของโยคีศานติศีล",
-              "เวตาลผู้มีปัญญาเฉียบแหลมรู้ทัน จึงเริ่มกล่าวเล่านิทานชวนฉงน",
-              "เพื่อล่อลวงให้พระราชาตรัสตอบและทำลายพันธสัญญาแห่งความเงียบ..."
-            ],
-            verses: "พระราชาทรงนิ่งตั้งสติ แบกศพไว้บนพระอังสาอย่างแน่วแน่",
-            pageNum: 2, totalPages: 8, accentColor: "#6366f1", author: "ม.6/1 (กลุ่มที่ 3)"
-          },
-          {
-            title: "ตอนที่ 2: สองพ่อลูกและสองแม่ลูก",
-            subtitle: "การพบกันกลางพงไพร",
-            chapter: "ปมความสัมพันธ์",
-            bodyTexts: [
-              "ท้าวยโสธรและพระโอรส เสด็จประพาสป่าจนพบรอยเท้านารีสองคู่",
-              "รอยเท้าหนึ่งเล็ก รอยเท้าหนึ่งใหญ่ ทรงตกลงสัญญากันว่า:",
-              "พระบิดาจะอภิเษกกับหญิงผู้มีรอยเท้าใหญ่ พระโอรสจะอภิเษกกับหญิงรอยเท้าเล็ก",
-              "แต่เมื่อพบตัวจริง ปรากฏว่ามารดามีเท้าเล็ก ส่วนธิดากลับมีเท้าใหญ่!"
-            ],
-            verses: "คำสัญญากลับตาลปัตร บิดาได้บุตรสาว โอรสได้มารดาเป็นชายา",
-            pageNum: 3, totalPages: 8, accentColor: "#6366f1", author: "ม.6/1 (กลุ่มที่ 3)"
-          },
-          {
-            title: "ตอนที่ 3: กำเนิดทายาทสับสน",
-            subtitle: "ปมปริศนาทวีความซับซ้อน",
-            chapter: "ปัญหาครอบครัว",
-            bodyTexts: [
-              "กาลเวลาผ่านไป ทั้งสองคู่ต่างให้กำเนิดพระโอรสและพระธิดา",
-              "สายโลหิตของทั้งสองสายเริ่มเกี่ยวพันจนยากจะอธิบาย",
-              "เวตาลจึงหยุดเล่า แล้วหันมาถามพระวิกรมาทิตย์ด้วยเสียงเย้ยหยัน:",
-              "'ข้าแต่พระราชา เด็กเหล่านั้นที่เกิดมา จะนับญาติกันอย่างไรเล่า?'"
-            ],
-            verses: "พี่น้องหรือน้าหลาน ลุงป้าหรือลูกตา ปริศนายากหยั่งถึง!",
-            pageNum: 4, totalPages: 8, accentColor: "#6366f1", author: "ม.6/1 (กลุ่มที่ 3)"
-          },
-          {
-            title: "ตอนที่ 4: ชัยชนะแห่งปัญญา",
-            subtitle: "ความเงียบคืออาวุธที่ทรงพลังที่สุด",
-            chapter: "บทสรุป",
-            bodyTexts: [
-              "พระวิกรมาทิตย์ทรงครุ่นคิด พระองค์ทรงทราบคำตอบอันซับซ้อนดี",
-              "แต่ทรงระลึกได้ถึงคำเตือนของเวตาลว่า 'หากตรัสออกมา เวตาลจะหนีไป'",
-              "พระราชาจึงทรงนิ่งสงบ ไม่ยอมเอ่ยพระวาจาแม้แต่คำเดียว",
-              "เวตาลจนด้วยปัญญา ไม่อาจหลบหนีได้อีก จึงยอมจำนนต่อพระองค์ในที่สุด!"
-            ],
-            verses: "สติคุ้มครองตน ปัญญาระงับวจี คือยอดวีรบุรุษผู้พิชิต",
-            pageNum: 5, totalPages: 8, accentColor: "#6366f1", author: "ม.6/1 (กลุ่มที่ 3)"
-          },
-          {
-            title: "ถอดบทเรียน: คุณค่าทางวรรณศิลป์",
-            subtitle: "การวิเคราะห์โครงเรื่องและอุบายวรรณคดี",
-            chapter: "บทวิจักษ์",
-            bodyTexts: [
-              "1. โครงเรื่องซ้อนโครงเรื่อง (Frame Story) สร้างความน่าติดตามอย่างชาญฉลาด",
-              "2. การประลองปัญญาสอนเรื่องการยับยั้งชั่งใจและการรักษาคำมั่นสัญญา",
-              "3. สะท้อนให้เห็นว่า 'การพูดมีค่าดั่งเงิน แต่ความนิ่งเงียบในกาลที่ควรมีค่าดั่งทองคำ'",
-              "4. กิจกรรมโครงงานการ์ตูนช่องภาษาไทย ม.6 โรงเรียนพัฒนาการเรียนรู้"
-            ],
-            verses: "นิทานเวตาล พระราชนิพนธ์ กรมหมื่นพิทยาลงกรณ์ (น.ม.ส.)",
-            pageNum: 6, totalPages: 8, accentColor: "#6366f1", author: "ม.6/1 (กลุ่มที่ 3)"
-          }
-        ]
-      },
-      {
-        id: 1,
-        title: "พระอภัยมณี ตอนศึกเก้าทัพ",
-        subtitle: "ภาพประกอบโคลงกลอน • เสียงปี่สะท้านคลื่นสมุทร",
-        author: "ม.6/2 (กลุ่มที่ 1)",
-        createdAt: "2026-10-01T14:30:00Z",
-        colorClass: "card-green",
-        desc: "ภาพวาดประกอบโคลงกลอนสุนทรภู่ ฉากกองทัพเมืองผลึกประจันบาน และอานุภาพเสียงปี่แก้ว",
-        pages: [
-          {
-            isCover: true,
-            title: "พระอภัยมณี",
-            subtitle: "ตอน ศึกเก้าทัพ & เสียงปี่สะท้านคลื่น",
-            author: "ม.6/2 (กลุ่มที่ 1)",
-            themeGrad: '<stop offset="0%" stop-color="#064e3b"/><stop offset="60%" stop-color="#047857"/><stop offset="100%" stop-color="#022c22"/>',
-            accentColor: "#6ee7b7",
-            verses: "พระโหยหวนครวญเพลงวังเวงจิต ให้คนคิดถึงถิ่นถวิลหวัง",
-            iconFa: "🪈"
-          },
-          {
-            title: "บทที่ 1: กองทัพประจัญบาน",
-            subtitle: "การศึกเมืองผลึกอันดุเดือด",
-            chapter: "สมรภูมิรบ",
-            bodyTexts: [
-              "กองเรือทัพศัตรูเข้าล้อมประชิด พระอภัยมณีทรงนำปี่แก้ววิเศษขึ้นประทับ",
-              "บนยอดเนินสูงริมฝั่ง ทรงสูดลมปราณเข้าสู่ทรวงอกลึก",
-              "ก่อนจะเริ่มบรรเลงเพลงปี่มนตราที่ไม่มีผู้ใดในสามโลกต้านทานได้",
-              "เสียงดนตรีสะท้อนผิวน้ำ กังวานไปทั่วผืนมหาสมุทรอันกว้างใหญ่..."
-            ],
-            verses: "วังเวงจิตคิดถึงถิ่นถวิลหวัง โอ้จากเรือนเหมือนนกที่พลัดรัง",
-            pageNum: 2, totalPages: 6, accentColor: "#10b981", author: "ม.6/2 (กลุ่มที่ 1)"
-          },
-          {
-            title: "บทที่ 2: มนต์สะกดแห่งเสียงดนตรี",
-            subtitle: "ไพร่พลหลับใหลไร้การต่อสู้",
-            chapter: "อานุภาพปี่แก้ว",
-            bodyTexts: [
-              "ทหารหาญนับหมื่นที่กำอาวุธแน่น เริ่มรู้สึกเคลิบเคลิ้มอ่อนเปลี้ย",
-              "ดาบและหอกหลุดจากมือ ทหารต่างทรุดตัวลงนอนหลับใหลไปทั้งกองทัพ",
-              "สุนทรภู่แสดงให้เห็นถึงอำนาจของ 'ศิลปะและดนตรี' ที่เหนือกว่าศาสตราวุธ",
-              "ชัยชนะที่ได้มาโดยไม่ต้องหลั่งเลือดแม้แต่หยดเดียว!"
-            ],
-            verses: "ทั้งไพร่พลหลับทับกันสลอน ไร้อาวุธรอนรานผลาญชีวา",
-            pageNum: 3, totalPages: 6, accentColor: "#10b981", author: "ม.6/2 (กลุ่มที่ 1)"
-          },
-          {
-            title: "บทที่ 3: ข้อคิดวรรณกรรม",
-            subtitle: "สันติวิธีและสุนทรียศาสตร์ของสุนทรภู่",
-            chapter: "บทสรุปคุณค่า",
-            bodyTexts: [
-              "วรรณคดีชิ้นเอกของกวีเอกสุนทรภู่ ได้รับการยกย่องจาก UNESCO",
-              "สะท้อนคุณธรรมเรื่องการเจรจาและการใช้ปัญญามากกว่ากำลัง",
-              "ภาพวาดประกอบชุดนี้สร้างสรรค์โดยนักเรียนชั้น ม.6/2 แผนกศิลป์-ภาษา",
-              "ผลงานบูรณาการวิชาภาษาไทยและศิลปกรรมดิจิทัล 2569"
-            ],
-            verses: "สดุดีครูกลอนสุนทรภู่ ผู้สร้างตำนานแห่งจินตนาการไทย",
-            pageNum: 4, totalPages: 6, accentColor: "#10b981", author: "ม.6/2 (กลุ่มที่ 1)"
-          }
-        ]
-      },
-      {
-        id: 2,
-        title: "มัทนะพาธา ตำนานดอกกุหลาบ",
-        subtitle: "บทละครพูดคำฉันท์ • พระราชนิพนธ์ ร.6",
-        author: "ม.6/5 (กลุ่มที่ 4)",
-        createdAt: "2026-09-30T09:15:00Z",
-        colorClass: "card-pink",
-        desc: "บทละครพูดคำฉันท์ วรรณคดีพระราชนิพนธ์ ร.6 ถ่ายทอดเป็นคอมมิกมังงะ ความเจ็บปวดแห่งรักแท้",
-        pages: [
-          {
-            isCover: true,
-            title: "มัทนะพาธา",
-            subtitle: "ตำนานแห่งดอกกุหลาบ • มังงะคอมมิก",
-            author: "ม.6/5 (กลุ่มที่ 4)",
-            themeGrad: '<stop offset="0%" stop-color="#831843"/><stop offset="60%" stop-color="#be185d"/><stop offset="100%" stop-color="#500724"/>',
-            accentColor: "#fbcfe8",
-            verses: "ความรักเหมือนโรคา บันดาลตาให้มืดมน ไม่ยินและไม่ยล อุปสัคคะใดใด",
-            iconFa: "🌹"
-          },
-          {
-            title: "องก์ที่ 1: แดนสวรรค์และคำปฏิเสธ",
-            subtitle: "สุเทษณ์เทพบุตรและนางฟ้ามัทนา",
-            chapter: "จุดกำเนิดคำสาป",
-            bodyTexts: [
-              "สุเทษณ์เทพบุตรทรงหลงรักนางฟ้ามัทนาอย่างยิ่ง แต่เมื่อตรัสถามความรัก",
-              "มัทนานางฟ้าผู้ซื่อตรงต่อหัวใจตนเองได้ทูลตอบอย่างสุภาพว่า:",
-              "'หม่อมฉันมิอาจปดว่ารัก ในเมื่อใจมิได้มีรักต่อพระองค์'",
-              "ความพิโรธทำให้สุเทษณ์สาปให้นางจุติลงไปเป็นดอกไม้ในโลกมนุษย์..."
-            ],
-            verses: "ไม่อาจรักตอบได้ หากใจไร้ซึ่งเสน่หา แม้เป็นเทพบุตรผู้ยิ่งใหญ่",
-            pageNum: 2, totalPages: 6, accentColor: "#ec4899", author: "ม.6/5 (กลุ่มที่ 4)"
-          },
-          {
-            title: "องก์ที่ 2: กำเนิดดอกกุพชกะ",
-            subtitle: "ดอกไม้ที่มีหนามแหลมคมแต่กลิ่นหอม",
-            chapter: "ตำนานดอกกุหลาบ",
-            bodyTexts: [
-              "มัทนาเลือกเกิดเป็น 'ดอกกุพชกะ' (ดอกกุหลาบ) ซึ่งจะกลายร่างเป็นมนุษย์",
-              "ได้เฉพาะในคืนวันเพ็ญเพียงคืนเดียวเท่านั้น ยกเว้นแต่จะมีความรักแท้",
-              "ดอกกุหลาบจึงเป็นตัวแทนของความรักที่งดงาม หอมหวาน",
-              "แต่ทว่าแฝงไปด้วยหนามแหลมคมอันเป็นเครื่องเตือนใจถึงความเจ็บปวด"
-            ],
-            verses: "ความรักที่แท้จริงคือความบริสุทธิ์ มิอาจบังคับครอบครองได้",
-            pageNum: 3, totalPages: 6, accentColor: "#ec4899", author: "ม.6/5 (กลุ่มที่ 4)"
-          },
-          {
-            title: "บทวิเคราะห์: คุณค่าเชิงปรัชญา",
-            subtitle: "ความรักคือความเสียสละ มิใช่การผูกขาด",
-            chapter: "บทสรุปคุณค่า",
-            bodyTexts: [
-              "พระบาทสมเด็จพระมงกุฎเกล้าเจ้าอยู่หัวทรงพระราชนิพนธ์ด้วยฉันท์หลากหลายชนิด",
-              "แสดงให้เห็นว่าความรักที่เกิดจากตัณหาความอยากได้ ย่อมนำมาซึ่งความทุกข์ระทม",
-              "ผลงานการ์ตูนช่องของกลุ่ม 4 ม.6/5 ถ่ายทอดภาพวาดสไตล์นีโอคลาสสิก",
-              "ได้รับรางวัลผลงานสร้างสรรค์ดีเด่นประจำห้องเรียน CLEAR"
-            ],
-            verses: "วรรณคดีสโมสรยกย่องให้เป็นยอดแห่งบทละครพูดคำฉันท์",
-            pageNum: 4, totalPages: 6, accentColor: "#ec4899", author: "ม.6/5 (กลุ่มที่ 4)"
-          }
-        ]
-      },
-      {
-        id: 3,
-        title: "กาพย์เห่เรือ ลำนำสายน้ำ",
-        subtitle: "เจ้าฟ้าธรรมาธิเบศร์ (เจ้าฟ้ากุ้ง) • ขบวนพยุหยาตรา",
-        author: "ม.6/8 (กลุ่มที่ 2)",
-        createdAt: "2026-09-28T16:00:00Z",
-        colorClass: "card-blue",
-        desc: "รวบรวมภาพประกอบขบวนพยุหยาตราและเห่ชมปลา ชมไม้ ชมนก พร้อมคำแปลและเสียงสัมผัสกวี",
-        pages: [
-          {
-            isCover: true,
-            title: "กาพย์เห่เรือ",
-            subtitle: "ลำนำสายน้ำเจ้าพระยา • มนต์กวีอยุธยา",
-            author: "ม.6/8 (กลุ่มที่ 2)",
-            themeGrad: '<stop offset="0%" stop-color="#0c4a6e"/><stop offset="60%" stop-color="#0284c7"/><stop offset="100%" stop-color="#082f49"/>',
-            accentColor: "#7dd3fc",
-            verses: "สุวรรณหงส์ทรงพู่ห้อย งามชดช้อยลอยหลังสินธุ์ เพียงหงส์ทรงพรหมินทร์ ลินลาศเลื่อนเตือนตาชม",
-            iconFa: "⛵"
-          },
-          {
-            title: "บทเห่ชมเรือกระบวน",
-            subtitle: "ความงดงามแห่งขบวนชลมารค",
-            chapter: "พยุหยาตรา",
-            bodyTexts: [
-              "ปางเสด็จประเวศด้าว ชลมารค ทรงเรือต้นงามเฉิดฉาย กิ่งแก้วแพร้วพรรณราย",
-              "เรือครุฑยุดนาคหิ้ว ลิ่วลอยมาในสาคร พายอ่อนหยับจับงามงอน สลอนสาครลั่นครั่นครื้นฟอง",
-              "กวีบรรยายภาพขบวนเรือพระที่นั่งได้อย่างวิจิตรอลังการ",
-              "เสียงฝีพายและบทขับเห่สอดรับกันเป็นจังหวะสะกดใจผู้ฟัง..."
-            ],
-            verses: "นาวาแน่นเป็นขนัด ล้วนรูปสัตว์แสนยากร เรือริ้วทิวธงสลอน",
-            pageNum: 2, totalPages: 6, accentColor: "#0284c7", author: "ม.6/8 (กลุ่มที่ 2)"
-          },
-          {
-            title: "บทเห่ชมปลาและสายนที",
-            subtitle: "ธรรมชาติอันรื่นรมย์และความคำนึง",
-            chapter: "สุนทรียภาพธรรมชาติ",
-            bodyTexts: [
-              "พิศพรรณปลาว่ายเคล้า คลึงกัน ถวิลสุดาบพิตรพลัน สวาทเศร้า",
-              "นวลจันทร์เป็นนวลจริง เจ้างามพริ้งยิ่งนวลปลา คางเบือนเบือนหน้ามา ไม่งามเท่าเจ้าเบือนชาย",
-              "กวีใช้การเล่นคำพ้องเสียงเปรียบเทียบชื่อปลากับหญิงที่รัก",
-              "ถ่ายทอดอารมณ์ความเหงาและความคิดถึงออกมาได้อย่างประณีตยิ่ง"
-            ],
-            verses: "มัสยาน่าชมชื่น แหวกว่ายคลื่นในคงคา ดั่งใจคิดถึงกานดา",
-            pageNum: 3, totalPages: 6, accentColor: "#0284c7", author: "ม.6/8 (กลุ่มที่ 2)"
-          },
-          {
-            title: "บทสรุป: คุณค่าทางวรรณศิลป์",
-            subtitle: "แบบแผนการขับเห่เรือหลวงแห่งกรุงรัตนโกสินทร์",
-            chapter: "มรดกวัฒนธรรม",
-            bodyTexts: [
-              "กาพย์เห่เรือของเจ้าฟ้ากุ้ง เป็นต้นแบบแห่งการเห่เรือพระราชพิธีจนถึงปัจจุบัน",
-              "โดดเด่นด้วยการใช้สัมผัสสระและสัมผัสอักษรอย่างแพรวพราว",
-              "ทีมงานนักเรียน ม.6/8 ได้นำภาพเรือพระราชพิธีจำลองมาผสานเข้ากับตัวอักษรไทย",
-              "เปิดอ่านเสมือนได้ร่วมล่องเรือชมลำน้ำแห่งประวัติศาสตร์"
-            ],
-            verses: "มรดกวรรณคดีไทยอันล้ำค่า คู่สายน้ำเจ้าพระยาตลอดกาล",
-            pageNum: 4, totalPages: 6, accentColor: "#0284c7", author: "ม.6/8 (กลุ่มที่ 2)"
-          }
-        ]
-      }
-    ];
-
-    /* =========================================================
-       State & Preloading Engine
-       ========================================================= */
-    let currentBookIndex = 0;
-    let flipInstance = null;
-    let isFullscreen = false;
-    let preloadedCache = {};
-
-    // Relative Time Helper in Thai (from Raminest spec)
-    function formatRelativeTimeTH(dateStr) {
-      if (!dateStr) return '';
-      const d = new Date(dateStr);
-      const now = new Date();
-      const diffMs = now - d;
-      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-      if (diffDays === 0) return 'วันนี้';
-      if (diffDays === 1) return 'เมื่อวาน';
-      if (diffDays < 7) return `${diffDays} วันที่แล้ว`;
-      if (diffDays < 30) return `${Math.floor(diffDays / 7)} สัปดาห์ที่แล้ว`;
-      return `${Math.floor(diffDays / 30)} เดือนที่แล้ว`;
-    }
-
-    // Convert book pages to array of high-res image URLs
-    function getBookPageUrls(book) {
-      if (!book) return [];
-      return book.pages.map((p, idx) => {
-        if (p.url) return p.url;
-        // Generate SVG Data URI
-        return createA4PageSVG({
-          isCover: p.isCover || idx === 0,
-          title: p.title || book.title,
-          subtitle: p.subtitle || book.subtitle,
-          author: p.author || book.author,
-          chapter: p.chapter || '',
-          bodyTexts: p.bodyTexts || [],
-          verses: p.verses || '',
-          themeGrad: p.themeGrad || '<stop offset="0%" stop-color="#1e1b4b"/><stop offset="100%" stop-color="#0f172a"/>',
-          accentColor: p.accentColor || '#10b981',
-          pageNum: idx + 1,
-          totalPages: book.pages.length,
-          iconFa: p.iconFa || '📖'
-        });
-      });
-    }
-
-    // Preload book pages into browser memory on Hover / Touch
-    function preloadBook(index) {
-      if (preloadedCache[index]) return;
-      const book = BOOKS_DATA[index];
-      if (!book) return;
-      const urls = getBookPageUrls(book);
-      urls.forEach(u => {
-        const img = new Image();
-        img.src = u;
-      });
-      preloadedCache[index] = urls;
-    }
-
-    /* =========================================================
-       Render Wall / Grid of Books
-       ========================================================= */
-    function renderPostGrid() {
-      const grid = document.getElementById('spacePostGrid');
-      grid.innerHTML = '';
-
-      BOOKS_DATA.forEach((b, idx) => {
-        // Pre-generate cover URL
-        const coverUrl = b.pages[0].url || createA4PageSVG({
-          isCover: true,
-          title: b.pages[0].title || b.title,
-          subtitle: b.pages[0].subtitle || b.subtitle,
-          author: b.author,
-          themeGrad: b.pages[0].themeGrad || '<stop offset="0%" stop-color="#1e1b4b"/><stop offset="100%" stop-color="#0f172a"/>',
-          accentColor: b.pages[0].accentColor || '#10b981',
-          verses: b.pages[0].verses || '',
-          iconFa: b.pages[0].iconFa || '📖'
-        });
-
-        const card = document.createElement('div');
-        card.className = `space-post-card ${b.colorClass || ''}`;
-        card.innerHTML = `
-          <button type="button" class="book-cover" onclick="openReader(${idx})" onmouseenter="preloadBook(${idx})" onfocus="preloadBook(${idx})" ontouchstart="preloadBook(${idx})" title="คลิกเพื่อเปิดอ่าน ${b.title}">
-            <img src="${coverUrl}" alt="${b.title}" loading="lazy" />
-            <span class="book-cover-hint">📖 ${b.pages.length} หน้า</span>
-          </button>
-          
-          <div class="card-meta-row">
-            <span><i class="fa-solid fa-graduation-cap"></i> ${b.author}</span>
-            <span>${formatRelativeTimeTH(b.createdAt)}</span>
-          </div>
-
-          <h3 class="card-title">${b.title}</h3>
-          <p class="card-excerpt">${b.desc || b.subtitle}</p>
-
-          <div class="card-footer-row">
-            <button type="button" class="read-now-btn" onclick="openReader(${idx})" onmouseenter="preloadBook(${idx})">
-              <span>เปิดอ่าน E-Book</span> <i class="fa-solid fa-arrow-right"></i>
-            </button>
-            <span style="color: var(--text-dim); font-size: 0.72rem;">
-              <i class="fa-regular fa-heart" style="color: #ec4899;"></i> 24
-            </span>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-
-      document.getElementById('bookCountBadge').textContent = `ผลงานทั้งหมด: ${BOOKS_DATA.length} เล่ม`;
-    }
-
-    /* =========================================================
-       AnyFlip Real 3D Book Viewer Implementation
-       ========================================================= */
-    function openReader(bookIndex) {
-      currentBookIndex = bookIndex;
-      const book = BOOKS_DATA[bookIndex];
-      if (!book) return;
-
-      document.getElementById('readerBookTitle').textContent = `${book.title} — ${book.author}`;
-      const backdrop = document.getElementById('anyFlipReader');
-      backdrop.classList.add('open');
-
-      // Setup swipe hint animation & auto-fade
-      const hint = document.getElementById('swipeHint');
-      hint.classList.remove('fade-out');
-      hint.style.display = 'flex';
-      setTimeout(() => hint.classList.add('fade-out'), 3500);
-
-      // Mount PageFlip
-      setupPageFlip(book);
-    }
-
-    function closeReader() {
-      const backdrop = document.getElementById('anyFlipReader');
-      backdrop.classList.remove('open');
-      if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
-      }
-      if (flipInstance) {
-        flipInstance.destroy();
-        flipInstance = null;
-      }
-      document.getElementById('flipContainer').innerHTML = '';
-    }
-
-    function setupPageFlip(book) {
-      const container = document.getElementById('flipContainer');
-      const stageFrame = document.getElementById('stageFrame');
-      const spineShadow = document.getElementById('spineShadow');
-      const loading = document.getElementById('readerLoading');
-
-      container.innerHTML = '';
-      loading.style.display = 'grid';
-
-      // Check responsiveness 결정
-      const isDesktop = window.innerWidth >= 768;
-      if (isDesktop) {
-        stageFrame.classList.add('spread');
-        spineShadow.style.display = 'block';
-      } else {
-        stageFrame.classList.remove('spread');
-        spineShadow.style.display = 'none';
-      }
-
-      const rect = stageFrame.getBoundingClientRect();
-      let pageWidth, pageHeight;
-
-      if (isDesktop) {
-        // Two-page spread: each single page takes half of width
-        pageWidth = Math.floor((rect.width - 28) / 2);
-        pageHeight = Math.floor(pageWidth / A4_RATIO);
-        if (pageHeight > rect.height - 28) {
-          pageHeight = Math.floor(rect.height - 28);
-          pageWidth = Math.floor(pageHeight * A4_RATIO);
-        }
-      } else {
-        // Single portrait page on phone
-        pageWidth = Math.floor(rect.width - 24);
-        pageHeight = Math.floor(pageWidth / A4_RATIO);
-        if (pageHeight > rect.height - 24) {
-          pageHeight = Math.floor(rect.height - 24);
-          pageWidth = Math.floor(pageHeight * A4_RATIO);
-        }
-      }
-
-      pageWidth = Math.max(160, Math.min(600, pageWidth));
-      pageHeight = Math.max(226, Math.min(850, pageHeight));
-
-      const mount = document.createElement('div');
-      mount.style.width = '100%';
-      mount.style.height = '100%';
-      container.appendChild(mount);
-
-      const urls = preloadedCache[currentBookIndex] || getBookPageUrls(book);
-
-      try {
-        if (window.St && window.St.PageFlip) {
-          flipInstance = new window.St.PageFlip(mount, {
-            width: pageWidth,
-            height: pageHeight,
-            size: 'stretch',
-            minWidth: 160,
-            maxWidth: 600,
-            minHeight: Math.round(160 / A4_RATIO),
-            maxHeight: Math.round(600 / A4_RATIO),
-            showCover: true,
-            maxShadowOpacity: 0.5,
-            mobileScrollSupport: false,
-            usePortrait: !isDesktop
-          });
-
-          flipInstance.on('flip', (e) => {
-            const currentPg = typeof e.data === 'number' ? e.data : 0;
-            updateControlsState(currentPg, urls.length);
-            // Hide swipe hint once user flips
-            const hint = document.getElementById('swipeHint');
-            if (currentPg > 0 && hint) hint.classList.add('fade-out');
-          });
-
-          flipInstance.on('init', () => {
-            loading.style.display = 'none';
-          });
-
-          flipInstance.loadFromImages(urls);
-          updateControlsState(0, urls.length);
-        } else {
-          // Fallback if library failed to load
-          loading.innerHTML = '<span style="color:#fca5a5;">กำลังโหลดไลบรารี 3D Flip...</span>';
-        }
-      } catch (err) {
-        console.error('PageFlip Error:', err);
-        loading.innerHTML = '<span style="color:#fca5a5;">ไม่สามารถแสดงผล 3D ได้: ' + err.message + '</span>';
-      }
-    }
-
-    function flipPrev() {
-      if (flipInstance) flipInstance.flipPrev();
-    }
-
-    function flipNext() {
-      if (flipInstance) flipInstance.flipNext();
-    }
-
-    function updateControlsState(pageIndex, totalPages) {
-      document.getElementById('readerPageCounter').textContent = `หน้า ${pageIndex + 1} / ${totalPages}`;
-      const prevBtn = document.getElementById('prevPageBtn');
-      const nextBtn = document.getElementById('nextPageBtn');
-      if (prevBtn) prevBtn.disabled = (pageIndex <= 0);
-      if (nextBtn) nextBtn.disabled = (pageIndex >= totalPages - 1);
-    }
-
-    // Fullscreen Toggle (HTML5 Fullscreen API)
-    function toggleReaderFullscreen() {
-      const reader = document.getElementById('anyFlipReader');
-      const fsIcon = document.getElementById('fsIcon');
-      const ctrlFsBtn = document.getElementById('ctrlFsBtn');
-
-      if (!document.fullscreenElement) {
-        reader.requestFullscreen().then(() => {
-          isFullscreen = true;
-          if (fsIcon) fsIcon.className = 'fa-solid fa-compress';
-          if (ctrlFsBtn) ctrlFsBtn.innerHTML = '<i class="fa-solid fa-compress" style="font-size: 0.95rem;"></i>';
-          setTimeout(() => { if (flipInstance) flipInstance.update(); }, 200);
-        }).catch(() => {});
-      } else {
-        document.exitFullscreen().then(() => {
-          isFullscreen = false;
-          if (fsIcon) fsIcon.className = 'fa-solid fa-expand';
-          if (ctrlFsBtn) ctrlFsBtn.innerHTML = '<i class="fa-solid fa-expand" style="font-size: 0.95rem;"></i>';
-          setTimeout(() => { if (flipInstance) flipInstance.update(); }, 200);
-        }).catch(() => {});
-      }
-    }
-
-    document.addEventListener('fullscreenchange', () => {
-      isFullscreen = !!document.fullscreenElement;
-      const fsIcon = document.getElementById('fsIcon');
-      const ctrlFsBtn = document.getElementById('ctrlFsBtn');
-      if (fsIcon) fsIcon.className = isFullscreen ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
-      if (ctrlFsBtn) ctrlFsBtn.innerHTML = isFullscreen ? '<i class="fa-solid fa-compress" style="font-size: 0.95rem;"></i>' : '<i class="fa-solid fa-expand" style="font-size: 0.95rem;"></i>';
-    });
-
-    // Keyboard Shortcuts for Reader
-    window.addEventListener('keydown', (e) => {
-      const reader = document.getElementById('anyFlipReader');
-      if (!reader.classList.contains('open')) return;
-
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        flipNext();
-      } else if (e.key === 'ArrowLeft') {
-        flipPrev();
-      } else if (e.key === 'Escape') {
-        closeReader();
-      }
-    });
-
-    /* =========================================================
-       Compose / Upload New Book Modal
-       ========================================================= */
-    function openComposeModal() {
-      document.getElementById('composeModal').classList.add('open');
-    }
-
-    function closeComposeModal() {
-      document.getElementById('composeModal').classList.remove('open');
-    }
-
-    async function handleComposeSubmit(e) {
-      e.preventDefault();
-      const title = document.getElementById('bookName').value.trim();
-      const author = document.getElementById('authorName').value.trim();
-      const desc = document.getElementById('bookDesc').value.trim();
-      const fileInput = document.getElementById('bookImages');
-      const selectedColor = document.querySelector('input[name="cardColor"]:checked')?.value || '';
-
-      const newPages = [];
-
-      if (fileInput.files && fileInput.files.length > 0) {
-        // Read uploaded images as Data URLs
-        for (let i = 0; i < fileInput.files.length; i++) {
-          const file = fileInput.files[i];
-          const dataUrl = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (ev) => resolve(ev.target.result);
-            reader.readAsDataURL(file);
-          });
-          newPages.push({
-            url: dataUrl,
-            isCover: i === 0,
-            title: i === 0 ? title : `หน้า ${i + 1}`,
-            subtitle: desc,
-            author: author
-          });
-        }
-      } else {
-        // Generate simulated A4 literary pages
-        newPages.push({
-          isCover: true,
-          title: title,
-          subtitle: desc || 'ผลงานสร้างสรรค์วิชาภาษาไทย',
-          author: author,
-          themeGrad: '<stop offset="0%" stop-color="#064e3b"/><stop offset="60%" stop-color="#047857"/><stop offset="100%" stop-color="#022c22"/>',
-          accentColor: '#10b981',
-          verses: 'สร้างสรรค์วรรณกรรมดิจิทัล สานศิลป์ภาษาไทย ม.6',
-          iconFa: '✨'
-        });
-        for (let p = 2; p <= 6; p++) {
-          newPages.push({
-            title: `บทที่ ${p - 1}: เนื้อหาผลงาน`,
-            subtitle: `บันทึกการเรียนรู้โดย ${author}`,
-            chapter: `ส่วนที่ ${p - 1}`,
-            bodyTexts: [
-              `นี่คือหน้าเนื้อหาที่ ${p} ของผลงานเรื่อง "${title}"`,
-              `จัดทำโดยนักเรียน ${author} ชั้นมัธยมศึกษาปีที่ 6`,
-              `สามารถเปิดพลิกอ่านด้วยเอฟเฟกต์ 3D ราวกับหนังสือกระดาษจริง`,
-              `นักเรียนสามารถแนบภาพวาดหรือคอมมิกของตนเองได้ไม่จำกัดจำนวนหน้า`
-            ],
-            verses: 'ความรู้คู่คุณธรรม นำวรรณคดีสู่ยุคดิจิทัล',
-            pageNum: p,
-            totalPages: 6,
-            accentColor: '#10b981',
-            author: author
-          });
-        }
-      }
-
-      const newBook = {
-        id: BOOKS_DATA.length,
-        title: title,
-        subtitle: desc || 'ผลงานใหม่ล่าสุด',
-        author: author,
-        desc: desc,
-        createdAt: new Date().toISOString(),
-        colorClass: selectedColor,
-        pages: newPages
-      };
-
-      BOOKS_DATA.unshift(newBook);
-      renderPostGrid();
-      closeComposeModal();
-
-      if (window.showToast) {
-        showToast(`เพิ่มผลงาน "${title}" เรียบร้อยแล้ว!`, 'success');
-      }
-
-      // Automatically open the newly created book
-      setTimeout(() => openReader(0), 400);
-    }
-
-    /* =========================================================
-       Initialization & Standalone URL Check (?book=<id>)
-       ========================================================= */
-    document.addEventListener('DOMContentLoaded', () => {
-      renderPostGrid();
-
-      // Check if URL has standalone parameter: ?book=0
-      const params = new URLSearchParams(window.location.search);
-      if (params.has('book')) {
-        const bookIdx = parseInt(params.get('book'), 10);
-        if (!isNaN(bookIdx) && bookIdx >= 0 && bookIdx < BOOKS_DATA.length) {
-          setTimeout(() => openReader(bookIdx), 300);
-        }
-      }
-    });
-  </script>
+  <script src="space-data.js"></script>
+  <script src="space.js"></script>
 </body>
 </html>
