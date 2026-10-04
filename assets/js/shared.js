@@ -46,6 +46,13 @@ function showToast(message, type = 'info', title = '') {
 }
 
 // ── Theme Manager ──
+function toggleTheme() {
+  document.body.classList.toggle('dark-mode');
+  const isDark = document.body.classList.contains('dark-mode');
+  try { localStorage.setItem('clear_theme', isDark ? 'dark' : 'light'); } catch (e) {}
+  updateThemeIcon();
+}
+
 function initTheme() {
   const saved = localStorage.getItem('clear_theme');
   if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -54,12 +61,10 @@ function initTheme() {
 
   const toggleBtn = document.getElementById('themeToggleBtn');
   if (toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-      document.body.classList.toggle('dark-mode');
-      const isDark = document.body.classList.contains('dark-mode');
-      localStorage.setItem('clear_theme', isDark ? 'dark' : 'light');
-      updateThemeIcon();
-    });
+    // Avoid double-toggling when a page already wires onclick="toggleTheme()".
+    if (!toggleBtn.hasAttribute('onclick')) {
+      toggleBtn.addEventListener('click', toggleTheme);
+    }
     updateThemeIcon();
   }
 }
@@ -133,7 +138,10 @@ function copyTextToClipboard(text) {
   });
 }
 
-// ── Integrated Activity Modal (full-screen overlay / single workspace) ──
+// ── Integrated Activity Modal (full-screen, frameless single workspace) ──
+// NOTE: The old dark top bar with the red "ปิดหน้าต่าง" button was removed by
+// design. Closing is handled by each sub-app's own navbar "หน้าหลัก" button
+// (returnToScores -> CLOSE_WORKSPACE_MODAL), by Esc, or by the parent page.
 function openClearActivityModal(url, title = 'กิจกรรมการเรียนรู้') {
   let overlay = document.getElementById('clearActivityOverlay');
   if (!overlay) {
@@ -141,16 +149,6 @@ function openClearActivityModal(url, title = 'กิจกรรมการเ�
     overlay.id = 'clearActivityOverlay';
     overlay.className = 'clear-activity-overlay';
     overlay.innerHTML = `
-      <div class="clear-activity-bar">
-        <div class="clear-activity-bar-title">
-          <i class="fa-solid fa-graduation-cap"></i>
-          <span id="clearActivityTitle"></span>
-        </div>
-        <button type="button" class="clear-btn clear-activity-close" onclick="closeClearActivityModal()">
-          <i class="fa-solid fa-xmark"></i>
-          <span>ปิดหน้าต่าง / กลับสู่คะแนนของฉัน</span>
-        </button>
-      </div>
       <div class="clear-activity-frame">
         <iframe id="clearActivityFrame" title="กิจกรรมการเรียนรู้" allow="camera; microphone; fullscreen; clipboard-write" allowfullscreen></iframe>
       </div>
@@ -158,9 +156,7 @@ function openClearActivityModal(url, title = 'กิจกรรมการเ�
     document.body.appendChild(overlay);
   }
 
-  const titleEl = document.getElementById('clearActivityTitle');
   const frame = document.getElementById('clearActivityFrame');
-  if (titleEl) titleEl.textContent = title;
   if (frame) frame.src = url;
 
   document.body.classList.add('clear-modal-open');
@@ -176,6 +172,47 @@ function closeClearActivityModal() {
   if (frame) {
     setTimeout(() => { frame.src = 'about:blank'; }, 250);
   }
+}
+
+// ── Standard sub-app navigation (used by every sub-app navbar "หน้าหลัก") ──
+const CLEAR_ROOM_SLUGS = {
+  '6/1': '61-k9f2', '6/2': '62-m4x7', '6/5': '65-w1c8', '6/5 Add': '65a-j4d9',
+  '6/6': '66-k8n3', '6/7': '67-s5e6', '6/8': '68-p7y2', '6/9': '69-h3m5'
+};
+
+function clearResolveRoomSlug(value) {
+  if (!value) return '';
+  const v = String(value).trim();
+  const slugs = Object.values(CLEAR_ROOM_SLUGS);
+  if (slugs.indexOf(v) !== -1) return v;
+  return CLEAR_ROOM_SLUGS[v] || '';
+}
+
+function returnToScores() {
+  // 1) Opened inside the classroom workspace modal -> ask the parent to close it.
+  if (window.parent && window.parent !== window) {
+    try { window.parent.postMessage({ type: 'CLOSE_WORKSPACE_MODAL' }, '*'); } catch (e) {}
+    return;
+  }
+  // 2) Standalone: return to this student's own room score page (never the login page).
+  let raw = null;
+  try { raw = localStorage.getItem('clear_current_room'); } catch (e) {}
+  if (!raw) {
+    try { raw = new URLSearchParams(window.location.search).get('room'); } catch (e) {}
+  }
+  const slug = clearResolveRoomSlug(raw);
+  if (slug) { window.location.href = '../rooms/' + slug + '/'; return; }
+
+  // 3) Recover the room from the student code when available.
+  try {
+    const code = new URLSearchParams(window.location.search).get('code');
+    if (code && typeof window.findRoomByStudentCode === 'function') {
+      const rec = window.findRoomByStudentCode(code);
+      if (rec && rec.slug) { window.location.href = '../rooms/' + rec.slug + '/'; return; }
+    }
+  } catch (e) {}
+
+  if (typeof showToast === 'function') showToast('กรุณาเปิดใช้งานจากหน้าห้องเรียนของคุณ', 'warning');
 }
 
 // ── Init on load ──

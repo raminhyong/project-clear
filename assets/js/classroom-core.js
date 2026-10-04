@@ -411,6 +411,10 @@ async function renderStudentDashboard(config, student, fullData) {
         ${taskRowsHtml}
       </div>
     </div>
+
+    <footer class="clear-footer">
+      <p>© 2026 Project CLEAR — รายวิชาภาษาไทย ครูรามิล ปัญญพัทธ์</p>
+    </footer>
   `;
 
   // Bind activity hub buttons to the integrated full-screen modal

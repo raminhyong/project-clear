@@ -268,19 +268,19 @@
   <header class="clear-navbar">
     <div class="clear-nav-inner">
       <div class="brand-badge">
-        <a href="#" onclick="goHome(); return false;" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
           <div class="brand-logo-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-book-open"></i></div>
           <span>CLEAR Space</span>
-        </a>
+        </div>
       </div>
       <nav class="nav-links">
-        <button class="nav-btn" onclick="goHome()" title="กลับหน้าคะแนนของฉัน">
+        <button class="nav-btn" onclick="returnToScores()" title="กลับหน้าคะแนนของฉัน">
           <i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span>
         </button>
         <button class="nav-btn" onclick="logoutStudent()" title="ออกจากระบบ" style="color: var(--brand-rose);">
           <i class="fa-solid fa-arrow-right-from-bracket nav-btn-icon"></i> <span>ออกจากระบบ</span>
         </button>
-        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด" onclick="toggleTheme()"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
       </nav>
     </div>
   </header>
@@ -385,7 +385,7 @@
   </div>
 
   <footer class="clear-footer">
-    <p>© 2026 Project CLEAR — CLEAR Space · โฟลเดอร์ผลงานและคลังอีบุ๊ก 3D</p>
+    <p>© 2026 Project CLEAR — รายวิชาภาษาไทย ครูรามิล ปัญญพัทธ์</p>
   </footer>
 
   <script src="../assets/js/page-flip.browser.js"></script>

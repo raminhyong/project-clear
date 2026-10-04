@@ -647,12 +647,9 @@ window.addEventListener('keydown', (e) => {
 
 /* ── Classroom-safe navigation ── */
 function goHome() {
-  if (window.parent && window.parent !== window) {
-    try { window.parent.postMessage({ type: 'CLOSE_WORKSPACE_MODAL' }, '*'); } catch (e) {}
-    return;
-  }
-  if (state.room) { window.location.href = '../rooms/' + state.room.slug + '/'; return; }
-  if (typeof showToast === 'function') showToast('กรุณาเปิดใช้งานจากหน้าห้องเรียนของคุณ', 'warning');
+  // Delegate to the shared standard navigation when available.
+  if (typeof returnToScores === 'function') { returnToScores(); return; }
+  if (state.room) { window.location.href = '../rooms/' + state.room.slug + '/'; }
 }
 
 function logoutStudent() {

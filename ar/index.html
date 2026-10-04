@@ -54,15 +54,17 @@
   <header class="clear-navbar">
     <div class="clear-nav-inner">
       <div class="brand-badge">
-        <a href="../index.html" style="display: flex; align-items: center; gap: 0.75rem;">
-          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #0284c7, #06b6d4);"><i class="fa-solid fa-cube"></i></div>
-          <span>PROJECT CLEAR</span>
-        </a>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #0284c7, #06b6d4);"><i class="fa-solid fa-vr-cardboard"></i></div>
+          <span>CLEAR AR</span>
+        </div>
       </div>
 
       <nav class="nav-links">
-        <a href="../index.html" class="nav-btn"><i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span></a>
-        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+        <button type="button" class="nav-btn" onclick="returnToScores()" title="กลับหน้าคะแนนของฉัน">
+          <i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span>
+        </button>
+        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด" onclick="toggleTheme()"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
       </nav>
     </div>
   </header>
@@ -162,7 +164,7 @@
   </main>
 
   <footer class="clear-footer">
-    <p>© 2026 Project CLEAR — CLEAR AR · สื่อการเรียนรู้วรรณคดีสามมิติ</p>
+    <p>© 2026 Project CLEAR — รายวิชาภาษาไทย ครูรามิล ปัญญพัทธ์</p>
   </footer>
 
   <script src="../assets/js/shared.js"></script>

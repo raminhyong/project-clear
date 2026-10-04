@@ -16,6 +16,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;600;700&family=Prompt:wght@300;400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../assets/css/theme.css">
   
   <style>
     :root {
@@ -103,6 +104,12 @@
     .map-stage { position: relative; width: 100%; aspect-ratio: 96 / 1000; overflow: hidden; background: #17324b; }
     .map-image { display: block; width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
     .map-vignette { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 45px rgba(6, 22, 39, 0.35); }
+
+    /* --- Standard CLEAR sub-app navbar (sticky) stacked above the travel HUD (แถวที่ 2) --- */
+    .clear-navbar { position: sticky; top: 0; z-index: 100; height: 56px; padding: 0 1rem; }
+    .clear-navbar .clear-nav-inner { max-width: 680px; height: 56px; }
+    .topbar { position: sticky; top: 56px; left: auto; transform: none; margin: 0 auto; z-index: 90; }
+    .shell { padding-top: 0; }
 
     /* Collectibles Layer */
     .collected-items-layer { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
@@ -334,13 +341,27 @@
 </head>
 <body>
 
-  <!-- Topbar -->
+  <!-- Standard CLEAR sub-app navbar (แถวที่ 1) -->
+  <header class="clear-navbar">
+    <div class="clear-nav-inner">
+      <div class="brand-badge">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #10b981, #f59e0b);"><i class="fa-solid fa-compass"></i></div>
+          <span>CLEAR Journey</span>
+        </div>
+      </div>
+      <nav class="nav-links">
+        <button type="button" class="nav-btn" onclick="returnToScores()" title="กลับหน้าคะแนนของฉัน">
+          <i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span>
+        </button>
+        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด" onclick="toggleTheme()"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Travel HUD (แถวที่ 2) -->
   <header class="topbar hidden" id="topbar">
     <div class="topbar-row">
-      <button class="close-btn" id="closeTravelerBtn" aria-label="ปิดหน้าต่าง">
-        <i class="fa-solid fa-xmark"></i>
-        <span>ปิด / กลับห้องเรียน</span>
-      </button>
       <div class="logo">🧭</div>
       <div class="identity">
         <strong id="studentName">CLEAR Journey</strong>
@@ -815,16 +836,7 @@
       });
     });
 
-    // Close button in Topbar (Integrated Overlay support)
-    $('closeTravelerBtn').addEventListener('click', () => {
-      if (window.parent && window.parent !== window && typeof window.parent.closeClearActivityModal === 'function') {
-        window.parent.closeClearActivityModal();
-      } else if (document.referrer && document.referrer.includes('rooms')) {
-        window.location.href = document.referrer;
-      } else {
-        window.location.href = '../index.html';
-      }
-    });
+    // Close/return is handled by the standard navbar "หน้าหลัก" (returnToScores).
 
     // ── Auto-Login from Query Param (?code=xxxxx) ──
     const codeFromUrl = new URLSearchParams(location.search).get('code');
@@ -837,5 +849,9 @@
       $('loginScreen').classList.remove('hidden');
     }
   </script>
+  <script src="../assets/js/shared.js"></script>
+  <footer class="clear-footer">
+    <p>© 2026 Project CLEAR — รายวิชาภาษาไทย ครูรามิล ปัญญพัทธ์</p>
+  </footer>
 </body>
 </html>

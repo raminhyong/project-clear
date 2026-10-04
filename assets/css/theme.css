@@ -444,12 +444,14 @@ a {
 .clear-footer {
   border-top: 1px solid var(--border-subtle);
   background: var(--surface-glass);
-  padding: 2.5rem 1.5rem;
-  text-align: center;
+  padding: 2rem 1.75rem;
+  text-align: left;
   color: var(--text-muted);
   font-size: 0.9rem;
   margin-top: auto;
 }
+
+.clear-footer p { margin: 0; }
 
 /* ── Full-screen Activity Overlay (Integrated Single Workspace) ── */
 body.clear-modal-open { overflow: hidden; }
@@ -507,7 +509,10 @@ body.clear-modal-open { overflow: hidden; }
 }
 
 .clear-activity-frame {
-  flex: 1;
+  flex: 1 1 auto;
+  height: 100%;
+  width: 100%;
+  border: none;
   position: relative;
   background: var(--bg-primary);
 }
