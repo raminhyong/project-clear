@@ -11,9 +11,9 @@
 
   /* Color Tokens */
   --bg-primary: #f8fafc;
-  --bg-gradient: radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
-                 radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
-                 linear-gradient(135deg, #f1f5f9 0%, #f8fafc 50%, #eff6ff 100%);
+  --bg-gradient: radial-gradient(ellipse at 25% 0%, rgba(255, 255, 255, 0.95) 0%, transparent 60%),
+                 radial-gradient(circle at 85% 90%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                 linear-gradient(155deg, #ffffff 0%, #f1f5f9 45%, #e2e8f0 100%);
   
   --surface-glass: rgba(255, 255, 255, 0.88);
   --surface-glass-hover: rgba(255, 255, 255, 0.96);
@@ -54,9 +54,9 @@
 /* Dark Mode Tokens */
 body.dark-mode {
   --bg-primary: #090d16;
-  --bg-gradient: radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
-                 radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.12) 0%, transparent 45%),
-                 linear-gradient(135deg, #090d16 0%, #0f172a 60%, #111827 100%);
+  --bg-gradient: radial-gradient(ellipse at 25% 0%, rgba(30, 41, 59, 0.75) 0%, transparent 60%),
+                 radial-gradient(circle at 85% 90%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                 linear-gradient(155deg, #0f172a 0%, #090d16 55%, #020617 100%);
   
   --surface-glass: rgba(15, 23, 42, 0.82);
   --surface-glass-hover: rgba(30, 41, 59, 0.9);
@@ -99,14 +99,20 @@ a {
   text-decoration: none;
 }
 
-/* ── Ambient Orbs ── */
+/* ── Ambient Orbs (Aurora Slow Breathing) ── */
 .ambient-glow {
   position: fixed;
   pointer-events: none;
   border-radius: 50%;
-  filter: blur(90px);
   z-index: 0;
+  will-change: transform, opacity;
+  filter: blur(95px);
   opacity: 0.45;
+}
+@keyframes auroraSlowBreathe {
+  0% { transform: translate(0, 0) scale(1); opacity: 0.42; }
+  50% { transform: translate(25px, 18px) scale(1.18); opacity: 0.75; filter: blur(105px); }
+  100% { transform: translate(-15px, 25px) scale(1.05); opacity: 0.48; filter: blur(95px); }
 }
 .ambient-1 {
   width: 450px;
@@ -114,6 +120,7 @@ a {
   background: radial-gradient(circle, rgba(56, 189, 248, 0.35) 0%, transparent 70%);
   top: -120px;
   left: -80px;
+  animation: auroraSlowBreathe 9s ease-in-out infinite alternate;
 }
 .ambient-2 {
   width: 500px;
@@ -121,6 +128,7 @@ a {
   background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
   bottom: -150px;
   right: -100px;
+  animation: auroraSlowBreathe 11s ease-in-out infinite alternate-reverse;
 }
 
 /* ── Top Navigation Bar ── */
@@ -539,19 +547,22 @@ body.clear-modal-open { overflow: hidden; }
   gap: 0.9rem;
   padding: 1.1rem;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-glass);
   background: var(--surface-glass);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-top: 2px solid rgba(255, 255, 255, 0.55);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35), 0 6px 20px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   text-align: left;
   font-family: var(--font-thai);
+  position: relative;
+  overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .activity-hub-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-  border-color: rgba(37, 99, 235, 0.3);
+  transform: translateY(-4px);
+  border-top-color: #ffffff;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), 0 14px 28px rgba(0, 0, 0, 0.18);
 }
 
 .activity-hub-icon {
@@ -636,53 +647,70 @@ body[data-room="61-k9f2"] {
   --room-accent: #10b981;
   --room-glow: rgba(16, 185, 129, 0.22);
   --room-gradient: linear-gradient(135deg, #10b981, #047857);
+  --room-bg-gradient: radial-gradient(circle at 20% 0%, rgba(16, 185, 129, 0.28) 0%, transparent 60%), linear-gradient(155deg, rgba(6, 78, 59, 0.35) 0%, var(--bg-primary) 75%);
 }
 body[data-room="62-m4x7"] {
   --room-accent: #0ea5e9;
   --room-glow: rgba(14, 165, 233, 0.22);
   --room-gradient: linear-gradient(135deg, #0ea5e9, #0284c7);
+  --room-bg-gradient: radial-gradient(circle at 20% 0%, rgba(14, 165, 233, 0.28) 0%, transparent 60%), linear-gradient(155deg, rgba(7, 89, 133, 0.35) 0%, var(--bg-primary) 75%);
 }
 body[data-room="65-w1c8"] {
   --room-accent: #8b5cf6;
   --room-glow: rgba(139, 92, 246, 0.22);
   --room-gradient: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  --room-bg-gradient: radial-gradient(circle at 20% 0%, rgba(139, 92, 246, 0.28) 0%, transparent 60%), linear-gradient(155deg, rgba(91, 33, 182, 0.35) 0%, var(--bg-primary) 75%);
 }
 body[data-room="65a-j4d9"] {
   --room-accent: #a855f7;
   --room-glow: rgba(168, 85, 247, 0.22);
   --room-gradient: linear-gradient(135deg, #a855f7, #7e22ce);
+  --room-bg-gradient: radial-gradient(circle at 20% 0%, rgba(168, 85, 247, 0.28) 0%, transparent 60%), linear-gradient(155deg, rgba(107, 33, 168, 0.35) 0%, var(--bg-primary) 75%);
 }
 body[data-room="66-k8n3"] {
   --room-accent: #f59e0b;
   --room-glow: rgba(245, 158, 11, 0.22);
   --room-gradient: linear-gradient(135deg, #f59e0b, #b45309);
+  --room-bg-gradient: radial-gradient(circle at 20% 0%, rgba(245, 158, 11, 0.28) 0%, transparent 60%), linear-gradient(155deg, rgba(146, 64, 14, 0.35) 0%, var(--bg-primary) 75%);
 }
 body[data-room="67-s5e6"] {
   --room-accent: #f43f5e;
   --room-glow: rgba(244, 63, 94, 0.22);
   --room-gradient: linear-gradient(135deg, #f43f5e, #be123c);
+  --room-bg-gradient: radial-gradient(circle at 20% 0%, rgba(244, 63, 94, 0.28) 0%, transparent 60%), linear-gradient(155deg, rgba(159, 18, 57, 0.35) 0%, var(--bg-primary) 75%);
 }
 body[data-room="68-p7y2"] {
   --room-accent: #6366f1;
   --room-glow: rgba(99, 102, 241, 0.22);
   --room-gradient: linear-gradient(135deg, #6366f1, #4338ca);
+  --room-bg-gradient: radial-gradient(circle at 20% 0%, rgba(99, 102, 241, 0.28) 0%, transparent 60%), linear-gradient(155deg, rgba(55, 48, 163, 0.35) 0%, var(--bg-primary) 75%);
 }
 body[data-room="69-h3m5"] {
   --room-accent: #f97316;
   --room-glow: rgba(249, 115, 22, 0.22);
   --room-gradient: linear-gradient(135deg, #f97316, #c2410c);
+  --room-bg-gradient: radial-gradient(circle at 20% 0%, rgba(249, 115, 22, 0.28) 0%, transparent 60%), linear-gradient(155deg, rgba(154, 52, 18, 0.35) 0%, var(--bg-primary) 75%);
 }
+
+/* Apply the jewel-tone directional gradient to the room page background */
+body[data-room] { background-image: var(--room-bg-gradient, var(--bg-gradient)); }
 
 /* Room-aware accents (applied only when <body data-room="..."> is set) */
 body[data-room] .ambient-1 { background: radial-gradient(circle, var(--room-glow) 0%, transparent 70%); }
 body[data-room] .ambient-2 { background: radial-gradient(circle, var(--room-glow) 0%, transparent 70%); }
 body[data-room] .clear-btn-primary {
   background: var(--room-gradient);
-  box-shadow: 0 4px 14px var(--room-glow);
+  box-shadow:
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.55),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.28),
+    0 6px 18px var(--room-glow);
 }
 body[data-room] .clear-btn-primary:hover {
-  box-shadow: 0 6px 18px var(--room-glow);
-  filter: brightness(1.06);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.75),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.35),
+    0 10px 24px var(--room-glow);
+  filter: brightness(1.08);
 }
 body[data-room] .activity-hub-card { border-top: 3px solid var(--room-accent); }
 body[data-room] .profile-banner { border-left: 4px solid var(--room-accent); }
@@ -770,9 +798,9 @@ body.teacher-unicorn-theme .teacher-unicorn-ribbon-top { margin-top: 0.35rem; }
   position: absolute;
   top: -50%; left: -60%;
   width: 40%; height: 200%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   transform: rotate(25deg);
-  animation: metallicShine 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: metallicShine 7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   pointer-events: none;
 }
 @keyframes metallicShine {
@@ -785,8 +813,8 @@ body.teacher-unicorn-theme .teacher-unicorn-ribbon-top { margin-top: 0.35rem; }
 .card-metallic {
   background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.01) 100%), var(--surface-card, #1e293b);
   border: 1px solid rgba(255, 255, 255, 0.16);
-  border-top: 1px solid rgba(255, 255, 255, 0.32);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   border-radius: 16px;
   position: relative;
 }
@@ -800,9 +828,63 @@ body.teacher-unicorn-theme .teacher-unicorn-ribbon-top { margin-top: 0.35rem; }
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.2) 100%), rgba(255,255,255,0.06);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  box-shadow: inset 0 1px 1px rgba(255,255,255,0.35), 0 2px 6px rgba(0,0,0,0.2);
+  background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.2) 100%), rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5), 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Small metric card — subtle metallic bevel (room accent overrides border-top) */
+.metric-card {
+  position: relative;
+  border-top: 1.5px solid rgba(255, 255, 255, 0.55);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+/* ── 3D Metallic Relief: specular top-highlight + deep inset bevel + tactile press ── */
+.clear-btn, .btn-metallic, .clear-btn-metallic, .nav-btn {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  box-shadow:
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.55),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.28),
+    0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+.clear-btn::before, .btn-metallic::before, .clear-btn-metallic::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.04) 50%, rgba(0, 0, 0, 0.18) 100%);
+}
+.clear-btn:hover, .btn-metallic:hover, .clear-btn-metallic:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.75),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.35),
+    0 8px 22px rgba(0, 0, 0, 0.22);
+  filter: brightness(1.08);
+}
+.clear-btn:active, .btn-metallic:active, .clear-btn-metallic:active {
+  transform: translateY(1.5px);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.2);
+  filter: brightness(0.96);
+}
+
+/* ── 3D Metallic Emblem: icons get a raised jewel-like edge ── */
+.brand-logo-icon, .activity-hub-icon, .folder-icon {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.65),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.35),
+    0 6px 16px rgba(0, 0, 0, 0.25);
+  background-image: linear-gradient(145deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 60%, rgba(0,0,0,0.25) 100%);
 }
 
 /* Metallic buttons keep their bevel + room accent even over the room primary rule */
@@ -813,6 +895,7 @@ body[data-room] .clear-btn-metallic {
 
 @media (prefers-reduced-motion: reduce) {
   .shimmer-manifest::after { animation: none; }
+  .ambient-1, .ambient-2 { animation: none; }
 }
 
 /* Responsive Media Queries */
