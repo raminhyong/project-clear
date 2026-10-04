@@ -7,112 +7,129 @@
   <link rel="stylesheet" href="../assets/css/theme.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    .quiz-container {
-      max-width: 760px;
-      margin: 0 auto;
+    #prepRoot { --prep-accent: #f59e0b; --prep-accent-2: #d97706; --prep-soft: rgba(245,158,11,0.12); }
+    #prepRoot[data-exam="final"] { --prep-accent: #6366f1; --prep-accent-2: #4f46e5; --prep-soft: rgba(99,102,241,0.12); }
+
+    /* ── Catalog ── */
+    .prep-catalog-hero { text-align: center; margin-bottom: 2rem; }
+    .prep-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; max-width: 940px; margin: 0 auto; }
+    .prep-card {
+      display: flex; flex-direction: column; width: 100%; text-align: left; padding: 0;
+      border-radius: 20px; overflow: hidden; cursor: pointer; background: var(--surface-card);
+      border: 1px solid var(--border-glass); box-shadow: var(--shadow-md);
+      font-family: var(--font-thai); color: var(--text-main);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     }
-    .question-box {
-      margin-bottom: 1.5rem;
+    .prep-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); border-color: var(--prep-accent); }
+    .prep-card-head {
+      position: relative; min-height: 118px; display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 1.25rem 1.35rem; color: #fff; overflow: hidden;
     }
+    .prep-card-head > i { font-size: 2.6rem; opacity: 0.95; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.28)); }
+    .prep-card-head::after {
+      content: ''; position: absolute; top: -60%; left: -70%; width: 45%; height: 220%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.42), transparent);
+      transform: rotate(24deg); animation: metallicShine 5s cubic-bezier(0.4,0,0.2,1) infinite;
+    }
+    .prep-badges { display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-end; }
+    .prep-badges .badge-metallic { font-size: 0.7rem; background: rgba(0,0,0,0.22); border-color: rgba(255,255,255,0.45); }
+    .prep-card-body { padding: 1.35rem; display: flex; flex-direction: column; gap: 0.75rem; flex: 1; }
+    .prep-card-body h3 { font-size: 1.22rem; font-weight: 800; margin: 0; }
+    .prep-card-body p { font-size: 0.88rem; color: var(--text-muted); margin: 0; line-height: 1.6; flex: 1; }
+    .prep-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.8rem 1rem; border-radius: 12px; color: #fff; font-weight: 700; font-size: 0.95rem;
+      box-shadow: 0 6px 16px var(--prep-soft);
+    }
+
+    /* ── Test head / tabs ── */
+    .prep-test-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .prep-back {
+      display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.55rem 1rem; border-radius: 999px;
+      border: 1px solid var(--border-subtle); background: var(--surface-card); color: var(--text-muted);
+      font-family: var(--font-thai); font-weight: 600; font-size: 0.88rem; cursor: pointer;
+    }
+    .prep-back:hover { border-color: var(--prep-accent); color: var(--prep-accent); }
+    .prep-test-title { font-size: 1.1rem; font-weight: 800; color: var(--prep-accent); }
+    .prep-progress { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+    .subset-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .subset-tab {
+      padding: 0.55rem 1rem; border-radius: 999px; border: 1px solid var(--border-subtle);
+      background: var(--surface-card); font-family: var(--font-thai); font-weight: 600; font-size: 0.85rem;
+      color: var(--text-muted); cursor: pointer; transition: all 0.2s ease;
+    }
+    .subset-tab:hover { border-color: var(--prep-accent); }
+    .subset-tab.active { background: linear-gradient(135deg, var(--prep-accent), var(--prep-accent-2)); color: #fff; border-color: transparent; box-shadow: 0 4px 14px var(--prep-soft); }
+
+    /* ── Question navigator pills ── */
+    .qnav-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.35rem; }
+    .qnav-pill {
+      width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border-subtle);
+      background: var(--surface-card); color: var(--text-muted); font-weight: 700; font-size: 0.82rem;
+      cursor: pointer; transition: all 0.18s ease; font-family: var(--font-thai);
+    }
+    .qnav-pill.answered { background: #dcfce7; border-color: #86efac; color: #166534; }
+    .qnav-pill.current { background: linear-gradient(135deg, var(--prep-accent), var(--prep-accent-2)); border-color: transparent; color: #fff; box-shadow: 0 4px 12px var(--prep-soft); }
+
+    /* ── Question card ── */
+    .qcard { padding: 1.75rem; max-width: 900px; margin: 0 auto; }
+    .qcard-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.1rem; }
+    .qmeta-chip { font-size: 0.74rem; font-weight: 700; padding: 0.28rem 0.7rem; border-radius: 999px; background: var(--prep-soft); color: var(--prep-accent-2); }
+    #prepRoot[data-exam="final"] .qmeta-chip { color: var(--prep-accent); }
     .verse-quote {
-      background: var(--brand-amber-light);
-      border-left: 4px solid var(--brand-amber);
-      padding: 1rem 1.25rem;
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      margin-bottom: 1.25rem;
-      font-style: italic;
-      color: var(--text-main);
-      line-height: 1.8;
+      border-left: 5px solid var(--prep-accent); background: var(--surface-glass);
+      padding: 1rem 1.25rem; border-radius: 0 12px 12px 0; margin-bottom: 1.25rem;
+      font-family: 'Noto Serif Thai', 'Sarabun', serif; font-size: 1.02rem; line-height: 1.95;
+      white-space: pre-wrap; color: var(--text-main);
     }
+    .qtext { font-size: 1.15rem; font-weight: 700; line-height: 1.65; margin-bottom: 1.35rem; white-space: pre-wrap; }
+    .q-opts { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.25rem; }
     .option-btn {
-      width: 100%;
-      text-align: left;
-      padding: 0.9rem 1.25rem;
-      border-radius: var(--radius-md);
-      border: 1.5px solid var(--border-subtle);
-      background: var(--surface-card);
-      color: var(--text-main);
-      font-family: var(--font-thai);
-      font-size: 0.95rem;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 0.75rem;
-      transition: all 0.2s ease;
+      display: flex; align-items: flex-start; gap: 0.75rem; width: 100%; text-align: left;
+      padding: 0.9rem 1.1rem; border-radius: 12px; border: 1.5px solid var(--border-subtle);
+      background: var(--surface-card); color: var(--text-main); font-family: var(--font-thai);
+      font-size: 0.98rem; line-height: 1.55; cursor: pointer; transition: all 0.18s ease;
     }
-    .option-btn:hover {
-      border-color: var(--brand-blue);
-      background: var(--brand-blue-light);
-      transform: translateX(4px);
+    .option-btn:hover:not(:disabled) { border-color: var(--prep-accent); transform: translateX(3px); }
+    .option-btn .opt-num {
+      flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center;
+      background: var(--prep-soft); color: var(--prep-accent-2); font-weight: 800; font-size: 0.85rem;
     }
-    .option-btn.selected {
-      border-color: var(--brand-blue);
-      background: var(--brand-blue-light);
-      font-weight: 600;
-      color: var(--brand-blue);
-      box-shadow: 0 0 0 2px var(--brand-blue);
-    }
-    .option-btn.correct {
-      border-color: var(--brand-emerald) !important;
-      background: var(--brand-emerald-light) !important;
-      color: var(--brand-emerald) !important;
-    }
-    .option-btn.wrong {
-      border-color: var(--brand-rose) !important;
-      background: var(--brand-rose-light) !important;
-      color: var(--brand-rose) !important;
-    }
-    .option-letter {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.06);
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      font-size: 0.85rem;
-      flex-shrink: 0;
-    }
-    .nav-pill-grid {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin-bottom: 1.5rem;
-      justify-content: center;
-    }
-    .q-pill {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      border: 1px solid var(--border-subtle);
-      background: var(--surface-card);
-      display: grid;
-      place-items: center;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .q-pill.active {
-      border-color: var(--brand-blue);
-      background: var(--brand-blue);
-      color: white;
-    }
-    .q-pill.answered {
-      border-color: var(--brand-emerald);
-      background: var(--brand-emerald-light);
-      color: var(--brand-emerald);
-    }
+    #prepRoot[data-exam="final"] .option-btn .opt-num { color: var(--prep-accent); }
+    .option-btn.selected { border-color: var(--prep-accent); background: var(--prep-soft); }
+    .option-btn.correct { border-color: #10b981; background: #dcfce7; color: #065f46; }
+    .option-btn.correct .opt-num { background: #10b981; color: #fff; }
+    .option-btn.wrong { border-color: #ef4444; background: #fee2e2; color: #991b1b; }
+    .option-btn.wrong .opt-num { background: #ef4444; color: #fff; }
+    .option-btn:disabled { cursor: default; opacity: 0.95; }
+
+    .qfeedback { display: none; padding: 1rem 1.15rem; border-radius: 12px; margin-bottom: 1.25rem; font-size: 0.95rem; line-height: 1.7; }
+    .qfeedback.show { display: block; }
+    .qfeedback.ok { background: #dcfce7; border: 1px solid #86efac; color: #065f46; }
+    .qfeedback.no { background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; }
+    .qfeedback strong { display: block; margin-bottom: 0.35rem; }
+
+    .qcard-controls { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap; border-top: 1px solid var(--border-subtle); padding-top: 1.25rem; }
+    .prep-submit { text-align: center; margin: 1.75rem 0 2.5rem; }
+
+    /* ── Result stage ── */
+    .result-stage { max-width: 560px; margin: 1.5rem auto; text-align: center; }
+    .score-circle { position: relative; width: 190px; height: 190px; margin: 0 auto 1.25rem; }
+    .score-circle svg { transform: rotate(-90deg); }
+    .score-circle .track { fill: none; stroke: var(--border-subtle); stroke-width: 14; }
+    .score-circle .meter { fill: none; stroke: url(#scoreGrad); stroke-width: 14; stroke-linecap: round; transition: stroke-dashoffset 0.9s cubic-bezier(0.2,0,0,1); }
+    .score-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .score-inner .score-num { font-size: 3rem; font-weight: 800; color: var(--prep-accent); line-height: 1; }
+    .score-inner small { font-size: 0.95rem; color: var(--text-muted); }
+    .result-level { font-size: 1.35rem; font-weight: 800; margin-bottom: 0.35rem; }
+    .result-sub { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.75rem; }
+    .result-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
   </style>
 </head>
 <body>
-  <!-- Ambient background glow -->
   <div class="ambient-glow ambient-1"></div>
   <div class="ambient-glow ambient-2"></div>
 
-  <!-- Navbar -->
   <header class="clear-navbar">
     <div class="clear-nav-inner">
       <div class="brand-badge">
@@ -121,7 +138,6 @@
           <span>CLEAR Prep</span>
         </div>
       </div>
-
       <nav class="nav-links">
         <button type="button" class="nav-btn" onclick="returnToScores()" title="กลับหน้าคะแนนของฉัน">
           <i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span>
@@ -132,57 +148,7 @@
   </header>
 
   <main class="clear-container">
-    <div class="quiz-container">
-      <div style="margin-bottom: 1.5rem; text-align: center;">
-        <span class="clear-badge badge-metallic" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-graduation-cap"></i> CLEAR Prep · ข้อสอบจำลอง ท33101</span>
-        <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main);">CLEAR Prep</h1>
-        <p style="color: var(--text-muted); font-size: 0.95rem;">คลังข้อสอบและแบบฝึกหัดเสริมก่อนสอบ พร้อมเฉลยและคำอธิบาย</p>
-      </div>
-
-      <!-- Set Selection Buttons -->
-      <div style="display: flex; gap: 0.75rem; justify-content: center; margin-bottom: 1.75rem; flex-wrap: wrap;">
-        <button id="set1Btn" onclick="selectSet(1)" class="clear-btn clear-btn-amber" style="font-size: 0.9rem;">
-          <i class="fa-solid fa-book-bookmark"></i> ชุดที่ 1: วรรณคดีกาพย์เห่เรือ
-        </button>
-        <button id="set2Btn" onclick="selectSet(2)" class="clear-btn clear-btn-secondary" style="font-size: 0.9rem;">
-          <i class="fa-solid fa-spell-check"></i> ชุดที่ 2: วรรณศิลป์และการวิเคราะห์
-        </button>
-      </div>
-
-      <!-- Question Number Navigator -->
-      <div id="qNavigator" class="nav-pill-grid"></div>
-
-      <!-- Main Question Card -->
-      <div class="clear-card" style="padding: 2rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <span id="qCategory" class="clear-badge badge-blue">ระดับง่าย • ท่องจำและบอกคุณค่า</span>
-          <span id="qProgress" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">ข้อ 1 จาก 6</span>
-        </div>
-
-        <div id="qVerseBox" class="verse-quote" style="display: none;"></div>
-
-        <h3 id="qText" style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1.25rem; line-height: 1.5;"></h3>
-
-        <div id="qOptions"></div>
-
-        <div id="qFeedback" style="display: none; padding: 1rem; border-radius: var(--radius-md); margin-top: 1.25rem; font-size: 0.95rem;"></div>
-
-        <!-- Controls -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.75rem; border-top: 1px solid var(--border-subtle); padding-top: 1.25rem;">
-          <button id="prevBtn" onclick="changeQuestion(-1)" class="clear-btn clear-btn-secondary" style="font-size: 0.875rem;">
-            <i class="fa-solid fa-chevron-left"></i> <span>ข้อย้อนหลัง</span>
-          </button>
-          
-          <button id="checkBtn" onclick="checkCurrentAnswer()" class="clear-btn clear-btn-amber" style="font-size: 0.875rem;">
-            <i class="fa-solid fa-check"></i> <span>ตรวจคำตอบ</span>
-          </button>
-
-          <button id="nextBtn" onclick="changeQuestion(1)" class="clear-btn clear-btn-primary" style="font-size: 0.875rem;">
-            <span>ข้อถัดไป</span> <i class="fa-solid fa-chevron-right"></i>
-          </button>
-        </div>
-      </div>
-    </div>
+    <div id="prepRoot"></div>
   </main>
 
   <footer class="clear-footer">
@@ -190,200 +156,7 @@
   </footer>
 
   <script src="../assets/js/shared.js"></script>
-  <script>
-    const QUESTIONS_SET1 = [
-      {
-        category: "🟢 ระดับง่าย • กาพย์เห่ชมกระบวนเรือ",
-        verse: "พระเสด็จโดยแดนชล ทรงเรือต้นงามเฉิดฉาย<br>กิ่งแก้วแพร้วพรรณราย ......................(ข้อ 1)......................<br>๏ นาวาแน่นเปนขนัด ล้วนรูปสัตว์แสนยากร<br>เรือริ้วทิวธงสลอน สาครลั่นครั่นครื้นฟอง",
-        question: "1. บาทที่หายไปจากบทประพันธ์ข้างต้นคือข้อใด",
-        options: [
-          "พายอ่อนยับจับงามงอน",
-          "พายอ่อนหยับจับงามงอน",
-          "พายอ่อนหยับจับงามอ่อน",
-          "พายอ่อนหยับจับพร่างงอน"
-        ],
-        answer: 1,
-        explain: "บทอาขยานกาพย์เห่เรือที่ถูกต้องคือ 'กิ่งแก้วแพร้วพรรณราย พายอ่อนหยับจับงามงอน' คำว่า 'หยับ' หมายถึง ขยับหรือพายพร้อมเพรียงกัน"
-      },
-      {
-        category: "🟢 ระดับง่าย • กาพย์เห่ชมกระบวนเรือ",
-        verse: "๏ เรือครุธยุดนาคหิ้ว ลิ่วลอยมาพาผันผยอง<br>พลพายกรายพายทอง ร้องโห่เห่โอ้เห่มา",
-        question: "2. 'เรือครุธยุดนาคหิ้ว' สื่อถึงลักษณะของเรือพระที่นั่งลำใด",
-        options: [
-          "เรือที่มีรูปนกในตำนาน",
-          "เรือที่มีโขนเรือเป็นรูปพญาครุฑกำลังยึดจับพญานาค",
-          "เรือที่มีรูปสัตว์น้ำ",
-          "เรือที่มีรูปมังกรเล่นน้ำ"
-        ],
-        answer: 1,
-        explain: "เรือครุฑยุดนาคหิ้ว คือเรือรูปสัตว์ที่มีโขนเรือจำหลักเป็นรูปพญาครุฑจับนาค ซึ่งเป็นสัญลักษณ์แห่งอำนาจและบารมีพระมหากษัตริย์"
-      },
-      {
-        category: "🟡 ระดับปานกลาง • กาพย์เห่ชมปลา",
-        verse: "นวลจันทร์เปนนวลจริง เจ้างามพริ้งยิ่งนวลปลา<br>คางเบือนเบือนหน้ามา ไม่งามเท่าเจ้าเบือนชาย<br>๏ เพียนทองงามดั่งทอง ไม่เหมือนน้องห่มตาดพราย",
-        question: "3. 'เพียนทองงามดั่งทอง' ใช้โวหารภาพพจน์ชนิดใด",
-        options: [
-          "อุปมา (เปรียบเทียบสิ่งหนึ่งเหมือนอีกสิ่ง)",
-          "อุปลักษณ์ (เปรียบสิ่งหนึ่งเป็นอีกสิ่ง)",
-          "สัทพจน์ (เลียนเสียงธรรมชาติ)",
-          "บุคคลวัต (สมมุติสิ่งไม่มีชีวิตให้มีกิริยาเหมือนคน)"
-        ],
-        answer: 0,
-        explain: "ใช้คำว่า 'ดั่ง' เป็นคำเชื่อมเปรียบเทียบ จึงจัดเป็นภาพพจน์ประเภท 'อุปมา' (Simile)"
-      },
-      {
-        category: "🟡 ระดับปานกลาง • กาพย์เห่ชมปลา",
-        verse: "กระแหแหห่างชาย ดังสายสวาดิคลาศจากสม",
-        question: "4. กวีใช้ชื่อปลา 'กระแห' สื่อถึงความหมายและอารมณ์ความรู้สึกใด",
-        options: [
-          "ความอุดมสมบูรณ์ของท้องน้ำ",
-          "ความรู้สึกคิดถึง พลัดพราก ห่างไกลจากคนรัก",
-          "ความสวยงามของธรรมชาติ",
-          "ความหลากหลายของพันธุ์สัตว์น้ำ"
-        ],
-        answer: 1,
-        explain: "กวีเล่นคำว่า 'แห' พ้องกับ 'ห่าง' เพื่อสื่อถึงความรู้สึกพลัดพรากและคิดถึงนางอันเป็นที่รัก"
-      },
-      {
-        category: "🔴 ระดับวิเคราะห์ • กาพย์เห่ชมนก",
-        verse: "นางนวลนวลน่ารัก ไม่นวลพักตร์เหมือนทรามสงวน<br>แก้วพี่นี้สุดนวล ดั่งนกแก้วแจ้วจำนรรจา",
-        question: "5. กลวิธีทางวรรณศิลป์ที่เด่นชัดที่สุดในบทนี้คือข้อใด",
-        options: [
-          "การเล่นคำพ้องรูปพ้องเสียง (นางนวล - นวลพักตร์)",
-          "การใช้สัมผัสสระทุกคำ",
-          "การอติพจน์เกินจริง",
-          "การบรรยายฉากหลัง"
-        ],
-        answer: 0,
-        explain: "กวีใช้ชื่อนก 'นางนวล' มาเล่นคำเชื่อมโยงกับคำว่า 'นวลพักตร์' (ผิวหน้าเนียนนวล) ของหญิงคนรัก"
-      },
-      {
-        category: "🔴 ระดับวิเคราะห์ • คุณค่าด้านวรรณศิลป์",
-        verse: "เรือริ้วทิวธงสลอน สาครลั่นครั่นครื้นฟอง",
-        question: "6. 'สาครลั่นครั่นครื้นฟอง' ใช้ภาพพจน์หรือพลังเสียงแบบใด",
-        options: [
-          "ภาพพจน์เลียนเสียงธรรมชาติ (สัทพจน์) สร้างจินตภาพเสียงคลื่นกระหึ่ม",
-          "การใช้คำศัพท์ภาษาต่างประเทศ",
-          "การเปรียบเทียบแบบบุคคลวัต",
-          "การเล่นคำผวน"
-        ],
-        answer: 0,
-        explain: "คำว่า 'ครั่นครื้น' เป็นคำเลียนเสียงธรรมชาติ (สัทพจน์) ทำให้ผู้อ่านได้ยินเสียงน้ำซัดกระแทกฟองคลื่นอย่างทรงพลัง"
-      }
-    ];
-
-    let currentSet = 1;
-    let questions = QUESTIONS_SET1;
-    let currentIndex = 0;
-    let userAnswers = {};
-
-    function selectSet(setNum) {
-      currentSet = setNum;
-      document.getElementById('set1Btn').className = setNum === 1 ? 'clear-btn clear-btn-amber' : 'clear-btn clear-btn-secondary';
-      document.getElementById('set2Btn').className = setNum === 2 ? 'clear-btn clear-btn-amber' : 'clear-btn clear-btn-secondary';
-      currentIndex = 0;
-      userAnswers = {};
-      renderNavigator();
-      renderQuestion();
-    }
-
-    function renderNavigator() {
-      const nav = document.getElementById('qNavigator');
-      nav.innerHTML = questions.map((q, idx) => `
-        <div class="q-pill ${idx === currentIndex ? 'active' : ''} ${userAnswers[idx] !== undefined ? 'answered' : ''}" onclick="goToQuestion(${idx})">
-          ${idx + 1}
-        </div>
-      `).join('');
-    }
-
-    function renderQuestion() {
-      const q = questions[currentIndex];
-      document.getElementById('qProgress').textContent = `ข้อ ${currentIndex + 1} จาก ${questions.length}`;
-      document.getElementById('qCategory').textContent = q.category;
-
-      const verseBox = document.getElementById('qVerseBox');
-      if (q.verse) {
-        verseBox.innerHTML = q.verse;
-        verseBox.style.display = 'block';
-      } else {
-        verseBox.style.display = 'none';
-      }
-
-      document.getElementById('qText').textContent = q.question;
-
-      const optionsDiv = document.getElementById('qOptions');
-      const letters = ['ก', 'ข', 'ค', 'ง'];
-      optionsDiv.innerHTML = q.options.map((opt, i) => `
-        <button class="option-btn ${userAnswers[currentIndex] === i ? 'selected' : ''}" onclick="selectOption(${i})">
-          <span class="option-letter">${letters[i]}</span>
-          <span>${opt}</span>
-        </button>
-      `).join('');
-
-      document.getElementById('qFeedback').style.display = 'none';
-
-      document.getElementById('prevBtn').disabled = currentIndex === 0;
-      document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
-
-      renderNavigator();
-    }
-
-    function selectOption(idx) {
-      userAnswers[currentIndex] = idx;
-      renderQuestion();
-    }
-
-    function checkCurrentAnswer() {
-      const q = questions[currentIndex];
-      const selected = userAnswers[currentIndex];
-      const feedback = document.getElementById('qFeedback');
-
-      if (selected === undefined) {
-        showToast('กรุณาเลือกคำตอบก่อนตรวจ', 'warning');
-        return;
-      }
-
-      const isCorrect = selected === q.answer;
-      feedback.style.display = 'block';
-
-      if (isCorrect) {
-        feedback.style.background = 'var(--brand-emerald-light)';
-        feedback.style.color = 'var(--brand-emerald)';
-        feedback.style.border = '1px solid rgba(16,185,129,0.3)';
-        feedback.innerHTML = `
-          <strong><i class="fa-solid fa-circle-check"></i> ถูกต้องยอดเยี่ยม!</strong>
-          <p style="margin-top: 0.35rem; color: var(--text-main); font-size: 0.9rem;">${q.explain}</p>
-        `;
-        showToast('ตอบถูก! รับคะแนนสะสม', 'success');
-      } else {
-        feedback.style.background = 'var(--brand-rose-light)';
-        feedback.style.color = 'var(--brand-rose)';
-        feedback.style.border = '1px solid rgba(244,63,94,0.3)';
-        feedback.innerHTML = `
-          <strong><i class="fa-solid fa-circle-xmark"></i> ยังไม่ถูกต้อง</strong>
-          <p style="margin-top: 0.35rem; color: var(--text-main); font-size: 0.9rem;"><strong>เฉลย:</strong> ${q.options[q.answer]}<br>${q.explain}</p>
-        `;
-        showToast('ยังไม่ถูก ลองศึกษาคำอธิบายเพิ่มเติมนะ', 'error');
-      }
-    }
-
-    function changeQuestion(delta) {
-      const newIdx = currentIndex + delta;
-      if (newIdx >= 0 && newIdx < questions.length) {
-        currentIndex = newIdx;
-        renderQuestion();
-      }
-    }
-
-    function goToQuestion(idx) {
-      currentIndex = idx;
-      renderQuestion();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      renderNavigator();
-      renderQuestion();
-    });
-  </script>
+  <script src="exam-data.js"></script>
+  <script src="exam-engine.js"></script>
 </body>
 </html>
