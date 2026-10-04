@@ -294,7 +294,8 @@ async function renderStudentDashboard(config, student, fullData) {
     { key: 'ar', title: 'CLEAR AR', desc: 'สื่อการเรียนรู้วรรณคดีสามมิติเสมือนจริง', icon: 'fa-cube', grad: 'linear-gradient(135deg,#0284c7,#06b6d4)', url: `../../ar/index.html?room=${encodeURIComponent(config.room)}` },
     { key: 'space', title: 'CLEAR Space', desc: 'คลัง E-Book และผลงาน', icon: 'fa-book-open', grad: 'linear-gradient(135deg,#6366f1,#a855f7)', url: `../../space/index.html?room=${encodeURIComponent(config.room)}` },
     { key: 'voice', title: 'CLEAR Voice', desc: 'ประเมินครูผู้สอน', icon: 'fa-comment-dots', grad: 'linear-gradient(135deg,#8b5cf6,#7c3aed)', url: `../../voice/index.html?room=${encodeURIComponent(config.room)}` },
-    { key: 'quiz', title: 'CLEAR Quiz', desc: 'คำถามท้ายคาบเรียน 15 คาบ สะสมแต้มปั๊ม PUM', icon: 'fa-list-check', grad: 'linear-gradient(135deg, #f59e0b, #d97706)', url: `../../quiz/index.html?code=${encodeURIComponent(code)}&room=${encodeURIComponent(config.room)}` }
+    { key: 'quiz', title: 'CLEAR Quiz', desc: 'คำถามท้ายคาบเรียน 15 คาบ สะสมแต้มปั๊ม PUM', icon: 'fa-list-check', grad: 'linear-gradient(135deg, #f59e0b, #d97706)', url: `../../quiz/index.html?code=${encodeURIComponent(code)}&room=${encodeURIComponent(config.room)}` },
+    { key: 'plays', title: 'CLEAR Plays', desc: 'มินิเกมทบทวนบทเรียน 5 สไตล์ สะสมแต้มปั๊ม PUM', icon: 'fa-gamepad', grad: 'linear-gradient(135deg, #8b5cf6, #ec4899)', url: `../../plays/index.html?code=${encodeURIComponent(code)}&room=${encodeURIComponent(config.room)}` }
   ];
 
   const activityCardsHtml = activityCards.map(a => `

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CLEAR Plays — มินิเกมทบทวนบทเรียน | Project CLEAR</title>
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    #playsRoot { max-width: 960px; margin: 0 auto; }
+
+    /* Lobby */
+    .plays-hero {
+      display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between;
+      padding: 1.35rem 1.5rem; border-radius: 18px; margin-bottom: 1.5rem; color: #fff;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899 60%, #db2777);
+      box-shadow: 0 12px 30px -10px rgba(236,72,153,0.7), inset 0 1px 0 rgba(255,255,255,0.35);
+    }
+    .plays-hero h1 { font-size: 1.45rem; font-weight: 800; margin: 0 0 0.2rem; }
+    .plays-hero p { font-size: 0.85rem; opacity: 0.92; margin: 0; }
+    .plays-hero .stats { display: flex; gap: 1.5rem; }
+    .plays-hero .stats div { text-align: center; }
+    .plays-hero .stats strong { display: block; font-size: 1.7rem; font-weight: 800; line-height: 1; }
+    .plays-hero .stats span { font-size: 0.72rem; opacity: 0.9; }
+
+    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; }
+    @media (max-width: 640px) { .game-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; } .game-grid .game-tile:last-child { grid-column: 1 / -1; } }
+
+    .game-tile {
+      display: flex; flex-direction: column; gap: 0.5rem; text-align: left; padding: 1.05rem;
+      border-radius: var(--radius-md); background: var(--surface-card); border: 1px solid var(--border-glass);
+      border-top: 2px solid rgba(255,255,255,0.6); color: var(--text-main); cursor: pointer; font-family: var(--font-thai);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -2px 0 rgba(0,0,0,0.22), 0 5px 16px rgba(0,0,0,0.1);
+      transition: all 0.2s cubic-bezier(0.16,1,0.3,1); position: relative; overflow: hidden; min-height: 130px;
+    }
+    .game-tile:hover { transform: translateY(-3px); box-shadow: inset 0 1px 2px rgba(255,255,255,0.7), 0 12px 26px rgba(0,0,0,0.16); }
+    .game-tile:active { transform: translateY(1.5px); }
+    .game-icon { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 1.3rem; color: #fff; box-shadow: inset 0 1.5px 2px rgba(255,255,255,0.6), 0 5px 14px rgba(0,0,0,0.25); }
+    .game-tile h3 { font-size: 1rem; font-weight: 800; margin: 0; }
+    .game-tile p { font-size: 0.78rem; color: var(--text-muted); margin: 0; line-height: 1.45; flex: 1; }
+    .game-tile .tile-stars { font-size: 0.85rem; color: #f59e0b; letter-spacing: 1px; }
+
+    /* Arena */
+    .arena-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .arena-title { font-size: 1.05rem; font-weight: 800; }
+    .arena-chip { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.8rem; border-radius: 999px; background: var(--surface-glass); border: 1px solid var(--border-subtle); font-weight: 700; font-size: 0.85rem; }
+    .arena-timer.warn { color: var(--brand-rose); }
+    .arena-bar { height: 8px; border-radius: 99px; background: var(--border-subtle); overflow: hidden; margin-bottom: 1.25rem; }
+    .arena-bar > div { height: 100%; width: 100%; background: linear-gradient(90deg, #8b5cf6, #ec4899); border-radius: 99px; transition: width 1s linear; }
+
+    /* Match Rush */
+    .match-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+    @media (max-width: 640px) { .match-grid { grid-template-columns: repeat(2, 1fr); } }
+    .match-card {
+      min-height: 76px; border-radius: 12px; border: 1.5px solid var(--border-subtle); background: var(--surface-card);
+      color: var(--text-main); font-family: var(--font-thai); font-size: 0.85rem; font-weight: 700; padding: 0.5rem;
+      cursor: pointer; display: grid; place-items: center; text-align: center; transition: all 0.18s ease;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 3px 10px rgba(0,0,0,0.08);
+    }
+    .match-card.selected { border-color: #0ea5e9; background: rgba(14,165,233,0.12); transform: scale(1.04); }
+    .match-card.ok { border-color: #10b981; background: #dcfce7; color: #065f46; animation: pop 0.35s ease; }
+    .match-card.bad { border-color: #ef4444; background: #fee2e2; animation: shake 0.4s ease; }
+    .match-card.done { visibility: hidden; }
+    @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.12); } 100% { transform: scale(1); } }
+    @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+    /* Chest Sort */
+    .chest-word { text-align: center; font-size: 1.7rem; font-weight: 800; padding: 2rem 1rem; color: var(--text-main); }
+    .chest-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .chest-btn {
+      min-height: 96px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.4); color: #fff; cursor: pointer;
+      font-family: var(--font-thai); font-size: 1rem; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -3px 0 rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.2);
+      transition: transform 0.15s ease;
+    }
+    .chest-btn:active { transform: translateY(2px); }
+    .chest-btn.samas { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+    .chest-btn.sandhi { background: linear-gradient(135deg, #ec4899, #be185d); }
+    .chest-btn i { font-size: 1.5rem; }
+
+    /* Mystery Box */
+    .mystery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1rem; }
+    .mystery-box {
+      aspect-ratio: 1; border-radius: 14px; border: 1px solid rgba(255,255,255,0.4); cursor: pointer;
+      background: linear-gradient(145deg, #f59e0b, #d97706); color: #fff; font-size: 1.6rem; font-weight: 800;
+      display: grid; place-items: center; box-shadow: inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -3px 0 rgba(0,0,0,0.3), 0 6px 16px rgba(0,0,0,0.2);
+      transition: transform 0.2s ease;
+    }
+    .mystery-box:active { transform: scale(0.96); }
+    .mystery-box.done { background: linear-gradient(145deg, #fde68a, #f59e0b); color: #b45309; }
+    .mystery-panel { padding: 1.25rem; border-radius: 14px; border: 1px solid var(--border-subtle); background: var(--surface-glass); }
+    .mystery-q { font-size: 1rem; font-weight: 700; margin-bottom: 0.9rem; }
+    .mystery-opts { display: flex; flex-direction: column; gap: 0.5rem; }
+    .mystery-opt { min-height: 46px; text-align: left; padding: 0.7rem 0.9rem; border-radius: 10px; border: 1.5px solid var(--border-subtle); background: var(--surface-card); color: var(--text-main); font-family: var(--font-thai); font-size: 0.92rem; cursor: pointer; }
+    .mystery-opt.ok { border-color: #10b981; background: #dcfce7; color: #065f46; }
+    .mystery-opt.bad { border-color: #ef4444; background: #fee2e2; color: #991b1b; }
+    .mystery-opt:disabled { cursor: default; }
+
+    /* Verse Builder */
+    .verse-list { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+    .verse-line { min-height: 52px; display: flex; align-items: center; gap: 0.6rem; padding: 0.7rem 0.9rem; border-radius: 12px; border: 1.5px solid var(--border-subtle); background: var(--surface-card); color: var(--text-main); font-family: var(--font-thai); font-size: 0.98rem; cursor: pointer; transition: all 0.18s ease; }
+    .verse-line .ln { width: 26px; height: 26px; border-radius: 8px; background: var(--brand-purple-light); color: #7c3aed; display: grid; place-items: center; font-weight: 800; font-size: 0.8rem; flex: none; }
+    .verse-line.selected { border-color: #8b5cf6; background: rgba(139,92,246,0.12); }
+    .verse-line.correct { border-color: #10b981; background: #dcfce7; color: #065f46; }
+    .verse-line.wrong { border-color: #ef4444; background: #fee2e2; color: #991b1b; }
+
+    /* Speed Swipe */
+    .swipe-card { min-height: 150px; display: grid; place-items: center; text-align: center; padding: 1.5rem; font-size: 1.15rem; font-weight: 700; line-height: 1.6; border-radius: 16px; border: 1px solid var(--border-subtle); background: var(--surface-glass); margin-bottom: 1.25rem; }
+    .swipe-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .swipe-btn { min-height: 84px; border-radius: 16px; border: none; color: #fff; font-family: var(--font-thai); font-size: 1.1rem; font-weight: 800; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; transition: transform 0.15s ease; }
+    .swipe-btn.false { background: linear-gradient(135deg, #f43f5e, #be123c); box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -3px 0 rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.2); }
+    .swipe-btn.true { background: linear-gradient(135deg, #10b981, #047857); box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -3px 0 rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.2); }
+    .swipe-btn:active { transform: translateY(2px); }
+    .swipe-feedback { text-align: center; font-weight: 700; min-height: 1.4em; margin-top: 0.75rem; }
+
+    /* Victory */
+    .victory-card { text-align: center; padding: 2.25rem 1.5rem; }
+    .victory-stars { font-size: 3rem; letter-spacing: 0.2rem; margin-bottom: 0.5rem; }
+    .victory-stars .off { opacity: 0.25; }
+    .victory-pum { display: inline-flex; align-items: center; gap: 0.4rem; margin: 0.75rem 0 1.5rem; padding: 0.5rem 1.1rem; border-radius: 999px; background: linear-gradient(135deg,#f59e0b,#d97706); color: #fff; font-weight: 800; box-shadow: 0 8px 20px -8px rgba(245,158,11,0.8); }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow ambient-1"></div>
+  <div class="ambient-glow ambient-2"></div>
+
+  <header class="clear-navbar">
+    <div class="clear-nav-inner">
+      <div class="brand-badge">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #8b5cf6, #ec4899);"><i class="fa-solid fa-gamepad"></i></div>
+          <span>CLEAR Plays</span>
+        </div>
+      </div>
+      <nav class="nav-links">
+        <button type="button" class="nav-btn" onclick="returnToScores()" title="กลับหน้าคะแนนของฉัน">
+          <i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span>
+        </button>
+        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด" onclick="toggleTheme()"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="clear-container">
+    <div id="playsRoot"></div>
+  </main>
+
+  <footer class="clear-footer">
+    <p>© 2026 Project CLEAR — รายวิชาภาษาไทย ครูรามิล ปัญญพัทธ์</p>
+  </footer>
+
+  <script src="../assets/js/shared.js"></script>
+  <script src="plays-engine.js"></script>
+</body>
+</html>
