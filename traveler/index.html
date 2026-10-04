@@ -7,10 +7,10 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="นักเดินทางแห่งกาพย์เห่เรือ">
+  <meta name="apple-mobile-web-app-title" content="CLEAR Journey">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#071b32">
-  <title>นักเดินทางแห่งกาพย์เห่เรือ | Project CLEAR</title>
+  <title>CLEAR Journey — นักเดินทางแห่งกาพย์เห่เรือ | Project CLEAR</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -343,7 +343,7 @@
       </button>
       <div class="logo">🧭</div>
       <div class="identity">
-        <strong id="studentName">นักเดินทางแห่งสายน้ำ</strong>
+        <strong id="studentName">CLEAR Journey</strong>
         <small id="studentMeta">กาพย์เห่เรือ · อยุธยาสู่สระบุรี</small>
       </div>
       <div class="balance-pill"><b id="pumBalance">0</b><span>ปั๊มคงเหลือ</span></div>
@@ -392,10 +392,10 @@
   <section class="login-screen" id="loginScreen">
     <div class="login-card">
       <div class="login-emblem" style="background: linear-gradient(145deg, #fef2f2, #ef4444 60%, #991b1b); box-shadow: 0 10px 24px rgba(239, 68, 68, 0.35);">🔒</div>
-      <div class="login-kicker" style="color: #fca5a5; background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4);">เฉพาะนักเรียนที่เข้าสู่ระบบแล้ว</div>
+      <div class="login-kicker" style="color: #fca5a5; background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4);">CLEAR Journey · เฉพาะนักเรียนที่เข้าสู่ระบบแล้ว</div>
       <h1 style="font-size: 22px;">เข้าใช้งานผ่านห้องเรียน</h1>
       <p style="margin: 12px 0 22px; line-height: 1.7; font-size: 13.5px; color: #cbd5e1;">
-        ฟีเจอร์นักเดินทางแห่งกาพย์เห่เรือสงวนสิทธิ์เฉพาะนักเรียนที่เข้าสู่ระบบผ่านห้องเรียนของตนเองเท่านั้น เพื่อบันทึกแต้มและไอเทมลงสมุดพกส่วนบุคคล
+        ฟีเจอร์ CLEAR Journey (นักเดินทางแห่งกาพย์เห่เรือ) สงวนสิทธิ์เฉพาะนักเรียนที่เข้าสู่ระบบผ่านห้องเรียนของตนเองเท่านั้น เพื่อบันทึกแต้มและไอเทมลงสมุดพกส่วนบุคคล
       </p>
       
       <a href="../index.html" class="primary-btn" style="display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 14px; background: linear-gradient(135deg, #2563eb, #1d4ed8);">
@@ -404,7 +404,7 @@
       </a>
       
       <div class="preview-note" style="margin-top: 18px;">
-        กรุณาเข้าสู่ระบบในห้องเรียน ม.6 ของคุณ แล้วกดเปิด Traveler จากหน้าคะแนนส่วนบุคคล
+        กรุณาเข้าสู่ระบบในห้องเรียน ม.6 ของคุณ แล้วกดเปิด CLEAR Journey จากหน้าคะแนนส่วนบุคคล
       </div>
     </div>
   </section>
@@ -433,7 +433,7 @@
       <div class="item-image-wrap reward-image"><img id="rewardImage" alt=""></div>
       <div id="rewardCategory" class="summary-chip" style="display:inline-block"></div>
       <h2 id="rewardTitle"></h2>
-      <p id="rewardText">เก็บไอเทมชิ้นนี้เข้าคลังนักเดินทางแล้ว</p>
+      <p id="rewardText">เก็บไอเทมชิ้นนี้เข้าคลังสะสม CLEAR Journey แล้ว</p>
       <blockquote class="reward-poem"><em id="rewardPoem"></em></blockquote>
       <button class="primary-btn" data-close="rewardModal">เดินทางต่อ</button>
     </div>
@@ -443,7 +443,7 @@
   <section class="modal-backdrop hidden" id="inventoryModal" role="dialog" aria-modal="true">
     <div class="modal-card">
       <button class="modal-close" data-close="inventoryModal" aria-label="ปิด">✕</button>
-      <h2>🎒 คลังนักเดินทาง</h2>
+      <h2>🎒 คลังสะสม CLEAR Journey</h2>
       <p>ไอเทมจากการเดินทางตามบทกาพย์เห่เรือ</p>
       <div class="inventory-summary" id="inventorySummary"></div>
       <div class="inventory-grid" id="inventoryGrid"></div>
@@ -782,7 +782,7 @@
       $('rewardCategory').textContent = `ด่าน ${item.step} · ${item.categoryLabel}`;
       $('rewardTitle').textContent = item.name;
       $('rewardBadge').textContent = isNew ? 'ปลดล็อกสำเร็จ ✨' : 'บันทึกวรรณคดี 📖';
-      $('rewardText').textContent = isNew ? 'เก็บไอเทมชิ้นนี้เข้าคลังนักเดินทางแล้ว' : 'อ่านทบทวนบทประพันธ์กาพย์เห่เรือ';
+        $('rewardText').textContent = isNew ? 'เก็บไอเทมชิ้นนี้เข้าคลังสะสม CLEAR Journey แล้ว' : 'อ่านทบทวนบทประพันธ์กาพย์เห่เรือ';
       $('rewardPoem').textContent = `"${item.poem}"`;
       $('rewardModal').classList.remove('hidden');
     }

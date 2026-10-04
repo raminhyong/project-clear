@@ -6,6 +6,11 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
+const ROOM_SLUGS = {
+  '6/1': '61-k9f2', '6/2': '62-m4x7', '6/5': '65-w1c8', '6/5 Add': '65a-j4d9',
+  '6/6': '66-k8n3', '6/7': '67-s5e6', '6/8': '68-p7y2', '6/9': '69-h3m5'
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   const config = window.CLEAR_ROOM_CONFIG;
   if (!config || !config.room) {
@@ -14,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.title = `${config.title} | Project CLEAR`;
+  const roomSlug = ROOM_SLUGS[config.room] || '';
+  if (roomSlug) document.body.setAttribute('data-room', roomSlug);
 
   // Pre-fill student code from Smart Gatekeeper (?code=xxxxx)
   const params = new URLSearchParams(window.location.search);
@@ -95,7 +102,7 @@ function renderLoginForm(config) {
             <span id="errorText">รหัสประจำตัวหรือรหัสผ่านไม่ถูกต้อง</span>
           </div>
 
-          <button type="submit" id="loginBtn" class="clear-btn clear-btn-primary" style="width: 100%; padding: 0.85rem; font-size: 1rem;">
+          <button type="submit" id="loginBtn" class="clear-btn clear-btn-primary btn-metallic shimmer-manifest" style="width: 100%; padding: 0.85rem; font-size: 1rem;">
             <span>เข้าสู่ระบบ</span>
             <i class="fa-solid fa-arrow-right"></i>
           </button>
@@ -278,16 +285,16 @@ async function renderStudentDashboard(config, student, fullData) {
 
   const code = String(student.code);
   const activityCards = [
-    { key: 'traveler', title: 'Traveler', desc: 'สะสมไอเทมกาพย์เห่เรือ', icon: 'fa-compass', grad: 'linear-gradient(135deg,#10b981,#059669)', url: `../../traveler/index.html?code=${encodeURIComponent(code)}` },
-    { key: 'exam', title: 'ข้อสอบเสริมก่อนสอบ', desc: 'แบบทดสอบพร้อมเฉลยทันที', icon: 'fa-file-pen', grad: 'linear-gradient(135deg,#f59e0b,#d97706)', url: '../../exam-prep/index.html' },
-    { key: 'selfpoint', title: 'Self Point', desc: 'รับแต้มและสแกน QR Code', icon: 'fa-gem', grad: 'linear-gradient(135deg,#10b981,#0ea5e9)', url: `../../self-point/index.html?code=${encodeURIComponent(code)}` },
-    { key: 'ar', title: 'สื่อ AR กาพย์เห่เรือ', desc: 'สแกนการ์ด AR 3D', icon: 'fa-cube', grad: 'linear-gradient(135deg,#0284c7,#06b6d4)', url: '../../ar/index.html' },
+    { key: 'traveler', title: 'CLEAR Journey', desc: 'การเดินทางสะสมไอเทมล่องสายน้ำ 20 จุด', icon: 'fa-compass', grad: 'linear-gradient(135deg,#10b981,#059669)', url: `../../traveler/index.html?code=${encodeURIComponent(code)}` },
+    { key: 'exam', title: 'CLEAR Prep', desc: 'คลังข้อสอบและแบบฝึกหัดเสริมก่อนสอบ', icon: 'fa-file-pen', grad: 'linear-gradient(135deg,#f59e0b,#d97706)', url: '../../exam-prep/index.html' },
+    { key: 'selfpoint', title: 'CLEAR Point', desc: 'ระบบสะสมแต้มพอยต์และคูปองของรางวัล', icon: 'fa-gem', grad: 'linear-gradient(135deg,#10b981,#0ea5e9)', url: `../../self-point/index.html?code=${encodeURIComponent(code)}` },
+    { key: 'ar', title: 'CLEAR AR', desc: 'สื่อการเรียนรู้วรรณคดีสามมิติเสมือนจริง', icon: 'fa-cube', grad: 'linear-gradient(135deg,#0284c7,#06b6d4)', url: '../../ar/index.html' },
     { key: 'space', title: 'CLEAR Space', desc: 'คลัง E-Book และผลงาน', icon: 'fa-book-open', grad: 'linear-gradient(135deg,#6366f1,#a855f7)', url: `../../space/index.html?room=${encodeURIComponent(config.room)}` },
     { key: 'voice', title: 'CLEAR Voice', desc: 'ประเมินครูผู้สอน', icon: 'fa-comment-dots', grad: 'linear-gradient(135deg,#8b5cf6,#7c3aed)', url: `../../voice/index.html?room=${encodeURIComponent(config.room)}` }
   ];
 
   const activityCardsHtml = activityCards.map(a => `
-    <button type="button" class="activity-hub-card" data-url="${escapeHtml(a.url)}" data-title="${escapeHtml(a.title)}">
+    <button type="button" class="activity-hub-card card-metallic shimmer-manifest" data-url="${escapeHtml(a.url)}" data-title="${escapeHtml(a.title)}">
       <span class="activity-hub-icon" style="background:${a.grad};"><i class="fa-solid ${a.icon}"></i></span>
       <span class="activity-hub-text">
         <strong>${escapeHtml(a.title)}</strong>
@@ -298,7 +305,7 @@ async function renderStudentDashboard(config, student, fullData) {
 
   appContainer.innerHTML = `
     <!-- Top Student Profile Banner -->
-    <div class="clear-card" style="margin-bottom: 2rem; background: linear-gradient(135deg, rgba(37,99,235,0.08) 0%, rgba(139,92,246,0.08) 100%);">
+    <div class="clear-card profile-banner" style="margin-bottom: 2rem; background: linear-gradient(135deg, rgba(37,99,235,0.08) 0%, rgba(139,92,246,0.08) 100%);">
       <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1.25rem;">
         <div style="display: flex; align-items: center; gap: 1.25rem;">
           <div style="width: 64px; height: 64px; border-radius: 20px; background: linear-gradient(135deg, #0284c7, #2563eb); color: white; display: grid; place-items: center; font-size: 1.75rem; box-shadow: 0 6px 16px rgba(37,99,235,0.3);">
@@ -323,7 +330,7 @@ async function renderStudentDashboard(config, student, fullData) {
 
     <!-- Summary Metrics Grid -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.25rem; margin-bottom: 2.25rem;">
-      <div class="clear-card">
+      <div class="clear-card metric-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
           <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">คะแนนงานสะสม</span>
           <i class="fa-solid fa-clipboard-check" style="color: var(--brand-blue); font-size: 1.2rem;"></i>
@@ -337,7 +344,7 @@ async function renderStudentDashboard(config, student, fullData) {
         </div>
       </div>
 
-      <div class="clear-card">
+      <div class="clear-card metric-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
           <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">คะแนนกลางภาค</span>
           <i class="fa-solid fa-pen-nib" style="color: var(--brand-amber); font-size: 1.2rem;"></i>
@@ -350,7 +357,7 @@ async function renderStudentDashboard(config, student, fullData) {
         <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.85rem;">วัดผลความรู้กลางภาคเรียน</p>
       </div>
 
-      <div class="clear-card">
+      <div class="clear-card metric-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
           <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">แต้มปั๊มสะสม (PUM)</span>
           <i class="fa-solid fa-stamp" style="color: var(--brand-purple); font-size: 1.2rem;"></i>
@@ -362,7 +369,7 @@ async function renderStudentDashboard(config, student, fullData) {
         <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.85rem;">ใช้แลกไอเทมและคะแนนพิเศษ</p>
       </div>
 
-      <div class="clear-card" style="background: linear-gradient(135deg, rgba(16,185,129,0.1) 0%, rgba(6,182,212,0.1) 100%);">
+      <div class="clear-card metric-card" style="background: linear-gradient(135deg, rgba(16,185,129,0.1) 0%, rgba(6,182,212,0.1) 100%);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
           <span style="color: var(--brand-emerald); font-size: 0.9rem; font-weight: 700;">คะแนนรวมทั้งหมด</span>
           <i class="fa-solid fa-award" style="color: var(--brand-emerald); font-size: 1.2rem;"></i>

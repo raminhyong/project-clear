@@ -624,6 +624,192 @@ body.clear-modal-open { overflow: hidden; }
   }
 }
 
+/* =========================================================
+   CLEAR 7-Room Signature Palettes (Jewel Tones)
+   ========================================================= */
+body[data-room="61-k9f2"] {
+  --room-accent: #10b981;
+  --room-glow: rgba(16, 185, 129, 0.22);
+  --room-gradient: linear-gradient(135deg, #10b981, #047857);
+}
+body[data-room="62-m4x7"] {
+  --room-accent: #0ea5e9;
+  --room-glow: rgba(14, 165, 233, 0.22);
+  --room-gradient: linear-gradient(135deg, #0ea5e9, #0284c7);
+}
+body[data-room="65-w1c8"] {
+  --room-accent: #8b5cf6;
+  --room-glow: rgba(139, 92, 246, 0.22);
+  --room-gradient: linear-gradient(135deg, #8b5cf6, #6d28d9);
+}
+body[data-room="65a-j4d9"] {
+  --room-accent: #a855f7;
+  --room-glow: rgba(168, 85, 247, 0.22);
+  --room-gradient: linear-gradient(135deg, #a855f7, #7e22ce);
+}
+body[data-room="66-k8n3"] {
+  --room-accent: #f59e0b;
+  --room-glow: rgba(245, 158, 11, 0.22);
+  --room-gradient: linear-gradient(135deg, #f59e0b, #b45309);
+}
+body[data-room="67-s5e6"] {
+  --room-accent: #f43f5e;
+  --room-glow: rgba(244, 63, 94, 0.22);
+  --room-gradient: linear-gradient(135deg, #f43f5e, #be123c);
+}
+body[data-room="68-p7y2"] {
+  --room-accent: #6366f1;
+  --room-glow: rgba(99, 102, 241, 0.22);
+  --room-gradient: linear-gradient(135deg, #6366f1, #4338ca);
+}
+body[data-room="69-h3m5"] {
+  --room-accent: #f97316;
+  --room-glow: rgba(249, 115, 22, 0.22);
+  --room-gradient: linear-gradient(135deg, #f97316, #c2410c);
+}
+
+/* Room-aware accents (applied only when <body data-room="..."> is set) */
+body[data-room] .ambient-1 { background: radial-gradient(circle, var(--room-glow) 0%, transparent 70%); }
+body[data-room] .ambient-2 { background: radial-gradient(circle, var(--room-glow) 0%, transparent 70%); }
+body[data-room] .clear-btn-primary {
+  background: var(--room-gradient);
+  box-shadow: 0 4px 14px var(--room-glow);
+}
+body[data-room] .clear-btn-primary:hover {
+  box-shadow: 0 6px 18px var(--room-glow);
+  filter: brightness(1.06);
+}
+body[data-room] .activity-hub-card { border-top: 3px solid var(--room-accent); }
+body[data-room] .profile-banner { border-left: 4px solid var(--room-accent); }
+body[data-room] .metric-card { border-top: 3px solid var(--room-accent); }
+body[data-room] .room-accent-text { color: var(--room-accent); }
+body[data-room] .clear-input:focus { border-color: var(--room-accent); box-shadow: 0 0 0 4px var(--room-glow); }
+
+/* =========================================================
+   Teacher Command Center — Magical Unicorn Pastel Theme
+   ========================================================= */
+body.teacher-unicorn-theme {
+  --teacher-unicorn-grad: linear-gradient(135deg, #f472b6 0%, #c084fc 35%, #38bdf8 70%, #34d399 100%);
+  --teacher-unicorn-glow: rgba(192, 132, 252, 0.3);
+  --teacher-unicorn-badge: linear-gradient(135deg, #f43f5e, #8b5cf6, #06b6d4);
+}
+.unicorn-ribbon {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--teacher-unicorn-grad, linear-gradient(135deg, #f472b6, #c084fc, #38bdf8, #34d399));
+  box-shadow: 0 2px 12px var(--teacher-unicorn-glow, rgba(192, 132, 252, 0.3));
+  margin-bottom: 1.25rem;
+}
+.unicorn-title {
+  background: var(--teacher-unicorn-grad, linear-gradient(135deg, #f472b6, #c084fc, #38bdf8, #34d399));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.unicorn-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--teacher-unicorn-badge, linear-gradient(135deg, #f43f5e, #8b5cf6, #06b6d4));
+  box-shadow: 0 4px 14px var(--teacher-unicorn-glow, rgba(192, 132, 252, 0.3));
+}
+body.teacher-unicorn-theme .clear-navbar {
+  border-bottom: 2px solid transparent;
+  border-image: var(--teacher-unicorn-grad) 1;
+}
+body.teacher-unicorn-theme .teacher-tab.active {
+  background: var(--teacher-unicorn-badge);
+  border-color: transparent;
+  box-shadow: 0 4px 14px var(--teacher-unicorn-glow);
+}
+body.teacher-unicorn-theme .teacher-unicorn-ribbon-top { margin-top: 0.35rem; }
+
+/* =========================================================
+   3D Metallic & Iridescent Manifest Effects
+   ========================================================= */
+.btn-metallic, .clear-btn-metallic {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.02) 50%, rgba(0,0,0,0.25) 100%), var(--room-accent, #10b981);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.25) inset,
+    0 -2px 0 rgba(0, 0, 0, 0.35) inset,
+    0 6px 16px var(--room-glow, rgba(16, 185, 129, 0.3));
+  border-radius: var(--radius-md, 12px);
+  color: #ffffff;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  overflow: hidden;
+}
+.btn-metallic:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.4) inset,
+    0 -2px 0 rgba(0, 0, 0, 0.4) inset,
+    0 10px 22px var(--room-glow, rgba(16, 185, 129, 0.45));
+}
+.btn-metallic:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4) inset, 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.shimmer-manifest { position: relative; overflow: hidden; }
+.shimmer-manifest::after {
+  content: '';
+  position: absolute;
+  top: -50%; left: -60%;
+  width: 40%; height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: rotate(25deg);
+  animation: metallicShine 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+@keyframes metallicShine {
+  0% { left: -70%; opacity: 0; }
+  15% { opacity: 1; }
+  35% { left: 140%; opacity: 0; }
+  100% { left: 140%; opacity: 0; }
+}
+
+.card-metallic {
+  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.01) 100%), var(--surface-card, #1e293b);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-top: 1px solid rgba(255, 255, 255, 0.32);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  position: relative;
+}
+
+.badge-metallic {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.2) 100%), rgba(255,255,255,0.06);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.35), 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Metallic buttons keep their bevel + room accent even over the room primary rule */
+body[data-room] .btn-metallic,
+body[data-room] .clear-btn-metallic {
+  background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.02) 50%, rgba(0,0,0,0.25) 100%), var(--room-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-manifest::after { animation: none; }
+}
+
 /* Responsive Media Queries */
 @media (max-width: 768px) {
   .clear-navbar { padding: 0.75rem 1rem; }

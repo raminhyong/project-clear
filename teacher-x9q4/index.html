@@ -98,7 +98,7 @@
     }
   </style>
 </head>
-<body>
+<body class="teacher-unicorn-theme">
   <div class="ambient-glow ambient-1"></div>
   <div class="ambient-glow ambient-2"></div>
 
@@ -118,13 +118,15 @@
   </header>
 
   <main class="clear-container">
+    <div class="unicorn-ribbon"></div>
     <!-- Teacher PIN login -->
     <div id="teacherLoginArea" style="max-width: 430px; margin: 3rem auto; text-align: center;">
-      <div class="clear-card" style="padding: 2.25rem 2rem;">
-        <div style="width: 62px; height: 62px; border-radius: 18px; background: linear-gradient(135deg, #0f172a, #334155); color: white; display: grid; place-items: center; margin: 0 auto 1.25rem; font-size: 1.6rem;">
+      <div class="clear-card card-metallic shimmer-manifest" style="padding: 2.25rem 2rem;">
+        <div style="width: 62px; height: 62px; border-radius: 18px; background: var(--teacher-unicorn-badge); color: white; display: grid; place-items: center; margin: 0 auto 1.25rem; font-size: 1.6rem;">
           <i class="fa-solid fa-user-tie"></i>
         </div>
-        <h2 style="font-size: 1.45rem; font-weight: 800; margin-bottom: 0.35rem;">ศูนย์ควบคุมครูผู้สอน</h2>
+        <span class="unicorn-badge" style="margin-bottom: 0.75rem;">🦄 Magical Teacher Hub</span>
+        <h2 class="unicorn-title" style="font-size: 1.45rem; font-weight: 800; margin-bottom: 0.35rem;">ศูนย์ควบคุมครูผู้สอน</h2>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Teacher Command Center • กรุณากรอกรหัสครูเพื่อเข้าใช้งาน</p>
 
         <form onsubmit="handleTeacherLogin(event)" autocomplete="off">
@@ -146,12 +148,12 @@
     <!-- Teacher panel -->
     <div id="teacherPanelArea" style="display: none;">
       <!-- Header -->
-      <div class="clear-card" style="margin-bottom: 1.5rem; padding: 1.4rem 1.5rem;">
+      <div class="clear-card card-metallic" style="margin-bottom: 1.5rem; padding: 1.4rem 1.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <span class="clear-badge badge-blue"><i class="fa-solid fa-chalkboard-user"></i> ครูผู้สอนและผู้ดูแลระบบ</span>
-            <h1 style="font-size: 1.5rem; font-weight: 800; margin-top: 0.35rem;">ศูนย์ควบคุมครูผู้สอน (Teacher Command Center)</h1>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">จัดการคะแนน 8 ห้องเรียน พิมพ์คูปอง ดูรายงานประเมิน และเข้าถึงทุกเครื่องมือในที่เดียว</p>
+            <span class="unicorn-badge"><i class="fa-solid fa-chalkboard-user"></i> ครูผู้สอนและผู้ดูแลระบบ</span>
+            <h1 class="unicorn-title" style="font-size: 1.5rem; font-weight: 800; margin-top: 0.5rem;">ศูนย์ควบคุมครูผู้สอน (Teacher Command Center)</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">จัดการคะแนน 8 ห้องเรียน, CLEAR Point Voucher, รายงาน CLEAR Voice และคลัง CLEAR Space ในที่เดียว</p>
           </div>
           <button onclick="handleTeacherLogout()" class="clear-btn clear-btn-secondary" style="font-size: 0.85rem; color: var(--brand-rose);">
             <i class="fa-solid fa-right-from-bracket"></i> <span>ออกจากระบบ</span>
@@ -163,9 +165,9 @@
       <div class="teacher-tabs">
         <button class="teacher-tab active" data-tab="rooms" onclick="switchTab('rooms', this)"><i class="fa-solid fa-school"></i> ห้องเรียน 8 ห้อง</button>
         <button class="teacher-tab" data-tab="overview" onclick="switchTab('overview', this)"><i class="fa-solid fa-chart-line"></i> ภาพรวมคะแนนทั้ง 8 ห้อง</button>
-        <button class="teacher-tab" data-tab="coupons" onclick="switchTab('coupons', this)"><i class="fa-solid fa-ticket"></i> คูปอง Self Point &amp; PUM</button>
+        <button class="teacher-tab" data-tab="coupons" onclick="switchTab('coupons', this)"><i class="fa-solid fa-ticket"></i> คูปอง CLEAR Point</button>
         <button class="teacher-tab" data-tab="voice" onclick="switchTab('voice', this)"><i class="fa-solid fa-comment-dots"></i> รายงาน CLEAR Voice</button>
-        <button class="teacher-tab" data-tab="space" onclick="switchTab('space', this)"><i class="fa-solid fa-book-open"></i> คลัง Space</button>
+        <button class="teacher-tab" data-tab="space" onclick="switchTab('space', this)"><i class="fa-solid fa-book-open"></i> คลัง CLEAR Space</button>
       </div>
 
       <!-- Tab: room cards -->
@@ -215,14 +217,14 @@
       <!-- Tab: coupons -->
       <div id="tab-coupons" class="teacher-tab-panel">
         <div class="clear-card" style="margin-bottom: 1.25rem;">
-          <h3 class="section-title" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-print" style="color: var(--brand-amber);"></i> <span>เครื่องมือพิมพ์คูปอง (A4 160 ดวง)</span></h3>
+          <h3 class="section-title" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-print" style="color: var(--brand-amber);"></i> <span>เครื่องมือพิมพ์คูปอง CLEAR Point Voucher (A4 160 ดวง)</span></h3>
           <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">เลือกประเภทคูปองและจำนวนแผ่น แล้วกดพิมพ์ลงกระดาษ A4 (10 × 16 = 160 ดวงต่อแผ่น)</p>
 
           <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-end;">
             <div style="min-width: 220px;">
               <label class="clear-label" for="couponType">ประเภทคูปอง</label>
               <select id="couponType" class="clear-input" onchange="renderCouponSheet()">
-                <option value="self-point">Self Point (แต้มสมรรถนะ)</option>
+                <option value="self-point">CLEAR Point (แต้มสมรรถนะ)</option>
                 <option value="pum">PUM (แต้มปั๊มสะสม)</option>
               </select>
             </div>
@@ -278,6 +280,12 @@
     let allStudents = [];        // flattened: [{ ...student, _room, _roomTitle, _slug }]
     let roomStats = {};          // room -> { count, avg }
     let dataLoaded = false;
+
+    // Signature color per room for the teacher room cards (matches theme.css palettes).
+    const ROOM_HEX = {
+      '61-k9f2': '#10b981', '62-m4x7': '#0ea5e9', '65-w1c8': '#8b5cf6', '65a-j4d9': '#a855f7',
+      '66-k8n3': '#f59e0b', '67-s5e6': '#f43f5e', '68-p7y2': '#6366f1', '69-h3m5': '#f97316'
+    };
 
     function roomLabel(room) {
       return room === '6/5 Add' ? '6/5+' : room;
@@ -359,10 +367,10 @@
       grid.innerHTML = rooms.map(rd => {
         const st = roomStats[rd.room] || { count: 0, avg: 0 };
         return `
-          <div class="clear-card hover-lift">
+          <div class="clear-card hover-lift card-metallic" style="border-top: 3px solid ${ROOM_HEX[rd.slug] || 'var(--brand-emerald)'};">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem;">
               <div>
-                <span class="clear-badge ${rd.room === '6/5 Add' ? 'badge-purple' : 'badge-blue'}">ห้อง ${roomLabel(rd.room)}</span>
+                <span class="clear-badge badge-metallic">ห้อง ${roomLabel(rd.room)}</span>
                 <h3 style="font-size: 1.1rem; font-weight: 700; margin-top: 0.5rem;">${rd.title}</h3>
                 <p style="font-size: 0.8rem; color: var(--text-dim);">${rd.subject}</p>
               </div>
@@ -470,8 +478,8 @@
       const type = typeEl.value;
       const sheets = Math.max(1, Math.min(10, parseInt(sheetsEl.value, 10) || 1));
       const isPum = type === 'pum';
-      const markText = isPum ? 'PUM' : 'SP';
-      const labelText = isPum ? 'PUM' : 'Self Point';
+      const markText = isPum ? 'PUM' : 'CP';
+      const labelText = isPum ? 'PUM' : 'CLEAR Point';
 
       const cells = Array.from({ length: 160 }, (_, i) => `
         <div class="coupon-cell ${isPum ? 'pum' : 'self-point'}">

@@ -198,8 +198,8 @@ function renderHub() {
 
   root.innerHTML = `
     <div class="space-banner">
-      <span class="clear-badge badge-emerald" style="width: fit-content; margin-bottom: 0.5rem;">
-        <i class="fa-solid fa-folder-tree"></i> โฟลเดอร์ Space ประจำห้อง ${esc(room.room)}
+      <span class="badge-metallic" style="width: fit-content; margin-bottom: 0.5rem;">
+        <i class="fa-solid fa-folder-tree"></i> CLEAR Space · โฟลเดอร์ประจำห้อง ${esc(room.room)}
       </span>
       <h1 style="font-size: 1.9rem; font-weight: 800; margin-bottom: 0.35rem;">CLEAR Space</h1>
       <p style="opacity: 0.92; font-size: 0.98rem;">${esc(room.title)} — เลือกโฟลเดอร์เพื่อดูผลงานรูปภาพ ลิงก์ และคลังอีบุ๊ก 3D ของห้องคุณ</p>
