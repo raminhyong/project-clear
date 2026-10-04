@@ -183,6 +183,21 @@
   <script>
     const ratings = {};
 
+    // When opened from a student room modal, lock to that room and hide the
+    // cross-room selector so no other rooms are exposed (Dembrandt zero-leak).
+    (function lockRoomFromQuery() {
+      const room = (new URLSearchParams(window.location.search).get('room') || '').trim();
+      if (!room) return;
+      const sel = document.getElementById('evalRoom');
+      if (!sel) return;
+      const opt = Array.from(sel.options).find(o => o.value === room);
+      if (opt) {
+        sel.value = room;
+        const group = sel.closest('.clear-input-group');
+        if (group) group.style.display = 'none';
+      }
+    })();
+
     function selectRate(item, score, btn) {
       ratings[item] = score;
       const group = btn.closest('.rating-group');

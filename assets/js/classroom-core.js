@@ -1,6 +1,8 @@
 /**
  * ═══════════════════════════════════════════════════════════════
- * PROJECT CLEAR — CLASSROOM CORE LOGIC (PRIVATE SCORE VIEW)
+ * PROJECT CLEAR 2.0 — CLASSROOM CORE (PERSONAL SCORE WORKSPACE)
+ * Logged-out: mounts only the room login box (no shell / zero-leak)
+ * Logged-in : personal score dashboard + integrated activity modals
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -12,14 +14,26 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.title = `${config.title} | Project CLEAR`;
-  const roomTitleEl = document.getElementById('roomTitle');
-  if (roomTitleEl) roomTitleEl.textContent = config.title;
+
+  // Pre-fill student code from Smart Gatekeeper (?code=xxxxx)
+  const params = new URLSearchParams(window.location.search);
+  const incomingCode = (params.get('code') || '').replace(/\D/g, '').slice(0, 5);
+  window.__CLEAR_INCOMING_CODE = incomingCode;
 
   checkLoginState(config);
 });
 
 function getSessionKey(room) {
   return `clear_auth_student_${encodeURIComponent(room)}`;
+}
+
+function escapeHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 async function checkLoginState(config) {
@@ -34,13 +48,24 @@ async function checkLoginState(config) {
     }
   }
 
-  // Show login form
   renderLoginForm(config);
 }
 
+/* ─────────────────────────────────────────────────────────────
+   LOGGED-OUT STATE — only the room's login box is mounted.
+   No navbar, no footer, no cross-room links, no teacher links.
+   ───────────────────────────────────────────────────────────── */
 function renderLoginForm(config) {
   const appContainer = document.getElementById('classroomApp');
   if (!appContainer) return;
+
+  const incomingCode = window.__CLEAR_INCOMING_CODE || '';
+  const prefillHint = incomingCode
+    ? `<div style="margin-bottom: 1.25rem; padding: 0.7rem 0.9rem; border-radius: 12px; background: var(--brand-blue-light); color: var(--brand-blue); font-size: 0.85rem; font-weight: 600; text-align: left;">
+         <i class="fa-solid fa-wand-magic-sparkles" style="margin-right: 0.35rem;"></i>
+         ตรวจพบรหัสประจำตัว <strong>${escapeHtml(incomingCode)}</strong> แล้ว กรอกเลข 4 ตัวท้ายเพื่อปลดล็อกได้เลย
+       </div>`
+    : '';
 
   appContainer.innerHTML = `
     <div style="max-width: 440px; margin: 3rem auto 0; text-align: center;">
@@ -50,17 +75,19 @@ function renderLoginForm(config) {
         </div>
 
         <h2 style="font-size: 1.45rem; font-weight: 700; margin-bottom: 0.35rem;">เข้าสู่ระบบดูคะแนน</h2>
-        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.75rem;">${config.title}</p>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">${escapeHtml(config.title)}</p>
 
-        <form id="studentLoginForm" onsubmit="handleLoginSubmit(event)">
+        ${prefillHint}
+
+        <form id="studentLoginForm" onsubmit="handleLoginSubmit(event)" autocomplete="off">
           <div class="clear-input-group">
             <label class="clear-label" for="studentCode">รหัสประจำตัวนักเรียน (5 หลัก)</label>
-            <input type="text" id="studentCode" class="clear-input" placeholder="เช่น 24252" maxlength="5" pattern="\\d{5}" required autocomplete="username" autofocus>
+            <input type="text" id="studentCode" class="clear-input" placeholder="เช่น 24252" maxlength="5" inputmode="numeric" pattern="\\d{5}" value="${escapeHtml(incomingCode)}" required autocomplete="username" ${incomingCode ? '' : 'autofocus'}>
           </div>
 
           <div class="clear-input-group">
             <label class="clear-label" for="studentPass">รหัสผ่าน (รหัส 4 ตัวท้ายของรหัส 5 หลัก)</label>
-            <input type="password" id="studentPass" class="clear-input" placeholder="เช่น 4252" maxlength="4" pattern="\\d{4}" required autocomplete="current-password">
+            <input type="password" id="studentPass" class="clear-input" placeholder="เช่น 4252" maxlength="4" inputmode="numeric" pattern="\\d{4}" required autocomplete="current-password" ${incomingCode ? 'autofocus' : ''}>
           </div>
 
           <div id="loginErrorMsg" style="display: none; background: var(--brand-rose-light); color: var(--brand-rose); border: 1px solid rgba(244,63,94,0.3); padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.875rem; margin-bottom: 1.25rem; text-align: left;">
@@ -183,17 +210,19 @@ async function loadAndRenderStudentScore(config, studentCode) {
       <div class="clear-card" style="max-width: 500px; margin: 3rem auto; text-align: center;">
         <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5rem; color: var(--brand-rose); margin-bottom: 1rem;"></i>
         <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">เกิดข้อผิดพลาด</h3>
-        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">${err.message}</p>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">${escapeHtml(err.message)}</p>
         <button onclick="checkLoginState(window.CLEAR_ROOM_CONFIG)" class="clear-btn clear-btn-secondary">ลองใหม่อีกครั้ง</button>
       </div>
     `;
   }
 }
 
+/* ─────────────────────────────────────────────────────────────
+   LOGGED-IN STATE — personal dashboard + activity hub
+   ───────────────────────────────────────────────────────────── */
 async function renderStudentDashboard(config, student, fullData) {
   const appContainer = document.getElementById('classroomApp');
-  
-  // Calculate Task Scores
+
   const maxScores = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
   const defaultWorkLinks = [
     "https://padlet.com/raminhyong/inspired-by-6-1-2569-7f3xmg9g8nvrpqdv",
@@ -201,7 +230,7 @@ async function renderStudentDashboard(config, student, fullData) {
     "https://youtu.be/tKxtgNLDJkE"
   ];
 
-  let tasks = (fullData.grading && fullData.grading.tasks) ? fullData.grading.tasks : maxScores.map((m, idx) => ({
+  const tasks = (fullData.grading && fullData.grading.tasks) ? fullData.grading.tasks : maxScores.map((m, idx) => ({
     taskIndex: idx,
     title: `งานที่ ${idx + 1}`,
     maxScore: m,
@@ -219,14 +248,14 @@ async function renderStudentDashboard(config, student, fullData) {
     const isFull = score >= t.maxScore && t.maxScore > 0;
     const isSubmitted = score > 0;
 
-    let badgeClass = isFull ? 'badge-emerald' : (isSubmitted ? 'badge-blue' : 'badge-amber');
-    let badgeText = isFull ? 'คะแนนเต็ม' : (isSubmitted ? 'ส่งแล้ว' : 'ยังไม่ส่ง / รอตรวจ');
+    const badgeClass = isFull ? 'badge-emerald' : (isSubmitted ? 'badge-blue' : 'badge-amber');
+    const badgeText = isFull ? 'คะแนนเต็ม' : (isSubmitted ? 'ส่งแล้ว' : 'ยังไม่ส่ง / รอตรวจ');
 
     return `
       <div class="clear-card hover-lift" style="padding: 1.15rem; display: flex; flex-direction: column; justify-content: space-between;">
         <div>
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.6rem;">
-            <h4 style="font-size: 1rem; font-weight: 700;">${t.title}</h4>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.6rem; gap: 0.5rem;">
+            <h4 style="font-size: 1rem; font-weight: 700;">${escapeHtml(t.title)}</h4>
             <span class="clear-badge ${badgeClass}">${badgeText}</span>
           </div>
           <div style="display: flex; align-items: baseline; gap: 0.3rem; margin-bottom: 0.75rem;">
@@ -236,7 +265,7 @@ async function renderStudentDashboard(config, student, fullData) {
         </div>
         <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 0.8rem; color: var(--text-dim);">ชิ้นงานที่ ${t.taskIndex + 1}</span>
-          ${t.workUrl ? `<a href="${t.workUrl}" target="_blank" rel="noopener noreferrer" style="font-size: 0.8rem; color: var(--brand-blue); font-weight: 600; display: inline-flex; align-items: center; gap: 0.25rem;">ส่งงาน / ดูโจทย์ <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i></a>` : ''}
+          ${t.workUrl ? `<a href="${escapeHtml(t.workUrl)}" target="_blank" rel="noopener noreferrer" style="font-size: 0.8rem; color: var(--brand-blue); font-weight: 600; display: inline-flex; align-items: center; gap: 0.25rem;">ส่งงาน / ดูโจทย์ <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i></a>` : ''}
         </div>
       </div>
     `;
@@ -245,6 +274,26 @@ async function renderStudentDashboard(config, student, fullData) {
   const midtermScore = student.midterm != null ? Number(student.midterm) : 0;
   const midtermBonus = Number(student.midtermBonus || 0);
   const totalAccumulated = tasksTotal + midtermScore + midtermBonus;
+
+  const code = String(student.code);
+  const activityCards = [
+    { key: 'traveler', title: 'Traveler', desc: 'สะสมไอเทมกาพย์เห่เรือ', icon: 'fa-compass', grad: 'linear-gradient(135deg,#10b981,#059669)', url: '../../traveler/index.html' },
+    { key: 'exam', title: 'ข้อสอบเสริมก่อนสอบ', desc: 'แบบทดสอบพร้อมเฉลยทันที', icon: 'fa-file-pen', grad: 'linear-gradient(135deg,#f59e0b,#d97706)', url: '../../exam-prep/index.html' },
+    { key: 'selfpoint', title: 'Self Point', desc: 'รับแต้มและสแกน QR Code', icon: 'fa-gem', grad: 'linear-gradient(135deg,#10b981,#0ea5e9)', url: `../../self-point/index.html?code=${encodeURIComponent(code)}` },
+    { key: 'ar', title: 'สื่อ AR กาพย์เห่เรือ', desc: 'สแกนการ์ด AR 3D', icon: 'fa-cube', grad: 'linear-gradient(135deg,#0284c7,#06b6d4)', url: '../../ar/index.html' },
+    { key: 'space', title: 'CLEAR Space', desc: 'คลัง E-Book และผลงาน', icon: 'fa-book-open', grad: 'linear-gradient(135deg,#6366f1,#a855f7)', url: '../../space/index.html' },
+    { key: 'voice', title: 'CLEAR Voice', desc: 'ประเมินครูผู้สอน', icon: 'fa-comment-dots', grad: 'linear-gradient(135deg,#8b5cf6,#7c3aed)', url: `../../voice/index.html?room=${encodeURIComponent(config.room)}` }
+  ];
+
+  const activityCardsHtml = activityCards.map(a => `
+    <button type="button" class="activity-hub-card" data-url="${escapeHtml(a.url)}" data-title="${escapeHtml(a.title)}">
+      <span class="activity-hub-icon" style="background:${a.grad};"><i class="fa-solid ${a.icon}"></i></span>
+      <span class="activity-hub-text">
+        <strong>${escapeHtml(a.title)}</strong>
+        <span>${escapeHtml(a.desc)}</span>
+      </span>
+    </button>
+  `).join('');
 
   appContainer.innerHTML = `
     <!-- Top Student Profile Banner -->
@@ -256,15 +305,15 @@ async function renderStudentDashboard(config, student, fullData) {
           </div>
           <div>
             <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.25rem;">
-              <h2 style="font-size: 1.5rem; font-weight: 800;">${student.name}</h2>
-              <span class="clear-badge badge-blue">เลขที่ ${student.id || student.student_no || '-'}</span>
-              <span class="clear-badge badge-purple">รหัส ${student.code}</span>
+              <h2 style="font-size: 1.5rem; font-weight: 800;">${escapeHtml(student.name)}</h2>
+              <span class="clear-badge badge-blue">เลขที่ ${escapeHtml(student.id || student.student_no || '-')}</span>
+              <span class="clear-badge badge-purple">รหัส ${escapeHtml(code)}</span>
             </div>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">${config.title}</p>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">${escapeHtml(config.title)}</p>
           </div>
         </div>
 
-        <button onclick="handleLogout('${config.room}')" class="clear-btn clear-btn-secondary" style="font-size: 0.875rem;">
+        <button onclick="handleLogout('${escapeHtml(config.room)}')" class="clear-btn clear-btn-secondary" style="font-size: 0.875rem;">
           <i class="fa-solid fa-right-from-bracket"></i>
           <span>ออกจากระบบ</span>
         </button>
@@ -272,7 +321,7 @@ async function renderStudentDashboard(config, student, fullData) {
     </div>
 
     <!-- Summary Metrics Grid -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2.25rem;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.25rem; margin-bottom: 2.25rem;">
       <div class="clear-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
           <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">คะแนนงานสะสม</span>
@@ -325,6 +374,21 @@ async function renderStudentDashboard(config, student, fullData) {
       </div>
     </div>
 
+    <!-- Activity Hub -->
+    <div style="margin-bottom: 2.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+        <h3 class="section-title" style="margin-bottom: 0;">
+          <i class="fa-solid fa-shapes" style="color: var(--brand-cyan);"></i>
+          <span>กิจกรรมการเรียนรู้ประจำห้อง</span>
+        </h3>
+        <span style="font-size: 0.85rem; color: var(--text-dim);">เปิดเป็นหน้าต่างเต็มจอ ปิดแล้วกลับมาที่คะแนนของฉันทันที</span>
+      </div>
+
+      <div class="activity-hub-grid">
+        ${activityCardsHtml}
+      </div>
+    </div>
+
     <!-- Task Breakdown Section -->
     <div style="margin-bottom: 2rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
@@ -340,6 +404,13 @@ async function renderStudentDashboard(config, student, fullData) {
       </div>
     </div>
   `;
+
+  // Bind activity hub buttons to the integrated full-screen modal
+  appContainer.querySelectorAll('.activity-hub-card').forEach(btn => {
+    btn.addEventListener('click', () => {
+      openClearActivityModal(btn.dataset.url, btn.dataset.title);
+    });
+  });
 }
 
 function handleLogout(room) {

@@ -146,6 +146,17 @@
     let scanning = false;
     let videoStream = null;
 
+    // Auto-fill student code when opened from a room dashboard modal (?code=xxxxx)
+    (function prefillStudentCode() {
+      const incoming = (new URLSearchParams(window.location.search).get('code') || '').replace(/\D/g, '').slice(0, 5);
+      if (incoming.length === 5) {
+        const input = document.getElementById('claimStudentCode');
+        if (input) input.value = incoming;
+        const codeField = document.getElementById('claimCode');
+        if (codeField) codeField.focus();
+      }
+    })();
+
     function switchMode(mode) {
       currentMode = mode;
       const tabScore = document.getElementById('tabScore');

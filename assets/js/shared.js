@@ -109,7 +109,80 @@ async function fetchClearApi(action, params = {}, useCache = true) {
   return data;
 }
 
+// ── Clipboard Helper (works on local http server too) ──
+function copyTextToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text);
+  }
+  return new Promise((resolve, reject) => {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.top = '-9999px';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      resolve();
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+// ── Integrated Activity Modal (full-screen overlay / single workspace) ──
+function openClearActivityModal(url, title = 'กิจกรรมการเรียนรู้') {
+  let overlay = document.getElementById('clearActivityOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'clearActivityOverlay';
+    overlay.className = 'clear-activity-overlay';
+    overlay.innerHTML = `
+      <div class="clear-activity-bar">
+        <div class="clear-activity-bar-title">
+          <i class="fa-solid fa-graduation-cap"></i>
+          <span id="clearActivityTitle"></span>
+        </div>
+        <button type="button" class="clear-btn clear-activity-close" onclick="closeClearActivityModal()">
+          <i class="fa-solid fa-xmark"></i>
+          <span>ปิดหน้าต่าง / กลับสู่คะแนนของฉัน</span>
+        </button>
+      </div>
+      <div class="clear-activity-frame">
+        <iframe id="clearActivityFrame" title="กิจกรรมการเรียนรู้" allow="camera; microphone; fullscreen; clipboard-write" allowfullscreen></iframe>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  }
+
+  const titleEl = document.getElementById('clearActivityTitle');
+  const frame = document.getElementById('clearActivityFrame');
+  if (titleEl) titleEl.textContent = title;
+  if (frame) frame.src = url;
+
+  document.body.classList.add('clear-modal-open');
+  requestAnimationFrame(() => overlay.classList.add('open'));
+}
+
+function closeClearActivityModal() {
+  const overlay = document.getElementById('clearActivityOverlay');
+  if (!overlay) return;
+  overlay.classList.remove('open');
+  document.body.classList.remove('clear-modal-open');
+  const frame = document.getElementById('clearActivityFrame');
+  if (frame) {
+    setTimeout(() => { frame.src = 'about:blank'; }, 250);
+  }
+}
+
 // ── Init on load ──
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeClearActivityModal();
+  });
 });

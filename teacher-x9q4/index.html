@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ศูนย์ควบคุมครูผู้สอน (Teacher Command Center) | Project CLEAR</title>
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .teacher-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.9rem;
+    }
+    .teacher-table th {
+      background: var(--surface-card);
+      padding: 0.8rem 0.6rem;
+      border-bottom: 2px solid var(--border-subtle);
+      font-weight: 700;
+      text-align: center;
+      position: sticky;
+      top: 60px;
+      z-index: 10;
+      white-space: nowrap;
+    }
+    .teacher-table td {
+      padding: 0.7rem 0.6rem;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+      white-space: nowrap;
+    }
+    .teacher-table tr:hover td { background: var(--brand-blue-light); }
+
+    .room-stat {
+      display: flex;
+      gap: 1rem;
+      margin: 0.9rem 0 1.1rem;
+    }
+    .room-stat > div {
+      flex: 1;
+      background: var(--brand-blue-light);
+      border-radius: var(--radius-md);
+      padding: 0.6rem 0.75rem;
+      text-align: center;
+    }
+    .room-stat strong { display: block; font-size: 1.35rem; font-weight: 800; color: var(--brand-blue); }
+    .room-stat span { font-size: 0.75rem; color: var(--text-muted); }
+
+    .coupon-sheet {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto 1.5rem;
+      padding: 8mm;
+      background: #fff;
+      box-shadow: 0 6px 24px rgba(15,23,42,0.18);
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      grid-template-rows: repeat(16, 1fr);
+      gap: 2mm;
+    }
+    .coupon-cell {
+      border: 1px dashed #cbd5e1;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #0f172a;
+      overflow: hidden;
+      padding: 1px;
+    }
+    .coupon-cell .coupon-mark {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 0.62rem; font-weight: 800; color: #fff;
+      margin-bottom: 2px;
+    }
+    .coupon-cell .coupon-label { font-size: 0.5rem; font-weight: 700; line-height: 1.05; }
+    .coupon-cell .coupon-brand { font-size: 0.4rem; color: #94a3b8; letter-spacing: 0.03em; }
+    .coupon-cell.self-point .coupon-mark { background: linear-gradient(135deg, #10b981, #0ea5e9); }
+    .coupon-cell.pum .coupon-mark { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+    .voice-bar {
+      height: 8px;
+      border-radius: 99px;
+      background: rgba(139,92,246,0.15);
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+    .voice-bar > div { height: 100%; background: linear-gradient(90deg, #8b5cf6, #7c3aed); border-radius: 99px; }
+
+    @media print {
+      .coupon-sheet { margin: 0; box-shadow: none; page-break-after: always; }
+      .coupon-sheet:last-child { page-break-after: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow ambient-1"></div>
+  <div class="ambient-glow ambient-2"></div>
+
+  <header class="clear-navbar">
+    <div class="clear-nav-inner">
+      <div class="brand-badge">
+        <a href="../index.html" style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #0f172a, #334155);"><i class="fa-solid fa-chalkboard-user"></i></div>
+          <span>ศูนย์ควบคุมครูผู้สอน</span>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a href="../index.html" class="nav-btn"><i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลักนักเรียน</span></a>
+        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="clear-container">
+    <!-- Teacher PIN login -->
+    <div id="teacherLoginArea" style="max-width: 430px; margin: 3rem auto; text-align: center;">
+      <div class="clear-card" style="padding: 2.25rem 2rem;">
+        <div style="width: 62px; height: 62px; border-radius: 18px; background: linear-gradient(135deg, #0f172a, #334155); color: white; display: grid; place-items: center; margin: 0 auto 1.25rem; font-size: 1.6rem;">
+          <i class="fa-solid fa-user-tie"></i>
+        </div>
+        <h2 style="font-size: 1.45rem; font-weight: 800; margin-bottom: 0.35rem;">ศูนย์ควบคุมครูผู้สอน</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Teacher Command Center • กรุณากรอกรหัสครูเพื่อเข้าใช้งาน</p>
+
+        <form onsubmit="handleTeacherLogin(event)" autocomplete="off">
+          <div class="clear-input-group">
+            <label class="clear-label" for="teacherPin">รหัสครู (PIN 6 หลัก)</label>
+            <input type="password" id="teacherPin" class="clear-input" inputmode="numeric" maxlength="6" placeholder="••••••" required autofocus style="text-align:center; letter-spacing: 0.4rem; font-size: 1.2rem;">
+          </div>
+          <button type="submit" class="clear-btn clear-btn-primary" style="width: 100%; padding: 0.85rem;">
+            <span>เข้าสู่ศูนย์ควบคุม</span> <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+
+        <div style="margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-dim);">
+          <i class="fa-solid fa-shield-halved"></i> สำหรับครูรามิล (ผู้ดูแลระบบคนเดียว) เท่านั้น
+        </div>
+      </div>
+    </div>
+
+    <!-- Teacher panel -->
+    <div id="teacherPanelArea" style="display: none;">
+      <!-- Header -->
+      <div class="clear-card" style="margin-bottom: 1.5rem; padding: 1.4rem 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <span class="clear-badge badge-blue"><i class="fa-solid fa-chalkboard-user"></i> ครูผู้สอนและผู้ดูแลระบบ</span>
+            <h1 style="font-size: 1.5rem; font-weight: 800; margin-top: 0.35rem;">ศูนย์ควบคุมครูผู้สอน (Teacher Command Center)</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">จัดการคะแนน 8 ห้องเรียน พิมพ์คูปอง ดูรายงานประเมิน และเข้าถึงทุกเครื่องมือในที่เดียว</p>
+          </div>
+          <button onclick="handleTeacherLogout()" class="clear-btn clear-btn-secondary" style="font-size: 0.85rem; color: var(--brand-rose);">
+            <i class="fa-solid fa-right-from-bracket"></i> <span>ออกจากระบบ</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="teacher-tabs">
+        <button class="teacher-tab active" data-tab="rooms" onclick="switchTab('rooms', this)"><i class="fa-solid fa-school"></i> ห้องเรียน 8 ห้อง</button>
+        <button class="teacher-tab" data-tab="overview" onclick="switchTab('overview', this)"><i class="fa-solid fa-chart-line"></i> ภาพรวมคะแนนทั้ง 8 ห้อง</button>
+        <button class="teacher-tab" data-tab="coupons" onclick="switchTab('coupons', this)"><i class="fa-solid fa-ticket"></i> คูปอง Self Point &amp; PUM</button>
+        <button class="teacher-tab" data-tab="voice" onclick="switchTab('voice', this)"><i class="fa-solid fa-comment-dots"></i> รายงาน CLEAR Voice</button>
+        <button class="teacher-tab" data-tab="space" onclick="switchTab('space', this)"><i class="fa-solid fa-book-open"></i> คลัง Space</button>
+      </div>
+
+      <!-- Tab: room cards -->
+      <div id="tab-rooms" class="teacher-tab-panel active">
+        <div id="roomCardsGrid" class="teacher-grid">
+          <div class="clear-card" style="text-align:center; padding: 2.5rem;">
+            <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--brand-blue);"></i>
+            <p style="color: var(--text-muted); margin-top: 0.75rem;">กำลังโหลดข้อมูล 8 ห้องเรียน...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: overview -->
+      <div id="tab-overview" class="teacher-tab-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div style="max-width: 340px; width: 100%;">
+            <input type="text" id="teacherSearchInput" oninput="filterTeacherStudents()" class="clear-input" placeholder="🔍 ค้นหาชื่อ หรือรหัสประจำตัว ข้ามทุกห้อง..." style="padding: 0.6rem 0.85rem; font-size: 0.9rem;">
+          </div>
+          <div style="display: flex; gap: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+            <span>นักเรียนทั้งหมด: <strong id="totalStudentBadge" style="color: var(--text-main);">0</strong> คน</span>
+            <span>คะแนนเฉลี่ยรวม: <strong id="totalAvgBadge" style="color: var(--brand-blue);">0</strong></span>
+          </div>
+        </div>
+
+        <div class="clear-card" style="padding: 0; overflow-x: auto;">
+          <table class="teacher-table">
+            <thead>
+              <tr>
+                <th>ห้อง</th>
+                <th>เลขที่</th>
+                <th>รหัส</th>
+                <th style="text-align:left; padding-left:1rem;">ชื่อ-สกุล</th>
+                <th>งาน 1-12</th>
+                <th>รวมงาน</th>
+                <th>กลางภาค</th>
+                <th>โบนัส</th>
+                <th>คะแนนรวม</th>
+              </tr>
+            </thead>
+            <tbody id="teacherTableBody">
+              <tr><td colspan="9" style="padding: 3rem; color: var(--text-muted);">กำลังโหลดข้อมูล...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab: coupons -->
+      <div id="tab-coupons" class="teacher-tab-panel">
+        <div class="clear-card" style="margin-bottom: 1.25rem;">
+          <h3 class="section-title" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-print" style="color: var(--brand-amber);"></i> <span>เครื่องมือพิมพ์คูปอง (A4 160 ดวง)</span></h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">เลือกประเภทคูปองและจำนวนแผ่น แล้วกดพิมพ์ลงกระดาษ A4 (10 × 16 = 160 ดวงต่อแผ่น)</p>
+
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-end;">
+            <div style="min-width: 220px;">
+              <label class="clear-label" for="couponType">ประเภทคูปอง</label>
+              <select id="couponType" class="clear-input" onchange="renderCouponSheet()">
+                <option value="self-point">Self Point (แต้มสมรรถนะ)</option>
+                <option value="pum">PUM (แต้มปั๊มสะสม)</option>
+              </select>
+            </div>
+            <div style="min-width: 140px;">
+              <label class="clear-label" for="couponSheets">จำนวนแผ่น</label>
+              <input type="number" id="couponSheets" class="clear-input" min="1" max="10" value="1" onchange="renderCouponSheet()">
+            </div>
+            <button class="clear-btn clear-btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> <span>พิมพ์คูปอง</span></button>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto; padding: 0.5rem;">
+          <div id="couponPrintArea"></div>
+        </div>
+      </div>
+
+      <!-- Tab: voice -->
+      <div id="tab-voice" class="teacher-tab-panel">
+        <div class="clear-card" style="margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+            <h3 class="section-title" style="margin-bottom: 0;"><i class="fa-solid fa-comment-dots" style="color: var(--brand-purple);"></i> <span>รายงานผลประเมิน CLEAR Voice</span></h3>
+            <button class="clear-btn clear-btn-secondary" style="font-size: 0.85rem;" onclick="renderVoiceReport()"><i class="fa-solid fa-rotate"></i> <span>รีเฟรชข้อมูล</span></button>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">ข้อมูลแบบประเมินที่นักเรียนส่งไว้บนอุปกรณ์นี้ (ไม่ระบุตัวตน)</p>
+        </div>
+        <div id="voiceReportArea"></div>
+      </div>
+
+      <!-- Tab: space -->
+      <div id="tab-space" class="teacher-tab-panel">
+        <div class="clear-card" style="text-align: center; padding: 3rem 2rem;">
+          <div style="width: 70px; height: 70px; border-radius: 20px; background: linear-gradient(135deg, #6366f1, #a855f7); color: #fff; display: grid; place-items: center; margin: 0 auto 1.25rem; font-size: 1.8rem;">
+            <i class="fa-solid fa-book-open"></i>
+          </div>
+          <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.5rem;">คลัง CLEAR Space E-Book</h3>
+          <p style="color: var(--text-muted); max-width: 520px; margin: 0 auto 1.5rem;">ศูนย์รวมหนังสือการ์ตูน E-Book และผลงานสร้างสรรค์ของนักเรียน จัดการและเปิดดูได้จากที่นี่</p>
+          <a href="../space/index.html" target="_blank" rel="noopener noreferrer" class="clear-btn clear-btn-primary">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>เปิดคลัง CLEAR Space</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="clear-footer">
+    <p>© 2026 Project CLEAR — ศูนย์ควบคุมครูผู้สอน (Teacher Command Center)</p>
+  </footer>
+
+  <script src="../assets/js/shared.js"></script>
+  <script src="../assets/js/student-map.js"></script>
+  <script>
+    const TEACHER_PIN = '142536';
+    let allStudents = [];        // flattened: [{ ...student, _room, _roomTitle, _slug }]
+    let roomStats = {};          // room -> { count, avg }
+    let dataLoaded = false;
+
+    function roomLabel(room) {
+      return room === '6/5 Add' ? '6/5+' : room;
+    }
+
+    function grandTotal(s) {
+      const scores = Array.isArray(s.scores) ? s.scores : [];
+      const taskSum = scores.reduce((sum, v) => sum + Number(v || 0), 0);
+      const midterm = s.midterm != null ? Number(s.midterm) : 0;
+      const bonus = Number(s.midtermBonus || 0);
+      return taskSum + midterm + bonus;
+    }
+
+    /* ── Auth ── */
+    function handleTeacherLogin(e) {
+      e.preventDefault();
+      const pin = document.getElementById('teacherPin').value.trim();
+      if (pin === TEACHER_PIN) {
+        sessionStorage.setItem('clear_teacher_auth', 'true');
+        showToast('ยินดีต้อนรับเข้าสู่ศูนย์ควบคุมครูผู้สอน', 'success');
+        enterPanel();
+      } else {
+        showToast('รหัสครูไม่ถูกต้อง กรุณาลองอีกครั้ง', 'error');
+      }
+    }
+
+    function handleTeacherLogout() {
+      sessionStorage.removeItem('clear_teacher_auth');
+      document.getElementById('teacherLoginArea').style.display = 'block';
+      document.getElementById('teacherPanelArea').style.display = 'none';
+      showToast('ออกจากระบบครูแล้ว', 'info');
+    }
+
+    function enterPanel() {
+      document.getElementById('teacherLoginArea').style.display = 'none';
+      document.getElementById('teacherPanelArea').style.display = 'block';
+      renderCouponSheet();
+      renderVoiceReport();
+      if (!dataLoaded) loadAllRooms();
+    }
+
+    /* ── Data loading ── */
+    async function loadAllRooms() {
+      const rooms = window.CLEAR_ROOMS || [];
+      const results = await Promise.all(rooms.map(async (rd) => {
+        try {
+          const data = await fetchClearApi('get', { room: rd.room }, false);
+          const students = (data && Array.isArray(data.students)) ? data.students : [];
+          return { rd, students, ok: true };
+        } catch (err) {
+          return { rd, students: [], ok: false, error: err.message };
+        }
+      }));
+
+      allStudents = [];
+      roomStats = {};
+      results.forEach(({ rd, students }) => {
+        let sum = 0;
+        students.forEach(s => {
+          const st = Object.assign({}, s, { _room: rd.room, _roomTitle: rd.title, _slug: rd.slug });
+          allStudents.push(st);
+          sum += grandTotal(s);
+        });
+        roomStats[rd.room] = {
+          count: students.length,
+          avg: students.length ? (sum / students.length) : 0
+        };
+      });
+
+      dataLoaded = true;
+      renderRoomCards();
+      renderOverviewTable(allStudents);
+      updateOverviewBadges();
+    }
+
+    function renderRoomCards() {
+      const grid = document.getElementById('roomCardsGrid');
+      const rooms = window.CLEAR_ROOMS || [];
+      grid.innerHTML = rooms.map(rd => {
+        const st = roomStats[rd.room] || { count: 0, avg: 0 };
+        return `
+          <div class="clear-card hover-lift">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem;">
+              <div>
+                <span class="clear-badge ${rd.room === '6/5 Add' ? 'badge-purple' : 'badge-blue'}">ห้อง ${roomLabel(rd.room)}</span>
+                <h3 style="font-size: 1.1rem; font-weight: 700; margin-top: 0.5rem;">${rd.title}</h3>
+                <p style="font-size: 0.8rem; color: var(--text-dim);">${rd.subject}</p>
+              </div>
+              <i class="fa-solid fa-chalkboard" style="color: var(--brand-blue); opacity: 0.35; font-size: 1.5rem;"></i>
+            </div>
+
+            <div class="room-stat">
+              <div><strong>${st.count}</strong><span>นักเรียน (คน)</span></div>
+              <div><strong>${st.avg.toFixed(1)}</strong><span>คะแนนเฉลี่ย</span></div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+              <button class="clear-btn clear-btn-emerald" style="width:100%; font-size:0.85rem;" onclick="copyRoomLink('${rd.slug}', '${roomLabel(rd.room)}')">
+                <i class="fa-solid fa-link"></i> <span>🔗 คัดลอกลิงก์ส่ง LINE</span>
+              </button>
+              <button class="clear-btn clear-btn-secondary" style="width:100%; font-size:0.85rem;" onclick="viewStudentRoom('${rd.slug}')">
+                <i class="fa-solid fa-eye"></i> <span>👁️ เปิดดูหน้านักเรียน</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function copyRoomLink(slug, label) {
+      const url = new URL(`../rooms/${slug}/index.html`, window.location.href).href;
+      copyTextToClipboard(url).then(() => {
+        showToast(`คัดลอกลิงก์ห้อง ม.${label} สำเร็จ! นำไปส่งใน LINE ได้เลย`, 'success', '📋 คัดลอกแล้ว');
+      }).catch(() => {
+        showToast('คัดลอกอัตโนมัติไม่สำเร็จ: ' + url, 'warning');
+      });
+    }
+
+    function viewStudentRoom(slug) {
+      window.open(new URL(`../rooms/${slug}/index.html`, window.location.href).href, '_blank', 'noopener');
+    }
+
+    /* ── Overview table + cross-room search ── */
+    function renderOverviewTable(list) {
+      const tbody = document.getElementById('teacherTableBody');
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="9" style="padding: 2rem; color: var(--text-muted);">ไม่พบข้อมูลนักเรียน</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(s => {
+        const scores = Array.isArray(s.scores) ? s.scores : [];
+        const taskSum = scores.reduce((sum, v) => sum + Number(v || 0), 0);
+        const bonus = Number(s.midtermBonus || 0);
+        const total = grandTotal(s);
+        const preview = scores.slice(0, 12).map(sc => `<span style="display:inline-block; width:16px; font-size:0.72rem; color:${sc > 0 ? 'var(--brand-blue)' : 'var(--text-dim)'};">${sc || 0}</span>`).join('');
+        return `
+          <tr>
+            <td><span class="clear-badge ${s._room === '6/5 Add' ? 'badge-purple' : 'badge-blue'}">${roomLabel(s._room)}</span></td>
+            <td><strong style="color:var(--text-muted);">${s.id || s.student_no || '-'}</strong></td>
+            <td>${s.code}</td>
+            <td style="text-align:left; padding-left:1rem; font-weight:600;">${s.name}</td>
+            <td><div style="display:flex; justify-content:center; gap:2px;">${preview}</div></td>
+            <td><strong style="color:var(--brand-blue);">${taskSum}</strong></td>
+            <td>${s.midterm != null ? s.midterm : '-'}</td>
+            <td>${bonus > 0 ? `<span class="clear-badge badge-emerald">+${bonus}</span>` : '-'}</td>
+            <td><span class="clear-badge badge-purple" style="font-size:0.9rem; font-weight:700;">${total}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterTeacherStudents() {
+      const q = document.getElementById('teacherSearchInput').value.trim().toLowerCase();
+      if (!q) {
+        renderOverviewTable(allStudents);
+        return;
+      }
+      const filtered = allStudents.filter(s =>
+        (s.name && String(s.name).toLowerCase().includes(q)) ||
+        (s.code && String(s.code).includes(q)) ||
+        (String(s.id || s.student_no || '') === q) ||
+        (s._room && s._room.toLowerCase().includes(q))
+      );
+      renderOverviewTable(filtered);
+    }
+
+    function updateOverviewBadges() {
+      const total = allStudents.length;
+      const totalSum = allStudents.reduce((sum, s) => sum + grandTotal(s), 0);
+      document.getElementById('totalStudentBadge').textContent = total;
+      document.getElementById('totalAvgBadge').textContent = (total ? (totalSum / total) : 0).toFixed(1);
+    }
+
+    /* ── Tabs ── */
+    function switchTab(name, btn) {
+      document.querySelectorAll('.teacher-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.teacher-tab-panel').forEach(p => p.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      const panel = document.getElementById('tab-' + name);
+      if (panel) panel.classList.add('active');
+    }
+
+    /* ── Coupon printer (A4 · 160 units) ── */
+    function renderCouponSheet() {
+      const typeEl = document.getElementById('couponType');
+      const sheetsEl = document.getElementById('couponSheets');
+      if (!typeEl || !sheetsEl) return;
+
+      const type = typeEl.value;
+      const sheets = Math.max(1, Math.min(10, parseInt(sheetsEl.value, 10) || 1));
+      const isPum = type === 'pum';
+      const markText = isPum ? 'PUM' : 'SP';
+      const labelText = isPum ? 'PUM' : 'Self Point';
+
+      const cells = Array.from({ length: 160 }, (_, i) => `
+        <div class="coupon-cell ${isPum ? 'pum' : 'self-point'}">
+          <div class="coupon-mark">${markText}</div>
+          <div class="coupon-label">${labelText}</div>
+          <div class="coupon-brand">CLEAR</div>
+        </div>
+      `).join('');
+
+      const sheetHtml = `
+        <div class="coupon-sheet">${cells}</div>
+      `;
+
+      document.getElementById('couponPrintArea').innerHTML = sheetHtml.repeat(sheets);
+    }
+
+    /* ── CLEAR Voice report ── */
+    const VOICE_LABELS = {
+      '1': 'การจัดกิจกรรมการเรียนรู้',
+      '2': 'การใช้สื่อนวัตกรรมและเทคโนโลยี',
+      '3': 'การให้คำแนะนำและดูแลเอาใจใส่',
+      '4': 'ความเป็นธรรมและโปร่งใสในการวัดผล'
+    };
+
+    function renderVoiceReport() {
+      const area = document.getElementById('voiceReportArea');
+      let feedbacks = [];
+      try {
+        feedbacks = JSON.parse(localStorage.getItem('clear_voice_feedbacks') || '[]');
+      } catch (e) { feedbacks = []; }
+
+      if (!feedbacks.length) {
+        area.innerHTML = `
+          <div class="clear-card" style="text-align:center; padding: 3rem 2rem;">
+            <i class="fa-solid fa-inbox" style="font-size: 2.5rem; color: var(--text-dim); margin-bottom: 1rem;"></i>
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">ยังไม่มีผลประเมิน</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">เมื่อนักเรียนส่งแบบประเมิน CLEAR Voice ผลจะแสดงที่นี่</p>
+          </div>`;
+        return;
+      }
+
+      // Per-room aggregation
+      const agg = {};
+      let globalSum = 0, globalCount = 0;
+      feedbacks.forEach(fb => {
+        const room = fb.room || 'ไม่ระบุ';
+        if (!agg[room]) agg[room] = { count: 0, sum: 0, ratings: {} };
+        agg[room].count++;
+        const ratings = fb.ratings || {};
+        Object.values(ratings).forEach(v => {
+          const num = Number(v) || 0;
+          globalSum += num; globalCount++;
+          agg[room].sum += num;
+        });
+      });
+      const globalAvg = globalCount ? (globalSum / globalCount).toFixed(2) : '0.00';
+
+      const roomCards = Object.entries(agg).map(([room, a]) => {
+        const avg = a.count ? (a.sum / (a.count * 4)) : 0;
+        const pct = Math.round((avg / 5) * 100);
+        return `
+          <div class="clear-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong style="font-size:1.05rem;">ห้อง ${roomLabel(room)}</strong>
+              <span class="clear-badge badge-purple">${avg.toFixed(2)} / 5</span>
+            </div>
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">${a.count} ความคิดเห็น</p>
+            <div class="voice-bar"><div style="width:${pct}%"></div></div>
+          </div>
+        `;
+      }).join('');
+
+      const listHtml = feedbacks.slice().reverse().map(fb => {
+        const ratings = fb.ratings || {};
+        const stars = Object.keys(VOICE_LABELS).map(k => {
+          const v = Number(ratings[k] || 0);
+          return `<div style="display:flex; justify-content:space-between; font-size:0.82rem; padding:0.2rem 0;">
+            <span style="color:var(--text-muted);">${VOICE_LABELS[k]}</span>
+            <span style="color:var(--brand-amber); font-weight:700;">${v}/5</span>
+          </div>`;
+        }).join('');
+        const when = fb.timestamp ? new Date(fb.timestamp).toLocaleString('th-TH') : '';
+        return `
+          <div class="clear-card" style="margin-bottom:1rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem; flex-wrap:wrap; gap:0.4rem;">
+              <span class="clear-badge badge-blue">ห้อง ${roomLabel(fb.room || 'ไม่ระบุ')}</span>
+              <span style="font-size:0.78rem; color:var(--text-dim);">${when}</span>
+            </div>
+            ${stars}
+            ${fb.feedback ? `<div style="margin-top:0.75rem; padding:0.75rem; border-radius:10px; background:var(--brand-blue-light); font-size:0.9rem; color:var(--text-main);"><i class="fa-solid fa-quote-left" style="opacity:0.4; margin-right:0.4rem;"></i>${fb.feedback}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+
+      area.innerHTML = `
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:1rem; margin-bottom:1.5rem;">
+          <div class="clear-card" style="text-align:center; background:linear-gradient(135deg, rgba(139,92,246,0.1), rgba(124,58,237,0.06));">
+            <div style="font-size:2rem; font-weight:800; color:var(--brand-purple);">${feedbacks.length}</div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">แบบประเมินทั้งหมด</div>
+          </div>
+          <div class="clear-card" style="text-align:center; background:linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.06));">
+            <div style="font-size:2rem; font-weight:800; color:var(--brand-amber);">${globalAvg}</div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">คะแนนเฉลี่ยรวม (เต็ม 5)</div>
+          </div>
+          <div class="clear-card" style="text-align:center; background:linear-gradient(135deg, rgba(37,99,235,0.1), rgba(37,99,235,0.04));">
+            <div style="font-size:2rem; font-weight:800; color:var(--brand-blue);">${Object.keys(agg).length}</div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">ห้องที่มีผู้ประเมิน</div>
+          </div>
+        </div>
+
+        <div class="teacher-grid" style="margin-bottom:1.75rem;">${roomCards}</div>
+
+        <h3 class="section-title"><i class="fa-solid fa-list" style="color:var(--brand-purple);"></i> <span>ความคิดเห็นรายฉบับ</span></h3>
+        ${listHtml}
+      `;
+    }
+
+    /* ── Init ── */
+    document.addEventListener('DOMContentLoaded', () => {
+      if (sessionStorage.getItem('clear_teacher_auth') === 'true') {
+        enterPanel();
+      }
+    });
+  </script>
+</body>
+</html>
