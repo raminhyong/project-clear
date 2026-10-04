@@ -9,59 +9,51 @@
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
   <style>
     .scanner-box {
-      width: 100%;
-      max-width: 380px;
-      height: 280px;
-      margin: 0 auto 1.25rem;
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      position: relative;
-      background: #000;
-      display: none;
+      width: 100%; max-width: 380px; height: 280px; margin: 0 auto 1.25rem;
+      border-radius: var(--radius-md); overflow: hidden; position: relative;
+      background: #000; display: none;
     }
-    .scanner-video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .scanner-video { width: 100%; height: 100%; object-fit: cover; }
     .scanner-laser {
-      position: absolute;
-      top: 50%; left: 10%; right: 10%;
-      height: 2px;
-      background: var(--brand-emerald);
-      box-shadow: 0 0 12px var(--brand-emerald);
+      position: absolute; top: 50%; left: 10%; right: 10%; height: 2px;
+      background: var(--brand-emerald); box-shadow: 0 0 12px var(--brand-emerald);
       animation: laserScan 2s ease-in-out infinite alternate;
     }
-    @keyframes laserScan {
-      0% { top: 15%; }
-      100% { top: 85%; }
+    @keyframes laserScan { 0% { top: 15%; } 100% { top: 85%; } }
+
+    .code-hint {
+      text-align: left; font-size: 0.8rem; font-weight: 700; margin-top: -0.6rem; margin-bottom: 1rem;
+      min-height: 1.1em; color: var(--text-muted);
     }
-    .mode-tab {
-      flex: 1;
-      padding: 0.75rem;
-      border-radius: var(--radius-md);
-      font-weight: 600;
-      font-size: 0.95rem;
-      border: 1px solid var(--border-subtle);
-      background: var(--surface-card);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      transition: all 0.2s;
+    .code-hint.task { color: #10b981; }
+    .code-hint.pum { color: #d97706; }
+    .code-hint.bad { color: var(--brand-rose); }
+
+    .claim-result {
+      display: none; margin-top: 1.5rem; padding: 1.4rem; border-radius: var(--radius-lg);
+      text-align: left; border: 1px solid var(--border-subtle); background: var(--surface-card);
+      animation: claimRise 0.35s cubic-bezier(0.2,0,0,1) both;
     }
-    .mode-tab.active {
-      background: linear-gradient(135deg, #10b981, #059669);
-      color: white;
-      border-color: #10b981;
-      box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+    .claim-result.show { display: block; }
+    @keyframes claimRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .claim-result.pum { border-color: rgba(245,158,11,0.5); background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.05)); }
+    .claim-result.task { border-color: rgba(16,185,129,0.5); background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05)); }
+    .claim-result.error { border-color: rgba(244,63,94,0.5); background: linear-gradient(135deg, rgba(244,63,94,0.1), rgba(225,29,72,0.05)); }
+    .cr-head { display: flex; gap: 0.9rem; align-items: flex-start; }
+    .cr-icon {
+      width: 52px; height: 52px; flex: none; border-radius: 16px; display: grid; place-items: center;
+      font-size: 1.5rem; color: #fff;
     }
-    .mode-tab.active.mode-pum {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      border-color: #f59e0b;
-      box-shadow: 0 4px 12px rgba(245,158,11,0.3);
-    }
+    .claim-result.pum .cr-icon { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 8px 20px -6px rgba(245,158,11,0.7); }
+    .claim-result.task .cr-icon { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 8px 20px -6px rgba(16,185,129,0.7); }
+    .claim-result.error .cr-icon { background: linear-gradient(135deg, #f43f5e, #e11d48); box-shadow: 0 8px 20px -6px rgba(244,63,94,0.7); }
+    .cr-title { font-size: 1.1rem; font-weight: 800; }
+    .cr-big { font-size: 1.7rem; font-weight: 800; margin: 0.2rem 0; }
+    .claim-result.pum .cr-big { color: #d97706; }
+    .claim-result.task .cr-big { color: #059669; }
+    .cr-sub { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
+    .cr-actions { display: flex; gap: 0.6rem; margin-top: 1.1rem; flex-wrap: wrap; }
+    .cr-actions .clear-btn { flex: 1; min-width: 140px; }
   </style>
 </head>
 <body>
@@ -76,7 +68,6 @@
           <span>CLEAR Point</span>
         </div>
       </div>
-
       <nav class="nav-links">
         <button type="button" class="nav-btn" onclick="returnToScores()" title="กลับหน้าคะแนนของฉัน">
           <i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span>
@@ -90,20 +81,9 @@
     <div style="max-width: 520px; margin: 1rem auto 0; text-align: center;">
       <span class="clear-badge badge-metallic" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-qrcode"></i> CLEAR Point · รับแต้มด้วยตนเอง</span>
       <h1 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 0.35rem;">CLEAR Point</h1>
-      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.75rem;">ระบบสะสมแต้มพอยต์และคูปองของรางวัล — กรอกรหัสคูปอง หรือสแกน QR Code</p>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.75rem;">สแกน QR Code หรือกรอกรหัสคูปอง ระบบจะตรวจประเภทและบันทึกแต้มให้อัตโนมัติ</p>
 
-      <!-- Mode Switcher -->
-      <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem;">
-        <button id="tabScore" class="mode-tab active" onclick="switchMode('score')">
-          <i class="fa-solid fa-ticket"></i> คูปองคะแนนงาน
-        </button>
-        <button id="tabPum" class="mode-tab" onclick="switchMode('pum')">
-          <i class="fa-solid fa-stamp"></i> แต้มปั๊ม (PUM)
-        </button>
-      </div>
-
-      <div class="clear-card" style="padding: 2rem;">
-        <!-- Camera Scanner Area -->
+      <div class="clear-card card-metallic" style="padding: 2rem;">
         <div id="scannerArea" class="scanner-box">
           <video id="videoFeed" class="scanner-video" playsinline></video>
           <div class="scanner-laser"></div>
@@ -115,25 +95,26 @@
           </button>
         </div>
 
-        <!-- Code Input Form -->
-        <form onsubmit="handleClaimCode(event)">
+        <form onsubmit="handleClaimCode(event)" autocomplete="off">
           <div class="clear-input-group">
             <label class="clear-label" for="claimCode">รหัสคูปอง / โค้ดปั๊ม</label>
-            <input type="text" id="claimCode" class="clear-input" placeholder="เช่น PUM-7890 หรือ CP-1234" style="text-align: center; font-size: 1.25rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;" required autofocus>
+            <input type="text" id="claimCode" class="clear-input" placeholder="เช่น T01-AB12-CD34 หรือ P5-WXYZ"
+              style="text-align: center; font-size: 1.25rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;"
+              oninput="onCodeInput()" required autofocus>
           </div>
+          <div id="codeHint" class="code-hint"></div>
 
           <div class="clear-input-group">
             <label class="clear-label" for="claimStudentCode">รหัสประจำตัวนักเรียน (5 หลัก)</label>
-            <input type="text" id="claimStudentCode" class="clear-input" placeholder="เช่น 24252" maxlength="5" pattern="\\d{5}" style="text-align: center;" required>
+            <input type="text" id="claimStudentCode" class="clear-input" placeholder="เช่น 24252" maxlength="5" inputmode="numeric" pattern="\d{5}" style="text-align: center;" required>
           </div>
 
-          <button type="submit" id="submitClaimBtn" class="clear-btn clear-btn-emerald" style="width: 100%; padding: 0.85rem; font-size: 1rem;">
-            <i class="fa-solid fa-check-to-slot"></i> <span>ยืนยันรับคะแนน</span>
+          <button type="submit" id="submitClaimBtn" class="clear-btn clear-btn-primary btn-metallic shimmer-manifest" style="width: 100%; padding: 0.85rem; font-size: 1rem;">
+            <i class="fa-solid fa-check-to-slot"></i> <span>ตรวจสอบและรับคะแนน</span>
           </button>
         </form>
 
-        <!-- Result Box -->
-        <div id="claimResult" style="display: none; margin-top: 1.5rem; padding: 1.25rem; border-radius: var(--radius-md); text-align: left;"></div>
+        <div id="claimResult" class="claim-result"></div>
       </div>
     </div>
   </main>
@@ -144,121 +125,176 @@
 
   <script src="../assets/js/shared.js"></script>
   <script>
-    let currentMode = 'score';
     let scanning = false;
     let videoStream = null;
+    let lastClaim = null;
 
-    // Auto-fill student code when opened from a room dashboard modal (?code=xxxxx)
-    (function prefillStudentCode() {
-      const incoming = (new URLSearchParams(window.location.search).get('code') || '').replace(/\D/g, '').slice(0, 5);
-      if (incoming.length === 5) {
-        const input = document.getElementById('claimStudentCode');
-        if (input) input.value = incoming;
-        const codeField = document.getElementById('claimCode');
-        if (codeField) codeField.focus();
-      }
-    })();
-
-    function switchMode(mode) {
-      currentMode = mode;
-      const tabScore = document.getElementById('tabScore');
-      const tabPum = document.getElementById('tabPum');
-      const submitBtn = document.getElementById('submitClaimBtn');
-
-      if (mode === 'score') {
-        tabScore.className = 'mode-tab active';
-        tabPum.className = 'mode-tab';
-        submitBtn.className = 'clear-btn clear-btn-emerald';
-      } else {
-        tabScore.className = 'mode-tab';
-        tabPum.className = 'mode-tab active mode-pum';
-        submitBtn.className = 'clear-btn clear-btn-amber';
-      }
+    function esc(v) {
+      return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
+    /* ── Prefill student code from ?code= or the logged-in room session ── */
+    (function prefillStudent() {
+      const input = document.getElementById('claimStudentCode');
+      if (!input) return;
+      const fromUrl = (new URLSearchParams(window.location.search).get('code') || '').replace(/\D/g, '').slice(0, 5);
+      if (fromUrl.length === 5) { input.value = fromUrl; return; }
+      try {
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const k = sessionStorage.key(i);
+          const m = k && k.match(/^clear_auth_student_(.+)$/);
+          if (m) {
+            const s = JSON.parse(sessionStorage.getItem(k) || 'null');
+            const code = (s && s.code ? String(s.code) : '').replace(/\D/g, '').slice(0, 5);
+            if (code.length === 5) { input.value = code; return; }
+          }
+        }
+      } catch (e) {}
+    })();
+
+    /* ── Auto-detect hint ── */
+    function detectType(code) {
+      const c = String(code || '').trim().toUpperCase();
+      if (c.startsWith('T')) return 'task';
+      if (c.startsWith('P')) return 'pum';
+      return '';
+    }
+    function onCodeInput() {
+      const input = document.getElementById('claimCode');
+      input.value = input.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+      const hint = document.getElementById('codeHint');
+      const t = detectType(input.value);
+      if (!input.value) { hint.className = 'code-hint'; hint.textContent = ''; }
+      else if (t === 'task') { hint.className = 'code-hint task'; hint.textContent = '🔎 ตรวจพบ: คูปองคะแนนงาน (Task Coupon)'; }
+      else if (t === 'pum') { hint.className = 'code-hint pum'; hint.textContent = '🔎 ตรวจพบ: แต้มปั๊ม (PUM Code)'; }
+      else { hint.className = 'code-hint bad'; hint.textContent = '⚠️ รหัสต้องขึ้นต้นด้วย T (คะแนนงาน) หรือ P (แต้มปั๊ม)'; }
+    }
+
+    function setResult(html, cls) {
+      const box = document.getElementById('claimResult');
+      box.className = 'claim-result show ' + (cls || '');
+      box.innerHTML = html;
+    }
+
+    /* ── Claim flow: lookupCode -> redeem / redeemPum ── */
     async function handleClaimCode(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
       const codeInput = document.getElementById('claimCode');
       const studentInput = document.getElementById('claimStudentCode');
-      const resultBox = document.getElementById('claimResult');
       const btn = document.getElementById('submitClaimBtn');
-
       const code = codeInput.value.trim().toUpperCase();
       const studentCode = studentInput.value.trim();
 
+      if (!code) { showToast('กรุณากรอกรหัสคูปอง', 'warning'); return; }
+      if (!/^\d{5}$/.test(studentCode)) { showToast('กรุณากรอกรหัสนักเรียน 5 หลัก', 'warning'); return; }
+      if (!detectType(code)) { showToast('รหัสต้องขึ้นต้นด้วย T หรือ P', 'warning'); return; }
+
       btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบ...`;
+      const original = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบ...';
 
       try {
-        const action = currentMode === 'score' ? 'redeemCoupon' : 'redeemPum';
-        const res = await fetchClearApi(action, {
-          code: code,
-          studentCode: studentCode
-        }, false);
+        const lookup = await fetchClearApi('lookupCode', { code }, false);
+        if (!lookup || !lookup.ok) throw new Error((lookup && lookup.error) || 'รหัสไม่ถูกต้องหรือถูกใช้งานไปแล้ว');
 
-        resultBox.style.display = 'block';
-
-        if (res.ok) {
-          resultBox.style.background = 'var(--brand-emerald-light)';
-          resultBox.style.color = 'var(--brand-emerald)';
-          resultBox.style.border = '1px solid rgba(16,185,129,0.3)';
-          resultBox.innerHTML = `
-            <div style="display: flex; gap: 0.75rem; align-items: center;">
-              <i class="fa-solid fa-circle-check" style="font-size: 1.5rem;"></i>
-              <div>
-                <strong>รับคะแนนสำเร็จ!</strong>
-                <p style="font-size: 0.9rem; color: var(--text-main); margin-top: 2px;">
-                  บันทึกคะแนน ${res.value || res.score || 1} แต้ม ให้กับรหัสนักเรียน ${studentCode} เรียบร้อยแล้ว
-                </p>
-              </div>
-            </div>
-          `;
-          showToast('รับแต้มสำเร็จ!', 'success');
-          codeInput.value = '';
+        if (lookup.type === 'pum') {
+          const res = await fetchClearApi('redeemPum', { pumCode: code, studentCode }, false);
+          if (!res || !res.ok) throw new Error((res && res.error) || 'ไม่สามารถรับแต้มปั๊มได้');
+          lastClaim = { kind: 'pum', code };
+          renderPumResult(res);
+          showToast('รับแต้มปั๊มสำเร็จ!', 'success');
+        } else if (lookup.type === 'task') {
+          const res = await fetchClearApi('redeem', { couponCode: code, studentCode, room: lookup.room }, false);
+          if (!res || !res.ok) throw new Error((res && res.error) || 'ไม่สามารถรับคะแนนงานได้');
+          lastClaim = { kind: 'task', code };
+          renderTaskResult(res);
+          showToast('บันทึกคะแนนงานสำเร็จ!', 'success');
         } else {
-          throw new Error(res.error || 'รหัสไม่ถูกต้องหรือถูกใช้งานไปแล้ว');
+          throw new Error('ไม่รู้จักประเภทของรหัสนี้');
         }
+        codeInput.value = '';
+        onCodeInput();
       } catch (err) {
-        resultBox.style.display = 'block';
-        resultBox.style.background = 'var(--brand-rose-light)';
-        resultBox.style.color = 'var(--brand-rose)';
-        resultBox.style.border = '1px solid rgba(244,63,94,0.3)';
-        resultBox.innerHTML = `
-          <div style="display: flex; gap: 0.75rem; align-items: center;">
-            <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.5rem;"></i>
+        setResult(`
+          <div class="cr-head">
+            <div class="cr-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
             <div>
-              <strong>ไม่สามารถรับคะแนนได้</strong>
-              <p style="font-size: 0.9rem; color: var(--text-main); margin-top: 2px;">${err.message}</p>
+              <div class="cr-title">ไม่สามารถรับคะแนนได้</div>
+              <div class="cr-sub">${esc(err.message)}</div>
             </div>
-          </div>
-        `;
+          </div>`, 'error');
         showToast(err.message, 'error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-check-to-slot"></i> <span>ยืนยันรับคะแนน</span>`;
+        btn.innerHTML = original;
       }
     }
 
+    function renderPumResult(res) {
+      const value = Number(res.value || 0);
+      const label = res.categoryLabel ? `คุณลักษณะ: ${esc(res.categoryLabel)}` : '';
+      setResult(`
+        <div class="cr-head">
+          <div class="cr-icon"><i class="fa-solid fa-stamp"></i></div>
+          <div style="flex:1;">
+            <div class="cr-title">🎉 รับแต้มปั๊มสำเร็จ!</div>
+            <div class="cr-big">+${value} PUM</div>
+            ${label ? `<div class="cr-sub">${label} (+${value} PUM)</div>` : ''}
+            <div class="cr-sub">นักเรียน ${esc(res.studentName || '')} · ห้อง ${esc(res.studentRoom || '')}</div>
+          </div>
+        </div>
+        <div class="cr-actions">
+          <button type="button" class="clear-btn clear-btn-amber" onclick="resetForNext()"><i class="fa-solid fa-ticket"></i> <span>รับอีกใบ 🎟️</span></button>
+          <button type="button" class="clear-btn clear-btn-secondary" onclick="returnToScores()"><i class="fa-solid fa-chart-simple"></i> <span>ดูคะแนนของฉัน</span></button>
+        </div>`, 'pum');
+    }
+
+    function renderTaskResult(res) {
+      const score = Number(res.score || 0);
+      const taskIndex = Number(res.taskIndex || 0);
+      setResult(`
+        <div class="cr-head">
+          <div class="cr-icon"><i class="fa-solid fa-circle-check"></i></div>
+          <div style="flex:1;">
+            <div class="cr-title">🎉 บันทึกคะแนนงานสำเร็จ!</div>
+            <div class="cr-big">+${score} คะแนน</div>
+            <div class="cr-sub">งานที่ ${taskIndex + 1}: ${esc(res.taskLabel || '')} · ห้อง ${esc(res.room || '')}</div>
+            <div class="cr-sub">นักเรียน ${esc(res.studentName || '')}</div>
+          </div>
+        </div>
+        <div class="cr-actions">
+          <button type="button" class="clear-btn clear-btn-emerald" onclick="resetForNext()"><i class="fa-solid fa-ticket"></i> <span>รับอีกใบ 🎟️</span></button>
+          <button type="button" class="clear-btn clear-btn-secondary" onclick="returnToScores()"><i class="fa-solid fa-chart-simple"></i> <span>ดูคะแนนของฉัน</span></button>
+        </div>`, 'task');
+    }
+
+    function resetForNext() {
+      const box = document.getElementById('claimResult');
+      box.className = 'claim-result';
+      box.innerHTML = '';
+      const codeInput = document.getElementById('claimCode');
+      codeInput.value = '';
+      onCodeInput();
+      codeInput.focus();
+      if (!scanning) showToast('พร้อมรับใบถัดไป กรอกหรือสแกนรหัสได้เลย', 'info');
+    }
+
+    /* ── Camera QR scanning (jsQR) ── */
     async function toggleCamera() {
       const scanner = document.getElementById('scannerArea');
       const video = document.getElementById('videoFeed');
       const btnText = document.getElementById('cameraBtnText');
 
       if (scanning) {
-        if (videoStream) {
-          videoStream.getTracks().forEach(t => t.stop());
-        }
-        scanner.style.display = 'none';
-        btnText.textContent = 'เปิดกล้องสแกน QR Code';
-        scanning = false;
+        stopCamera();
         return;
       }
-
       try {
         videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
         video.srcObject = videoStream;
         video.setAttribute('playsinline', true);
-        video.play();
+        await video.play();
         scanner.style.display = 'block';
         btnText.textContent = 'ปิดกล้องสแกน';
         scanning = true;
@@ -266,6 +302,26 @@
       } catch (err) {
         showToast('ไม่สามารถเข้าถึงกล้องได้: ' + err.message, 'error');
       }
+    }
+
+    function stopCamera() {
+      if (videoStream) videoStream.getTracks().forEach(t => t.stop());
+      videoStream = null;
+      const scanner = document.getElementById('scannerArea');
+      if (scanner) scanner.style.display = 'none';
+      const btnText = document.getElementById('cameraBtnText');
+      if (btnText) btnText.textContent = 'เปิดกล้องสแกน QR Code';
+      scanning = false;
+    }
+
+    function extractCode(text) {
+      let code = String(text || '').trim();
+      try {
+        const u = new URL(code);
+        const fromQuery = u.searchParams.get('code');
+        if (fromQuery) code = fromQuery;
+      } catch (e) {}
+      return code.toUpperCase().replace(/[^A-Z0-9-]/g, '');
     }
 
     function tickScan() {
@@ -278,11 +334,14 @@
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(imgData.data, imgData.width, imgData.height);
-        if (code && code.data) {
-          document.getElementById('claimCode').value = code.data.trim();
+        const result = jsQR(imgData.data, imgData.width, imgData.height);
+        if (result && result.data) {
+          const code = extractCode(result.data);
+          document.getElementById('claimCode').value = code;
+          onCodeInput();
+          stopCamera();
           showToast('สแกน QR Code สำเร็จ!', 'success');
-          toggleCamera();
+          handleClaimCode();
           return;
         }
       }

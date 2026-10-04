@@ -6,6 +6,7 @@
   <title>ศูนย์ควบคุมครูผู้สอน (Teacher Command Center) | Project CLEAR</title>
   <link rel="stylesheet" href="../assets/css/theme.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   <style>
     .teacher-table {
       width: 100%;
@@ -71,17 +72,17 @@
       overflow: hidden;
       padding: 1px;
     }
-    .coupon-cell .coupon-mark {
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      display: grid; place-items: center;
-      font-size: 0.62rem; font-weight: 800; color: #fff;
-      margin-bottom: 2px;
+    .coupon-cell .coupon-qr { width: 34px; height: 34px; display: grid; place-items: center; }
+    .coupon-cell .coupon-qr svg { width: 100%; height: 100%; display: block; }
+    .coupon-cell .coupon-code {
+      font-size: 0.42rem; font-weight: 800; letter-spacing: 0.01em; line-height: 1;
+      margin-top: 1px; word-break: break-all; font-family: 'Inter', monospace;
     }
-    .coupon-cell .coupon-label { font-size: 0.5rem; font-weight: 700; line-height: 1.05; }
-    .coupon-cell .coupon-brand { font-size: 0.4rem; color: #94a3b8; letter-spacing: 0.03em; }
-    .coupon-cell.self-point .coupon-mark { background: linear-gradient(135deg, #10b981, #0ea5e9); }
-    .coupon-cell.pum .coupon-mark { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .coupon-cell .coupon-label { font-size: 0.4rem; font-weight: 600; line-height: 1.05; color: #475569; margin-top: 1px; }
+    .coupon-cell.coupon { border-color: #a7f3d0; }
+    .coupon-cell.pum { border-color: #fcd34d; }
+    .coupon-cell.coupon .coupon-code { color: #047857; }
+    .coupon-cell.pum .coupon-code { color: #b45309; }
 
     .voice-bar {
       height: 8px;
@@ -219,22 +220,67 @@
       <div id="tab-coupons" class="teacher-tab-panel">
         <div class="clear-card" style="margin-bottom: 1.25rem;">
           <h3 class="section-title" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-print" style="color: var(--brand-amber);"></i> <span>เครื่องมือพิมพ์คูปอง CLEAR Point Voucher (A4 160 ดวง)</span></h3>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">เลือกประเภทคูปองและจำนวนแผ่น แล้วกดพิมพ์ลงกระดาษ A4 (10 × 16 = 160 ดวงต่อแผ่น)</p>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">สร้างรหัสจริงจากฐานข้อมูล แล้วพิมพ์ QR Code ลงกระดาษ A4 (10 × 16 = 160 ดวงต่อแผ่น)</p>
 
-          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-end;">
-            <div style="min-width: 220px;">
-              <label class="clear-label" for="couponType">ประเภทคูปอง</label>
-              <select id="couponType" class="clear-input" onchange="renderCouponSheet()">
-                <option value="self-point">CLEAR Point (แต้มสมรรถนะ)</option>
-                <option value="pum">PUM (แต้มปั๊มสะสม)</option>
+          <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:flex-end; margin-bottom:0.75rem;">
+            <div style="min-width: 250px;">
+              <label class="clear-label" for="couponKind">ประเภทคูปอง</label>
+              <select id="couponKind" class="clear-input" onchange="onCouponKindChange()">
+                <option value="coupon">คูปองคะแนนงาน (Task Coupon)</option>
+                <option value="pum">คูปองแต้มปั๊ม PUM</option>
               </select>
             </div>
-            <div style="min-width: 140px;">
-              <label class="clear-label" for="couponSheets">จำนวนแผ่น</label>
-              <input type="number" id="couponSheets" class="clear-input" min="1" max="10" value="1" onchange="renderCouponSheet()">
-            </div>
-            <button class="clear-btn clear-btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> <span>พิมพ์คูปอง</span></button>
           </div>
+
+          <div id="couponTaskFields" style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:flex-end;">
+            <div style="min-width:150px;">
+              <label class="clear-label" for="couponRoom">ห้องเรียน</label>
+              <select id="couponRoom" class="clear-input" onchange="onCouponRoomChange()"></select>
+            </div>
+            <div style="min-width:230px;">
+              <label class="clear-label" for="couponTask">ลำดับงาน</label>
+              <select id="couponTask" class="clear-input" onchange="onCouponTaskChange()"></select>
+            </div>
+            <div style="min-width:130px;">
+              <label class="clear-label" for="couponScore">คะแนน</label>
+              <input type="number" id="couponScore" class="clear-input" min="1" max="20" value="5">
+            </div>
+          </div>
+
+          <div id="couponPumFields" style="display:none; gap:0.75rem; flex-wrap:wrap; align-items:flex-end;">
+            <div style="min-width:230px;">
+              <label class="clear-label" for="pumKind">ชนิดปั๊ม</label>
+              <select id="pumKind" class="clear-input" onchange="onPumKindChange()">
+                <option value="general">ทั่วไป (2, 3, 4, 5, 10 ปั๊ม)</option>
+                <option value="attribute">คุณลักษณะอันพึงประสงค์ (A1–A8)</option>
+                <option value="competency">สมรรถนะสำคัญ (C1–C5)</option>
+              </select>
+            </div>
+            <div id="pumGeneralWrap" style="min-width:130px;">
+              <label class="clear-label" for="pumValue">มูลค่า</label>
+              <select id="pumValue" class="clear-input">
+                <option value="2">2 ปั๊ม</option>
+                <option value="3">3 ปั๊ม</option>
+                <option value="4">4 ปั๊ม</option>
+                <option value="5" selected>5 ปั๊ม</option>
+                <option value="10">10 ปั๊ม</option>
+              </select>
+            </div>
+            <div id="pumCategoryWrap" style="display:none; min-width:280px;">
+              <label class="clear-label" for="pumCategory">หัวข้อ</label>
+              <select id="pumCategory" class="clear-input"></select>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:flex-end; margin-top:1rem;">
+            <div style="min-width:150px;">
+              <label class="clear-label" for="couponSheets">จำนวนแผ่น (1–5)</label>
+              <input type="number" id="couponSheets" class="clear-input" min="1" max="5" value="1">
+            </div>
+            <button class="clear-btn clear-btn-primary" id="couponGenBtn" onclick="generateRealCoupons()"><i class="fa-solid fa-bolt"></i> <span>สร้างรหัสจริง &amp; แสดงตัวอย่างแผ่นพิมพ์</span></button>
+            <button class="clear-btn clear-btn-secondary" id="couponPrintBtn" onclick="window.print()" disabled><i class="fa-solid fa-print"></i> <span>พิมพ์คูปอง</span></button>
+          </div>
+          <p id="couponStatus" style="font-size:0.85rem; color:var(--text-muted); margin-top:0.75rem;"></p>
         </div>
 
         <div style="overflow-x: auto; padding: 0.5rem;">
@@ -431,7 +477,7 @@
     function enterPanel() {
       document.getElementById('teacherLoginArea').style.display = 'none';
       document.getElementById('teacherPanelArea').style.display = 'block';
-      renderCouponSheet();
+      if (typeof initCouponTools === 'function') initCouponTools();
       renderVoiceReport();
       if (!dataLoaded) loadAllRooms();
     }
@@ -578,32 +624,7 @@
       if (panel) panel.classList.add('active');
     }
 
-    /* ── Coupon printer (A4 · 160 units) ── */
-    function renderCouponSheet() {
-      const typeEl = document.getElementById('couponType');
-      const sheetsEl = document.getElementById('couponSheets');
-      if (!typeEl || !sheetsEl) return;
-
-      const type = typeEl.value;
-      const sheets = Math.max(1, Math.min(10, parseInt(sheetsEl.value, 10) || 1));
-      const isPum = type === 'pum';
-      const markText = isPum ? 'PUM' : 'CP';
-      const labelText = isPum ? 'PUM' : 'CLEAR Point';
-
-      const cells = Array.from({ length: 160 }, (_, i) => `
-        <div class="coupon-cell ${isPum ? 'pum' : 'self-point'}">
-          <div class="coupon-mark">${markText}</div>
-          <div class="coupon-label">${labelText}</div>
-          <div class="coupon-brand">CLEAR</div>
-        </div>
-      `).join('');
-
-      const sheetHtml = `
-        <div class="coupon-sheet">${cells}</div>
-      `;
-
-      document.getElementById('couponPrintArea').innerHTML = sheetHtml.repeat(sheets);
-    }
+    /* ── Coupon generator lives in assets/js/teacher-coupons.js (real codes + QR) ── */
 
     /* ── CLEAR Voice report ── */
     const VOICE_LABELS = {
@@ -714,5 +735,6 @@
     });
   </script>
   <script src="../assets/js/teacher-ar.js"></script>
+  <script src="../assets/js/teacher-coupons.js"></script>
 </body>
 </html>
