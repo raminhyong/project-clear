@@ -167,7 +167,7 @@
         <button class="teacher-tab active" data-tab="rooms" onclick="switchTab('rooms', this)"><i class="fa-solid fa-school"></i> ห้องเรียน 8 ห้อง</button>
         <button class="teacher-tab" data-tab="overview" onclick="switchTab('overview', this)"><i class="fa-solid fa-chart-line"></i> ภาพรวมคะแนนทั้ง 8 ห้อง</button>
         <button class="teacher-tab" data-tab="coupons" onclick="switchTab('coupons', this)"><i class="fa-solid fa-ticket"></i> คูปอง CLEAR Point</button>
-        <button class="teacher-tab" data-tab="voice" onclick="switchTab('voice', this)"><i class="fa-solid fa-comment-dots"></i> รายงาน CLEAR Voice</button>
+        <button class="teacher-tab" data-tab="voice" onclick="switchTab('voice', this); if (typeof initVoiceDashboard === 'function') initVoiceDashboard();"><i class="fa-solid fa-comment-dots"></i> CLEAR Voice</button>
         <button class="teacher-tab" data-tab="space" onclick="switchTab('space', this)"><i class="fa-solid fa-book-open"></i> คลัง CLEAR Space</button>
         <button class="teacher-tab" data-tab="ar" onclick="switchTab('ar', this); if (typeof loadArAdmin === 'function') loadArAdmin();"><i class="fa-solid fa-vr-cardboard"></i> จัดการ CLEAR AR</button>
       </div>
@@ -292,10 +292,27 @@
       <div id="tab-voice" class="teacher-tab-panel">
         <div class="clear-card" style="margin-bottom: 1.25rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
-            <h3 class="section-title" style="margin-bottom: 0;"><i class="fa-solid fa-comment-dots" style="color: var(--brand-purple);"></i> <span>รายงานผลประเมิน CLEAR Voice</span></h3>
-            <button class="clear-btn clear-btn-secondary" style="font-size: 0.85rem;" onclick="renderVoiceReport()"><i class="fa-solid fa-rotate"></i> <span>รีเฟรชข้อมูล</span></button>
+            <h3 class="section-title" style="margin-bottom: 0;"><i class="fa-solid fa-comment-dots" style="color: var(--brand-purple);"></i> <span>Voice Analytics Command Center</span></h3>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button class="clear-btn clear-btn-primary" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);" onclick="openVoiceRoundModal()"><i class="fa-solid fa-plus"></i> <span>สร้างรอบประเมินใหม่</span></button>
+              <button class="clear-btn clear-btn-secondary" onclick="showVoicePoster()"><i class="fa-solid fa-qrcode"></i> <span>แผ่นป้าย QR</span></button>
+            </div>
           </div>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">ข้อมูลแบบประเมินที่นักเรียนส่งไว้บนอุปกรณ์นี้ (ไม่ระบุตัวตน)</p>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
+            <div style="min-width: 210px;">
+              <label class="clear-label" for="voiceRoomFilter">ขอบเขตห้องเรียน</label>
+              <select id="voiceRoomFilter" class="clear-input" onchange="loadVoiceDashboard()">
+                <option value="all">ทุกห้องเรียน (ม.6 ภาพรวม)</option>
+              </select>
+            </div>
+            <div style="min-width: 250px;">
+              <label class="clear-label" for="voiceEvalFilter">รอบการประเมิน</label>
+              <select id="voiceEvalFilter" class="clear-input" onchange="loadVoiceDashboard()">
+                <option value="all">ทุกรอบ</option>
+              </select>
+            </div>
+          </div>
+          <p id="voiceStatus" style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.6rem;"></p>
         </div>
         <div id="voiceReportArea"></div>
       </div>
@@ -478,7 +495,7 @@
       document.getElementById('teacherLoginArea').style.display = 'none';
       document.getElementById('teacherPanelArea').style.display = 'block';
       if (typeof initCouponTools === 'function') initCouponTools();
-      renderVoiceReport();
+      if (typeof initVoiceDashboard === 'function') initVoiceDashboard();
       if (!dataLoaded) loadAllRooms();
     }
 
@@ -626,106 +643,7 @@
 
     /* ── Coupon generator lives in assets/js/teacher-coupons.js (real codes + QR) ── */
 
-    /* ── CLEAR Voice report ── */
-    const VOICE_LABELS = {
-      '1': 'การจัดกิจกรรมการเรียนรู้',
-      '2': 'การใช้สื่อนวัตกรรมและเทคโนโลยี',
-      '3': 'การให้คำแนะนำและดูแลเอาใจใส่',
-      '4': 'ความเป็นธรรมและโปร่งใสในการวัดผล'
-    };
-
-    function renderVoiceReport() {
-      const area = document.getElementById('voiceReportArea');
-      let feedbacks = [];
-      try {
-        feedbacks = JSON.parse(localStorage.getItem('clear_voice_feedbacks') || '[]');
-      } catch (e) { feedbacks = []; }
-
-      if (!feedbacks.length) {
-        area.innerHTML = `
-          <div class="clear-card" style="text-align:center; padding: 3rem 2rem;">
-            <i class="fa-solid fa-inbox" style="font-size: 2.5rem; color: var(--text-dim); margin-bottom: 1rem;"></i>
-            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">ยังไม่มีผลประเมิน</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">เมื่อนักเรียนส่งแบบประเมิน CLEAR Voice ผลจะแสดงที่นี่</p>
-          </div>`;
-        return;
-      }
-
-      // Per-room aggregation
-      const agg = {};
-      let globalSum = 0, globalCount = 0;
-      feedbacks.forEach(fb => {
-        const room = fb.room || 'ไม่ระบุ';
-        if (!agg[room]) agg[room] = { count: 0, sum: 0, ratings: {} };
-        agg[room].count++;
-        const ratings = fb.ratings || {};
-        Object.values(ratings).forEach(v => {
-          const num = Number(v) || 0;
-          globalSum += num; globalCount++;
-          agg[room].sum += num;
-        });
-      });
-      const globalAvg = globalCount ? (globalSum / globalCount).toFixed(2) : '0.00';
-
-      const roomCards = Object.entries(agg).map(([room, a]) => {
-        const avg = a.count ? (a.sum / (a.count * 4)) : 0;
-        const pct = Math.round((avg / 5) * 100);
-        return `
-          <div class="clear-card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <strong style="font-size:1.05rem;">ห้อง ${roomLabel(room)}</strong>
-              <span class="clear-badge badge-purple">${avg.toFixed(2)} / 5</span>
-            </div>
-            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">${a.count} ความคิดเห็น</p>
-            <div class="voice-bar"><div style="width:${pct}%"></div></div>
-          </div>
-        `;
-      }).join('');
-
-      const listHtml = feedbacks.slice().reverse().map(fb => {
-        const ratings = fb.ratings || {};
-        const stars = Object.keys(VOICE_LABELS).map(k => {
-          const v = Number(ratings[k] || 0);
-          return `<div style="display:flex; justify-content:space-between; font-size:0.82rem; padding:0.2rem 0;">
-            <span style="color:var(--text-muted);">${VOICE_LABELS[k]}</span>
-            <span style="color:var(--brand-amber); font-weight:700;">${v}/5</span>
-          </div>`;
-        }).join('');
-        const when = fb.timestamp ? new Date(fb.timestamp).toLocaleString('th-TH') : '';
-        return `
-          <div class="clear-card" style="margin-bottom:1rem;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem; flex-wrap:wrap; gap:0.4rem;">
-              <span class="clear-badge badge-blue">ห้อง ${roomLabel(fb.room || 'ไม่ระบุ')}</span>
-              <span style="font-size:0.78rem; color:var(--text-dim);">${when}</span>
-            </div>
-            ${stars}
-            ${fb.feedback ? `<div style="margin-top:0.75rem; padding:0.75rem; border-radius:10px; background:var(--brand-blue-light); font-size:0.9rem; color:var(--text-main);"><i class="fa-solid fa-quote-left" style="opacity:0.4; margin-right:0.4rem;"></i>${fb.feedback}</div>` : ''}
-          </div>
-        `;
-      }).join('');
-
-      area.innerHTML = `
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:1rem; margin-bottom:1.5rem;">
-          <div class="clear-card" style="text-align:center; background:linear-gradient(135deg, rgba(139,92,246,0.1), rgba(124,58,237,0.06));">
-            <div style="font-size:2rem; font-weight:800; color:var(--brand-purple);">${feedbacks.length}</div>
-            <div style="font-size:0.85rem; color:var(--text-muted);">แบบประเมินทั้งหมด</div>
-          </div>
-          <div class="clear-card" style="text-align:center; background:linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.06));">
-            <div style="font-size:2rem; font-weight:800; color:var(--brand-amber);">${globalAvg}</div>
-            <div style="font-size:0.85rem; color:var(--text-muted);">คะแนนเฉลี่ยรวม (เต็ม 5)</div>
-          </div>
-          <div class="clear-card" style="text-align:center; background:linear-gradient(135deg, rgba(37,99,235,0.1), rgba(37,99,235,0.04));">
-            <div style="font-size:2rem; font-weight:800; color:var(--brand-blue);">${Object.keys(agg).length}</div>
-            <div style="font-size:0.85rem; color:var(--text-muted);">ห้องที่มีผู้ประเมิน</div>
-          </div>
-        </div>
-
-        <div class="teacher-grid" style="margin-bottom:1.75rem;">${roomCards}</div>
-
-        <h3 class="section-title"><i class="fa-solid fa-list" style="color:var(--brand-purple);"></i> <span>ความคิดเห็นรายฉบับ</span></h3>
-        ${listHtml}
-      `;
-    }
+    /* ── CLEAR Voice dashboard lives in assets/js/teacher-voice.js ── */
 
     /* ── Init ── */
     document.addEventListener('DOMContentLoaded', () => {
@@ -736,5 +654,6 @@
   </script>
   <script src="../assets/js/teacher-ar.js"></script>
   <script src="../assets/js/teacher-coupons.js"></script>
+  <script src="../assets/js/teacher-voice.js"></script>
 </body>
 </html>

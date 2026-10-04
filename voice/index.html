@@ -3,61 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบประเมินครูผู้สอน (CLEAR Voice) | Project CLEAR</title>
+  <title>CLEAR Voice — เสียงสะท้อนผู้เรียน | Project CLEAR</title>
   <link rel="stylesheet" href="../assets/css/theme.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    .voice-container {
-      max-width: 680px;
-      margin: 0 auto;
+    body { background: radial-gradient(circle at 50% -10%, rgba(139,92,246,0.14), transparent 60%), var(--bg-primary); }
+    #voiceRoot { max-width: 720px; margin: 0 auto; }
+
+    .voice-hero { text-align: center; margin-bottom: 1.75rem; }
+    .voice-card { padding: 1.75rem; }
+    .voice-progress { display: flex; gap: 0.4rem; margin-bottom: 1.5rem; }
+    .voice-progress .seg { flex: 1; height: 7px; border-radius: 999px; background: var(--border-subtle); overflow: hidden; }
+    .voice-progress .seg.done { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
+    .voice-progress .seg.active { background: linear-gradient(90deg, #a78bfa, #8b5cf6); box-shadow: 0 0 0 2px rgba(139,92,246,0.25); }
+
+    .voice-step-title { font-size: 1.3rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem; }
+    .voice-step-title i { color: #8b5cf6; }
+    .voice-step-sub { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .voice-q { margin-bottom: 1.6rem; }
+    .voice-q-label { font-weight: 700; font-size: 1.02rem; margin-bottom: 0.75rem; line-height: 1.5; }
+    .voice-q-req { color: #f43f5e; margin-left: 0.2rem; }
+
+    .emoji-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; }
+    .emoji-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 0.35rem; padding: 0.7rem 0.3rem;
+      border-radius: 14px; border: 1.5px solid var(--border-subtle); background: var(--surface-card);
+      cursor: pointer; font-family: var(--font-thai); transition: all 0.18s ease;
     }
-    .criteria-card {
-      background: var(--surface-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 1.25rem;
-      margin-bottom: 1.25rem;
-      transition: all 0.2s;
+    .emoji-btn .emoji { font-size: 1.7rem; line-height: 1; transition: transform 0.18s ease; }
+    .emoji-btn .emoji-label { font-size: 0.68rem; color: var(--text-muted); font-weight: 600; text-align: center; line-height: 1.1; }
+    .emoji-btn:hover { border-color: #8b5cf6; transform: translateY(-2px); }
+    .emoji-btn.selected { border-color: #8b5cf6; background: rgba(139,92,246,0.12); box-shadow: 0 6px 16px -6px rgba(139,92,246,0.6); }
+    .emoji-btn.selected .emoji { transform: scale(1.15); }
+
+    .scale-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.45rem; }
+    .scale-btn {
+      padding: 0.6rem 0.25rem; border-radius: 12px; border: 1.5px solid var(--border-subtle);
+      background: var(--surface-card); cursor: pointer; font-family: var(--font-thai);
+      display: flex; flex-direction: column; align-items: center; gap: 0.2rem; transition: all 0.18s ease;
     }
-    .criteria-card:hover {
-      border-color: var(--brand-purple);
-      box-shadow: 0 4px 14px rgba(139,92,246,0.1);
+    .scale-btn .num { font-weight: 800; font-size: 1rem; }
+    .scale-btn .cap { font-size: 0.62rem; color: var(--text-muted); text-align: center; line-height: 1.05; }
+    .scale-btn:hover { border-color: #8b5cf6; }
+    .scale-btn.selected { border-color: #8b5cf6; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: #fff; }
+    .scale-btn.selected .cap { color: rgba(255,255,255,0.85); }
+    .scale-hint { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim); margin-top: 0.35rem; }
+
+    .chip-wrap { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip {
+      padding: 0.5rem 0.9rem; border-radius: 999px; border: 1.5px solid var(--border-subtle);
+      background: var(--surface-card); cursor: pointer; font-family: var(--font-thai);
+      font-size: 0.88rem; font-weight: 600; transition: all 0.16s ease;
     }
-    .rating-group {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.85rem;
-      justify-content: space-between;
-    }
-    .rate-btn {
-      flex: 1;
-      padding: 0.6rem 0.4rem;
-      border-radius: var(--radius-sm);
-      border: 1.5px solid var(--border-subtle);
-      background: var(--surface-card);
-      color: var(--text-main);
-      font-weight: 600;
-      font-size: 0.95rem;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.25rem;
-      transition: all 0.2s;
-    }
-    .rate-btn:hover {
-      border-color: var(--brand-purple);
-      background: var(--brand-purple-light);
-    }
-    .rate-btn.selected {
-      border-color: var(--brand-purple);
-      background: var(--brand-purple);
-      color: white;
-      box-shadow: 0 4px 12px rgba(139,92,246,0.3);
-    }
-    .rate-btn i {
-      font-size: 1.1rem;
-    }
+    .chip:hover { border-color: #8b5cf6; }
+    .chip.selected { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: #fff; border-color: transparent; box-shadow: 0 5px 14px -6px rgba(139,92,246,0.7); }
+    .chip-limit { font-size: 0.74rem; color: var(--text-dim); margin-top: 0.4rem; }
+
+    .voice-textarea { width: 100%; min-height: 84px; }
+
+    .voice-nav { display: flex; justify-content: space-between; gap: 0.75rem; margin-top: 1.75rem; }
+    .voice-nav .clear-btn { flex: 1; }
+
+    .voice-code-box { text-align: center; }
+    .voice-thanks { text-align: center; padding: 2.5rem 1.5rem; }
+    .voice-thanks .heart { font-size: 3rem; margin-bottom: 0.75rem; animation: heartBeat 1.4s ease-in-out infinite; }
+    @keyframes heartBeat { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); } }
   </style>
 </head>
 <body>
@@ -72,7 +82,6 @@
           <span>CLEAR Voice</span>
         </div>
       </div>
-
       <nav class="nav-links">
         <button type="button" class="nav-btn" onclick="returnToScores()" title="กลับหน้าคะแนนของฉัน">
           <i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span>
@@ -83,96 +92,17 @@
   </header>
 
   <main class="clear-container">
-    <div class="voice-container">
-      <div style="margin-bottom: 1.75rem; text-align: center;">
+    <div id="voiceRoot">
+      <div class="voice-hero">
         <span class="clear-badge badge-metallic" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-shield-heart"></i> CLEAR Voice · ประเมินอย่างโปร่งใส</span>
         <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main);">CLEAR Voice</h1>
-        <p style="color: var(--text-muted); font-size: 0.95rem;">ระบบประเมินเสียงสะท้อนผู้เรียน — สะท้อนความคิดเห็นและประเมินประสิทธิภาพการสอนของครูผู้สอน</p>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">เสียงสะท้อนของคุณมีค่า ช่วยให้ห้องเรียนของเราดีขึ้นทุกวัน</p>
       </div>
-
-      <div class="clear-card" style="padding: 2rem;">
-        <form onsubmit="handleSubmitEvaluation(event)">
-          <!-- Room Selector -->
-          <div class="clear-input-group">
-            <label class="clear-label" for="evalRoom">ระดับชั้น / ห้องเรียนของคุณ</label>
-            <select id="evalRoom" class="clear-input" required>
-              <option value="">-- กรุณาเลือกห้องเรียน --</option>
-              <option value="6/1">ม.6/1 ภาษาไทยพื้นฐาน</option>
-              <option value="6/2">ม.6/2 ภาษาไทยพื้นฐาน</option>
-              <option value="6/5">ม.6/5 ภาษาไทยพื้นฐาน</option>
-              <option value="6/5 Add">ม.6/5 ภาษาไทยเพิ่มเติม</option>
-              <option value="6/6">ม.6/6 ภาษาไทยพื้นฐาน</option>
-              <option value="6/7">ม.6/7 ภาษาไทยพื้นฐาน</option>
-              <option value="6/8">ม.6/8 ภาษาไทยพื้นฐาน</option>
-              <option value="6/9">ม.6/9 ภาษาไทยพื้นฐาน</option>
-            </select>
-          </div>
-
-          <!-- Evaluation Questions -->
-          <div id="criteriaList">
-            <!-- Item 1 -->
-            <div class="criteria-card">
-              <strong style="display:block; font-size: 1rem; margin-bottom: 0.25rem;">1. การจัดกิจกรรมการเรียนรู้</strong>
-              <p style="font-size: 0.85rem; color: var(--text-muted);">ครูจัดกิจกรรมที่น่าสนใจ ส่งเสริมให้นักเรียนได้คิด วิเคราะห์ และมีส่วนร่วม</p>
-              <div class="rating-group" data-item="1">
-                <button type="button" class="rate-btn" onclick="selectRate(1, 1, this)"><span>1</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(1, 2, this)"><span>2</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(1, 3, this)"><span>3</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(1, 4, this)"><span>4</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(1, 5, this)"><span>5</span><i class="fa-solid fa-star"></i></button>
-              </div>
-            </div>
-
-            <!-- Item 2 -->
-            <div class="criteria-card">
-              <strong style="display:block; font-size: 1rem; margin-bottom: 0.25rem;">2. การใช้สื่อนวัตกรรมและเทคโนโลยี</strong>
-              <p style="font-size: 0.85rem; color: var(--text-muted);">การนำสื่อ CLEAR AR, เกมจำลอง CLEAR Journey, แบบฝึกออนไลน์ และเว็บไซต์มาช่วยสอน</p>
-              <div class="rating-group" data-item="2">
-                <button type="button" class="rate-btn" onclick="selectRate(2, 1, this)"><span>1</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(2, 2, this)"><span>2</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(2, 3, this)"><span>3</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(2, 4, this)"><span>4</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(2, 5, this)"><span>5</span><i class="fa-solid fa-star"></i></button>
-              </div>
-            </div>
-
-            <!-- Item 3 -->
-            <div class="criteria-card">
-              <strong style="display:block; font-size: 1rem; margin-bottom: 0.25rem;">3. การให้คำแนะนำและการดูแลเอาใจใส่</strong>
-              <p style="font-size: 0.85rem; color: var(--text-muted);">ครูรับฟังความคิดเห็น ให้คำปรึกษา และช่วยเหลือเมื่อนักเรียนมีข้อสงสัย</p>
-              <div class="rating-group" data-item="3">
-                <button type="button" class="rate-btn" onclick="selectRate(3, 1, this)"><span>1</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(3, 2, this)"><span>2</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(3, 3, this)"><span>3</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(3, 4, this)"><span>4</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(3, 5, this)"><span>5</span><i class="fa-solid fa-star"></i></button>
-              </div>
-            </div>
-
-            <!-- Item 4 -->
-            <div class="criteria-card">
-              <strong style="display:block; font-size: 1rem; margin-bottom: 0.25rem;">4. ความเป็นธรรมและโปร่งใสในการวัดผล</strong>
-              <p style="font-size: 0.85rem; color: var(--text-muted);">เกณฑ์คะแนนชัดเจน ตรวจสอบผลงานและแจ้งคะแนนอย่างตรงไปตรงมา</p>
-              <div class="rating-group" data-item="4">
-                <button type="button" class="rate-btn" onclick="selectRate(4, 1, this)"><span>1</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(4, 2, this)"><span>2</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(4, 3, this)"><span>3</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(4, 4, this)"><span>4</span><i class="fa-regular fa-star"></i></button>
-                <button type="button" class="rate-btn" onclick="selectRate(4, 5, this)"><span>5</span><i class="fa-solid fa-star"></i></button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Free text feedback -->
-          <div class="clear-input-group">
-            <label class="clear-label" for="evalFeedback">ข้อเสนอแนะหรือสิ่งที่อยากบอกครูเพิ่มเติม (ไม่ระบุตัวตน)</label>
-            <textarea id="evalFeedback" class="clear-input" rows="3" placeholder="เขียนข้อความถึงครูได้ตามความจริง ข้อคิดเห็นนี้จะถูกนำไปพัฒนาการเรียนการสอนต่อไป"></textarea>
-          </div>
-
-          <button type="submit" id="submitVoiceBtn" class="clear-btn clear-btn-primary" style="width: 100%; padding: 0.85rem; font-size: 1rem; background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-            <i class="fa-solid fa-paper-plane"></i> <span>ส่งแบบประเมิน</span>
-          </button>
-        </form>
+      <div id="voiceBody">
+        <div class="clear-card voice-card" style="text-align:center; padding:3rem;">
+          <i class="fa-solid fa-circle-notch fa-spin" style="font-size:2rem; color:#8b5cf6;"></i>
+          <p style="color:var(--text-muted); margin-top:0.75rem;">กำลังโหลดแบบประเมิน...</p>
+        </div>
       </div>
     </div>
   </main>
@@ -182,65 +112,6 @@
   </footer>
 
   <script src="../assets/js/shared.js"></script>
-  <script>
-    const ratings = {};
-
-    // When opened from a student room modal, lock to that room and hide the
-    // cross-room selector so no other rooms are exposed (Dembrandt zero-leak).
-    (function lockRoomFromQuery() {
-      const room = (new URLSearchParams(window.location.search).get('room') || '').trim();
-      if (!room) return;
-      const sel = document.getElementById('evalRoom');
-      if (!sel) return;
-      const opt = Array.from(sel.options).find(o => o.value === room);
-      if (opt) {
-        sel.value = room;
-        const group = sel.closest('.clear-input-group');
-        if (group) group.style.display = 'none';
-      }
-    })();
-
-    function selectRate(item, score, btn) {
-      ratings[item] = score;
-      const group = btn.closest('.rating-group');
-      group.querySelectorAll('.rate-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-    }
-
-    function handleSubmitEvaluation(e) {
-      e.preventDefault();
-      const room = document.getElementById('evalRoom').value;
-      if (!room) {
-        showToast('กรุณาเลือกห้องเรียนของคุณ', 'warning');
-        return;
-      }
-
-      if (Object.keys(ratings).length < 4) {
-        showToast('กรุณาให้คะแนนครบทุกข้อการประเมิน', 'warning');
-        return;
-      }
-
-      const feedback = document.getElementById('evalFeedback').value.trim();
-      
-      const payload = {
-        room,
-        ratings,
-        feedback,
-        timestamp: new Date().toISOString()
-      };
-
-      try {
-        const stored = JSON.parse(localStorage.getItem('clear_voice_feedbacks') || '[]');
-        stored.push(payload);
-        localStorage.setItem('clear_voice_feedbacks', JSON.stringify(stored));
-      } catch (err) {}
-
-      showToast('ส่งแบบประเมินเรียบร้อยแล้ว ขอบคุณสำหรับความคิดเห็นที่มีค่านะครับ', 'success', '🙏 ขอบคุณครับ');
-      
-      setTimeout(() => {
-        window.location.href = '../index.html';
-      }, 1500);
-    }
-  </script>
+  <script src="voice-engine.js"></script>
 </body>
 </html>
