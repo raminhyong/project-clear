@@ -170,6 +170,7 @@
         <button class="teacher-tab" data-tab="voice" onclick="switchTab('voice', this); if (typeof initVoiceDashboard === 'function') initVoiceDashboard();"><i class="fa-solid fa-comment-dots"></i> CLEAR Voice</button>
         <button class="teacher-tab" data-tab="space" onclick="switchTab('space', this)"><i class="fa-solid fa-book-open"></i> คลัง CLEAR Space</button>
         <button class="teacher-tab" data-tab="ar" onclick="switchTab('ar', this); if (typeof loadArAdmin === 'function') loadArAdmin();"><i class="fa-solid fa-vr-cardboard"></i> จัดการ CLEAR AR</button>
+        <button class="teacher-tab" data-tab="quiz" onclick="switchTab('quiz', this); if (typeof loadQuizAdmin === 'function') loadQuizAdmin();"><i class="fa-solid fa-list-check"></i> CLEAR Quiz</button>
       </div>
 
       <!-- Tab: room cards -->
@@ -380,6 +381,24 @@
               <tr><td colspan="7" style="padding: 3rem; color: var(--text-muted);">กำลังโหลดข้อมูล...</td></tr>
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Tab: CLEAR Quiz (15 lessons) -->
+      <div id="tab-quiz" class="teacher-tab-panel">
+        <div class="clear-card" style="margin-bottom:1.25rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">
+            <h3 class="section-title" style="margin-bottom:0;"><i class="fa-solid fa-list-check" style="color:var(--brand-amber);"></i> <span>จัดการ CLEAR Quiz (15 คาบ)</span></h3>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+              <button class="clear-btn clear-btn-primary" style="background:linear-gradient(135deg,#f59e0b,#d97706);" onclick="toggleAllQuiz(true)"><i class="fa-solid fa-lock-open"></i> <span>เปิดทุกคาบ</span></button>
+              <button class="clear-btn clear-btn-secondary" style="color:var(--brand-rose);" onclick="toggleAllQuiz(false)"><i class="fa-solid fa-lock"></i> <span>ปิดทุกคาบ</span></button>
+              <button class="clear-btn clear-btn-secondary" onclick="loadQuizAdmin()"><i class="fa-solid fa-rotate"></i></button>
+            </div>
+          </div>
+          <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.5rem;">เปิด/ปิดคาบเรียนเพื่อให้นักเรียนทำคำถามท้ายคาบได้ · สวิตช์สีเขียว = เปิดให้ทำ</p>
+        </div>
+        <div id="quizLessonGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:0.85rem;">
+          <div class="clear-card" style="text-align:center;padding:2rem;"><i class="fa-solid fa-circle-notch fa-spin" style="font-size:1.5rem;color:#f59e0b;"></i></div>
         </div>
       </div>
     </div>
@@ -655,5 +674,6 @@
   <script src="../assets/js/teacher-ar.js"></script>
   <script src="../assets/js/teacher-coupons.js"></script>
   <script src="../assets/js/teacher-voice.js"></script>
+  <script src="../assets/js/teacher-quiz.js"></script>
 </body>
 </html>

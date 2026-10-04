@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CLEAR Quiz — คำถามท้ายคาบ 15 คาบ | Project CLEAR</title>
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    #quizRoot { max-width: 920px; margin: 0 auto; }
+
+    /* ── Lesson Hub ── */
+    .quiz-hero {
+      display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between;
+      padding: 1.35rem 1.5rem; border-radius: 18px; margin-bottom: 1.5rem; color: #fff;
+      background: linear-gradient(135deg, #f59e0b, #d97706 60%, #b45309);
+      box-shadow: 0 12px 30px -10px rgba(217, 119, 6, 0.7), inset 0 1px 0 rgba(255,255,255,0.35);
+    }
+    .quiz-hero h1 { font-size: 1.4rem; font-weight: 800; margin: 0 0 0.2rem; }
+    .quiz-hero p { font-size: 0.85rem; opacity: 0.92; margin: 0; }
+    .quiz-hero .stats { display: flex; gap: 1.5rem; }
+    .quiz-hero .stats div { text-align: center; }
+    .quiz-hero .stats strong { display: block; font-size: 1.7rem; font-weight: 800; line-height: 1; }
+    .quiz-hero .stats span { font-size: 0.72rem; opacity: 0.9; }
+
+    .lesson-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1rem; }
+    @media (max-width: 640px) { .lesson-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; } }
+
+    .lesson-card {
+      display: flex; flex-direction: column; gap: 0.4rem; text-align: left; padding: 1rem;
+      border-radius: var(--radius-md); background: var(--surface-card); border: 1px solid var(--border-glass);
+      border-top: 1.5px solid rgba(255,255,255,0.55);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -2px 0 rgba(0,0,0,0.22), 0 4px 14px rgba(0,0,0,0.08);
+      cursor: pointer; font-family: var(--font-thai); color: var(--text-main);
+      transition: all 0.2s cubic-bezier(0.16,1,0.3,1); position: relative; overflow: hidden; min-height: 116px;
+    }
+    .lesson-card:hover { transform: translateY(-3px); border-color: var(--brand-amber); box-shadow: inset 0 1px 2px rgba(255,255,255,0.7), 0 10px 24px rgba(0,0,0,0.15); }
+    .lesson-card:active { transform: translateY(1.5px); }
+    .lesson-card.active { border-top: 3px solid #f59e0b; }
+    .lesson-card.locked { opacity: 0.6; cursor: not-allowed; filter: grayscale(0.35); }
+    .lesson-card.locked:hover { transform: none; border-color: var(--border-glass); }
+    .lesson-no { font-size: 0.72rem; font-weight: 800; color: #d97706; letter-spacing: 0.03em; }
+    .lesson-title { font-size: 0.9rem; font-weight: 700; line-height: 1.35; flex: 1; }
+    .lesson-foot { display: flex; justify-content: space-between; align-items: center; }
+    .lesson-badge { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+    .lesson-badge.open { background: rgba(16,185,129,0.15); color: #047857; }
+    .lesson-badge.lock { background: rgba(100,116,139,0.15); color: #64748b; }
+    .lesson-stars { color: #f59e0b; font-size: 0.72rem; letter-spacing: 1px; }
+
+    /* ── Quiz Screen ── */
+    .quiz-progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .quiz-progress .bar { flex: 1; height: 8px; border-radius: 99px; background: var(--border-subtle); overflow: hidden; }
+    .quiz-progress .bar > div { height: 100%; width: 0; background: linear-gradient(90deg, #f59e0b, #d97706); border-radius: 99px; transition: width 0.3s ease; }
+    .quiz-progress .count { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); white-space: nowrap; }
+
+    .quiz-qcard { padding: 1.6rem; }
+    .quiz-qmeta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+    .quiz-qtext { font-size: 1.1rem; font-weight: 700; line-height: 1.65; margin-bottom: 1.35rem; white-space: pre-wrap; }
+    .quiz-opts { display: flex; flex-direction: column; gap: 0.7rem; }
+    .quiz-opt {
+      display: flex; gap: 0.75rem; align-items: flex-start; width: 100%; text-align: left;
+      padding: 0.9rem 1.05rem; border-radius: 12px; border: 1.5px solid var(--border-subtle);
+      background: var(--surface-card); color: var(--text-main); font-family: var(--font-thai); font-size: 0.98rem;
+      line-height: 1.55; cursor: pointer; transition: all 0.18s ease;
+    }
+    .quiz-opt:hover:not(:disabled) { border-color: #f59e0b; transform: translateX(3px); }
+    .quiz-opt .opt-key { flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--brand-amber-light); color: #b45309; font-weight: 800; font-size: 0.85rem; }
+    .quiz-opt.selected { border-color: #f59e0b; background: var(--brand-amber-light); }
+    .quiz-opt.correct { border-color: #10b981; background: #dcfce7; color: #065f46; }
+    .quiz-opt.correct .opt-key { background: #10b981; color: #fff; }
+    .quiz-opt.wrong { border-color: #ef4444; background: #fee2e2; color: #991b1b; }
+    .quiz-opt.wrong .opt-key { background: #ef4444; color: #fff; }
+    .quiz-opt:disabled { cursor: default; }
+
+    .quiz-feedback { display: none; margin-top: 1.25rem; padding: 1rem 1.15rem; border-radius: 12px; font-size: 0.95rem; line-height: 1.7; }
+    .quiz-feedback.show { display: block; animation: fbIn 0.3s ease both; }
+    @keyframes fbIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .quiz-feedback.ok { background: #dcfce7; border: 1px solid #86efac; color: #065f46; }
+    .quiz-feedback.no { background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; }
+    .reward-badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.7rem; border-radius: 999px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; font-weight: 800; font-size: 0.85rem; margin-left: 0.4rem; }
+
+    .quiz-actions { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.35rem; }
+
+    /* ── Summary ── */
+    .quiz-summary { text-align: center; padding: 2.25rem 1.5rem; }
+    .quiz-summary .big { font-size: 3rem; font-weight: 800; color: #d97706; line-height: 1; }
+    .quiz-summary .sub { color: var(--text-muted); font-size: 0.92rem; margin: 0.4rem 0 1.5rem; }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow ambient-1"></div>
+  <div class="ambient-glow ambient-2"></div>
+
+  <header class="clear-navbar">
+    <div class="clear-nav-inner">
+      <div class="brand-badge">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fa-solid fa-list-check"></i></div>
+          <span>CLEAR Quiz</span>
+        </div>
+      </div>
+      <nav class="nav-links">
+        <button type="button" class="nav-btn" onclick="returnToScores()" title="กลับหน้าคะแนนของฉัน">
+          <i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span>
+        </button>
+        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด" onclick="toggleTheme()"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="clear-container">
+    <div id="quizRoot">
+      <div class="clear-card" style="text-align:center; padding:3rem;">
+        <i class="fa-solid fa-circle-notch fa-spin" style="font-size:2rem; color:#f59e0b;"></i>
+        <p style="color:var(--text-muted); margin-top:0.75rem;">กำลังโหลดคลังคำถามท้ายคาบ...</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="clear-footer">
+    <p>© 2026 Project CLEAR — รายวิชาภาษาไทย ครูรามิล ปัญญพัทธ์</p>
+  </footer>
+
+  <script src="../assets/js/student-map.js"></script>
+  <script src="../assets/js/shared.js"></script>
+  <script src="quiz-engine.js"></script>
+</body>
+</html>
