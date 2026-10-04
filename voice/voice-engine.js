@@ -1,44 +1,50 @@
 /**
  * ═══════════════════════════════════════════════════════════════
  * PROJECT CLEAR — CLEAR VOICE STUDENT WIZARD
- * 6-section reflection flow driven by the evaluation questions
- * served from project-clear-api (cv_* tables in project-clear-db).
+ * No public-code box. Room-scoped: active evaluation -> wizard;
+ * otherwise a warm standby card. Questions come from project-clear-api
+ * (cv_* tables, 12 standard questions per category).
  * ═══════════════════════════════════════════════════════════════
  */
 (function () {
-  const root = document.getElementById('voiceRoot');
   const body = document.getElementById('voiceBody');
   if (!body) return;
 
   const EMOJI = [
-    ['😫', 'เครียดมาก'], ['😕', 'ค่อนข้างเหนื่อย'], ['😐', 'เรื่อย ๆ พอไหว'],
+    ['😫', 'เครียด/ไม่สนุก'], ['😕', 'ค่อนข้างเหนื่อย'], ['😐', 'เรื่อย ๆ พอไหว'],
     ['🙂', 'มีความสุขดี'], ['🤩', 'สนุกและชอบมาก'],
   ];
-  const GROUPS = [
-    { id: 'overall', title: 'ความรู้สึกโดยรวม', icon: 'fa-face-smile', sub: 'เริ่มจากความรู้สึกจริง ๆ ของเราในห้องเรียนนี้', keys: ['overall'] },
-    { id: 'impression', title: 'ภาพจำครู', icon: 'fa-tags', sub: 'เลือกคำที่ตรงกับความรู้สึกของเราที่สุด', keys: ['impression'] },
-    { id: 'classroom', title: 'ห้องเรียนของเรา 10 มิติ', icon: 'fa-chalkboard-user', sub: 'ให้คะแนนว่าแต่ละข้อจริงกับห้องเรียนเราแค่ไหน', keys: ['classroom'] },
-    { id: 'self', title: 'ส่องสะท้อนตัวเอง', icon: 'fa-user', sub: 'ไม่มีการตัดสิน แค่อยากให้เรารู้จักตัวเองมากขึ้น', keys: ['self', 'self_proud', 'self_change', 'self_next'] },
-    { id: 'activities', title: 'กิจกรรมที่ช่วยให้เรียนรู้ดีที่สุด', icon: 'fa-lightbulb', sub: 'เลือกสิ่งที่ช่วยให้เราเข้าใจบทเรียนได้ดี', keys: ['activities'] },
-    { id: 'voice', title: 'เสียงสะท้อนปลายเปิด', icon: 'fa-comment-dots', sub: 'บอกครูได้เต็มที่ คำตอบไม่ระบุตัวตน', keys: ['keep', 'change', 'less', 'more'] },
-  ];
-
-  const state = {
-    evaluation: null,
-    questions: [],
-    groups: [],
-    step: 0,
-    answers: {},
-    startedAt: Date.now(),
-    submitting: false,
+  const CATEGORY_LABELS = {
+    media: { label: '🎬 การประเมินสื่อการเรียนรู้', color: '#8b5cf6' },
+    activity: { label: '🎯 การประเมินกิจกรรมการเรียนรู้', color: '#0ea5e9' },
+    exit: { label: '🚪 Exit Ticket ท้ายคาบ', color: '#10b981' },
+    semester: { label: '📖 การประเมินรายภาคเรียน', color: '#7c3aed' },
   };
+  const SECTION_LABELS = {
+    overall: { title: 'ความรู้สึกโดยรวม', icon: 'fa-face-smile' },
+    impression: { title: 'ภาพจำครู', icon: 'fa-tags' },
+    questions: { title: 'ข้อคำถามประเมิน', icon: 'fa-clipboard-list' },
+    media: { title: 'ประเมินสื่อการเรียนรู้', icon: 'fa-photo-film' },
+    activity: { title: 'ประเมินกิจกรรมการเรียนรู้', icon: 'fa-people-group' },
+    exit: { title: 'สะท้อนหลังเรียน', icon: 'fa-door-open' },
+    semester: { title: 'สะท้อนรายภาคเรียน', icon: 'fa-book' },
+    classroom: { title: 'ห้องเรียนของเรา', icon: 'fa-chalkboard-user' },
+    activities: { title: 'กิจกรรมที่ช่วยให้เรียนรู้ดีที่สุด', icon: 'fa-lightbulb' },
+    self: { title: 'ส่องสะท้อนตัวเอง', icon: 'fa-user' },
+    keep: { title: 'KEEP · สิ่งที่ควรทำต่อ', icon: 'fa-circle-check' },
+    change: { title: 'CHANGE · สิ่งที่ควรปรับ', icon: 'fa-arrows-rotate' },
+    less: { title: 'LESS · สิ่งที่มากเกินไป', icon: 'fa-circle-minus' },
+    more: { title: 'MORE · สิ่งที่อยากให้เพิ่ม', icon: 'fa-circle-plus' },
+  };
+
+  const state = { evaluation: null, questions: [], groups: [], step: 0, answers: {}, startedAt: Date.now(), submitting: false };
 
   function esc(v) {
     return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
-
   function detectRoom() {
+    try { const r = localStorage.getItem('clear_current_room'); if (r) return r; } catch (e) {}
     try {
       for (let i = 0; i < sessionStorage.length; i++) {
         const k = sessionStorage.key(i);
@@ -46,21 +52,24 @@
         if (m) return m[1];
       }
     } catch (e) {}
-    try { const r = localStorage.getItem('clear_current_room'); if (r) return r; } catch (e) {}
     try { return (new URLSearchParams(window.location.search).get('room') || '').trim(); } catch (e) { return ''; }
   }
+  function roomLabel(room) {
+    const r = (window.CLEAR_ROOMS || []).find(x => x.room === room);
+    return r ? (r.title || room) : ('ม.' + room);
+  }
 
-  async function apiGet(action, paramsObj) {
+  async function apiGet(paramsObj) {
     const url = new URL(CLEAR_API_BASE);
-    url.searchParams.set('action', action);
+    url.searchParams.set('action', 'getVoiceEvaluation');
     Object.entries(paramsObj || {}).forEach(([k, v]) => { if (v != null) url.searchParams.set(k, v); });
     const res = await fetch(url.toString(), { cache: 'no-store' });
     return res.json();
   }
-  async function apiPost(action, payload) {
+  async function apiPost(payload) {
     const res = await fetch(CLEAR_API_BASE, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(Object.assign({ action }, payload || {})),
+      body: JSON.stringify(Object.assign({ action: 'submitVoiceEvaluation' }, payload || {})),
     });
     return res.json();
   }
@@ -71,47 +80,46 @@
     try { codeParam = (new URLSearchParams(window.location.search).get('code') || '').trim(); } catch (e) {}
     if (codeParam) {
       try {
-        const data = await apiGet('getVoiceEvaluation', { code: codeParam });
-        if (data && data.ok) { start(data); return; }
+        const data = await apiGet({ code: codeParam });
+        if (data && data.ok && data.active) { start(data); return; }
       } catch (e) { /* fall through */ }
     }
     const room = detectRoom();
-    if (room) {
-      try {
-        const data = await apiGet('getVoiceEvaluation', { room });
-        if (data && data.ok) { start(data); return; }
-      } catch (e) { /* fall through to code form */ }
-    }
-    renderCodeForm(room ? `ไม่พบรอบการประเมินที่เปิดอยู่สำหรับห้อง ${room} — กรุณากรอกรหัสสาธารณะจากครู` : '');
+    if (!room) { renderStandby(''); return; }
+    try {
+      const data = await apiGet({ room });
+      if (data && data.ok && data.active) { start(data); return; }
+    } catch (e) { /* standby */ }
+    renderStandby(room);
   }
 
-  function renderCodeForm(note) {
-    state.evaluation = null;
+  function renderStandby(room) {
+    const who = room ? `ห้องเรียน ${esc(roomLabel(room))}` : 'ห้องเรียนของคุณ';
     body.innerHTML = `
-      <div class="clear-card voice-card voice-code-box">
-        <div style="width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;display:grid;place-items:center;font-size:1.6rem;margin:0 auto 1.25rem;">
-          <i class="fa-solid fa-key"></i>
-        </div>
-        <h2 style="font-size:1.25rem;font-weight:800;margin-bottom:0.35rem;">เข้าร่วมการประเมิน</h2>
-        <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.25rem;">กรอกรหัสสาธารณะที่ครูแจกให้ เช่น DEMO2569</p>
-        ${note ? `<div class="ar-note" style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.4);color:#b45309;border-radius:12px;padding:0.7rem 0.9rem;font-size:0.85rem;margin-bottom:1.25rem;">${esc(note)}</div>` : ''}
-        <form data-code-form>
-          <div class="clear-input-group">
-            <input type="text" id="voicePublicCode" class="clear-input" placeholder="รหัสสาธารณะ" style="text-align:center;text-transform:uppercase;letter-spacing:0.12em;font-weight:700;" autocomplete="off" required>
-          </div>
-          <button type="submit" class="clear-btn clear-btn-primary btn-metallic" style="width:100%;background:linear-gradient(135deg,#8b5cf6,#7c3aed);">
-            <i class="fa-solid fa-arrow-right-to-bracket"></i> <span>เริ่มทำแบบประเมิน</span>
-          </button>
-        </form>
+      <div class="clear-card voice-card voice-thanks" style="background:linear-gradient(135deg, rgba(196,181,253,0.22), rgba(139,92,246,0.10));border:1px solid rgba(139,92,246,0.3);">
+        <div style="font-size:3rem;line-height:1;margin-bottom:0.75rem;">🕊️</div>
+        <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:0.6rem;">ยังไม่มีการประเมินในตอนนี้</h2>
+        <p style="color:var(--text-muted);max-width:460px;margin:0 auto 1.75rem;line-height:1.75;">
+          ${who} ในขณะนี้ยังไม่มีแบบประเมินเปิดรับเสียงสะท้อนครับ<br>
+          ขอให้นักเรียนพักผ่อนให้สบายใจ และรอฟังคำแนะนำจากครูรามิลในคาบเรียนนะ! 💜
+        </p>
+        <button type="button" class="clear-btn clear-btn-primary btn-metallic" onclick="returnToScores()" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);">
+          <i class="fa-solid fa-house"></i> <span>กลับหน้าคะแนนของฉัน</span>
+        </button>
       </div>`;
   }
 
   function start(data) {
-    state.evaluation = data.evaluation;
+    state.evaluation = data.evaluation || {};
     state.questions = data.questions || [];
-    const keysPresent = new Set(state.questions.map(q => q.sectionKey));
-    state.groups = GROUPS.map(g => ({ ...g, questions: state.questions.filter(q => g.keys.includes(q.sectionKey)) }))
-      .filter(g => g.questions.length > 0);
+    const order = [];
+    const bySection = {};
+    state.questions.forEach(q => {
+      const key = q.sectionKey || 'questions';
+      if (!bySection[key]) { bySection[key] = []; order.push(key); }
+      bySection[key].push(q);
+    });
+    state.groups = order.map(key => Object.assign({ id: key, questions: bySection[key] }, SECTION_LABELS[key] || { title: key, icon: 'fa-circle-question' }));
     state.step = 0;
     state.answers = {};
     state.startedAt = Date.now();
@@ -119,6 +127,17 @@
   }
 
   /* ── Render ── */
+  function banner() {
+    const ev = state.evaluation;
+    const cat = CATEGORY_LABELS[ev.category] || { label: '💬 แบบประเมินเสียงสะท้อน', color: '#8b5cf6' };
+    return `<div style="border-radius:16px;padding:1.1rem 1.25rem;margin-bottom:1.35rem;background:linear-gradient(135deg, ${cat.color}22, ${cat.color}11);border:1px solid ${cat.color}55;">
+      <span style="display:inline-block;font-size:0.78rem;font-weight:800;color:${cat.color};background:rgba(255,255,255,0.55);padding:0.25rem 0.7rem;border-radius:999px;margin-bottom:0.5rem;">${esc(cat.label)}</span>
+      <div style="font-size:1.15rem;font-weight:800;color:var(--text-main);">${esc(ev.title || '')}</div>
+      ${ev.description ? `<p style="font-size:0.9rem;color:var(--text-muted);margin-top:0.35rem;white-space:pre-wrap;">${esc(ev.description)}</p>` : ''}
+      <div style="font-size:0.78rem;color:var(--text-dim);margin-top:0.4rem;">${esc(ev.roomLabel || '')} · ตอบแบบไม่ระบุตัวตน 100%</div>
+    </div>`;
+  }
+
   function renderStep() {
     const g = state.groups[state.step];
     const total = state.groups.length;
@@ -128,13 +147,13 @@
     const isLast = state.step === total - 1;
     body.innerHTML = `
       <div class="clear-card voice-card">
+        ${banner()}
         <div class="voice-progress">${segs}</div>
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
           <span style="font-size:0.8rem;color:var(--text-dim);font-weight:700;">ส่วนที่ ${state.step + 1} / ${total}</span>
-          <span style="font-size:0.8rem;color:var(--text-dim);">${esc(state.evaluation.title)}${state.evaluation.roomLabel ? ' · ' + esc(state.evaluation.roomLabel) : ''}</span>
+          <span style="font-size:0.8rem;color:var(--text-dim);">${g.questions.length} ข้อ</span>
         </div>
         <h2 class="voice-step-title" style="margin-top:0.6rem;"><i class="fa-solid ${g.icon}"></i> ${esc(g.title)}</h2>
-        <p class="voice-step-sub">${esc(g.sub)}</p>
         ${questionsHtml}
         <div class="voice-nav">
           ${state.step > 0
@@ -158,17 +177,19 @@
           <span class="emoji">${e}</span><span class="emoji-label">${l}</span></button>`).join('')}</div>`;
     } else if (q.questionType === 'rating_scale') {
       const labels = q.config && Array.isArray(q.config.labels) ? q.config.labels : null;
+      const minL = (q.config && q.config.minLabel) || '1 · น้อย/ไม่จริง';
+      const maxL = (q.config && q.config.maxLabel) || '5 · มาก/จริง';
       control = `<div class="scale-row">${[1, 2, 3, 4, 5].map(n =>
         `<button type="button" class="scale-btn ${val === n ? 'selected' : ''}" data-action="scale" data-q="${esc(q.id)}" data-val="${n}">
-          <span class="num">${n}</span>${labels ? `<span class="cap">${esc(labels[n - 1] || '')}</span>` : ''}</button>`).join('')}</div>`;
-      if (!labels) control += '<div class="scale-hint"><span>1 · ไม่จริงเลย</span><span>5 · จริงมาก</span></div>';
-    } else if (q.questionType === 'tag_select' || q.questionType === 'multiple_choice') {
+          <span class="num">${n}</span>${labels ? `<span class="cap">${esc(labels[n - 1] || '')}</span>` : ''}</button>`).join('')}</div>
+        <div class="scale-hint"><span>${esc(minL)}</span><span>${esc(maxL)}</span></div>`;
+    } else if (q.questionType === 'single_choice' || q.questionType === 'multiple_choice' || q.questionType === 'tag_select') {
       const opts = (q.config && Array.isArray(q.config.options)) ? q.config.options : [];
-      const max = (q.config && Number(q.config.maxSelections)) || 1;
+      const max = q.questionType === 'single_choice' ? 1 : ((q.config && Number(q.config.maxSelections)) || 1);
       const chosen = Array.isArray(val) ? val : [];
       control = `<div class="chip-wrap">${opts.map(o =>
         `<button type="button" class="chip ${chosen.includes(o) ? 'selected' : ''}" data-action="chip" data-q="${esc(q.id)}" data-opt="${esc(o)}" data-max="${max}">${esc(o)}</button>`).join('')}</div>
-        <div class="chip-limit">เลือกได้สูงสุด ${max} รายการ</div>`;
+        <div class="chip-limit">${max === 1 ? 'เลือกได้ 1 ข้อ' : `เลือกได้สูงสุด ${max} รายการ`}</div>`;
     } else {
       const isLong = q.questionType === 'long_text';
       control = isLong
@@ -183,9 +204,7 @@
   }
 
   /* ── Validation + submit ── */
-  function syncTextInputs() {
-    body.querySelectorAll('[data-text]').forEach(el => { state.answers[el.dataset.text] = el.value; });
-  }
+  function syncTextInputs() { body.querySelectorAll('[data-text]').forEach(el => { state.answers[el.dataset.text] = el.value; }); }
   function validateGroup(g) {
     for (const q of g.questions) {
       if (!q.required) continue;
@@ -201,7 +220,7 @@
       const v = state.answers[q.id];
       if (q.questionType === 'emoji_scale' || q.questionType === 'rating_scale') {
         if (v != null && v !== '') out.push({ questionId: q.id, numericValue: Number(v) });
-      } else if (q.questionType === 'tag_select' || q.questionType === 'multiple_choice') {
+      } else if (q.questionType === 'single_choice' || q.questionType === 'multiple_choice' || q.questionType === 'tag_select') {
         if (Array.isArray(v) && v.length) out.push({ questionId: q.id, jsonValue: v });
       } else if (v != null && String(v).trim() !== '') {
         out.push({ questionId: q.id, textValue: String(v).trim() });
@@ -219,7 +238,7 @@
           ทุกความคิดเห็นมีค่ามากครับ ครูจะนำไปพัฒนาห้องเรียนของเราให้ดีขึ้น<br>คำตอบของคุณถูกบันทึกแบบไม่ระบุตัวตนอย่างปลอดภัย
         </p>
         <button type="button" class="clear-btn clear-btn-primary btn-metallic" onclick="returnToScores()" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);">
-          <i class="fa-solid fa-chart-simple"></i> <span>ดูคะแนนของฉัน</span>
+          <i class="fa-solid fa-house"></i> <span>กลับหน้าคะแนนของฉัน</span>
         </button>
       </div>`;
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -230,27 +249,16 @@
     syncTextInputs();
     for (let i = 0; i < state.groups.length; i++) {
       const missing = validateGroup(state.groups[i]);
-      if (missing) {
-        state.step = i; renderStep();
-        showToast('กรุณาตอบข้อที่มีเครื่องหมาย * ให้ครบก่อนนะครับ', 'warning');
-        return;
-      }
+      if (missing) { state.step = i; renderStep(); showToast('กรุณาตอบข้อที่มีเครื่องหมาย * ให้ครบก่อนนะครับ', 'warning'); return; }
     }
     state.submitting = true;
     try {
-      const result = await apiPost('submitVoiceEvaluation', {
-        evaluationId: state.evaluation.id,
-        answers: buildAnswers(),
-        completionTime: Date.now() - state.startedAt,
-      });
+      const result = await apiPost({ evaluationId: state.evaluation.id, answers: buildAnswers(), completionTime: Date.now() - state.startedAt });
       if (!result || !result.ok) throw new Error((result && result.error) || 'ส่งแบบประเมินไม่สำเร็จ');
       showToast('ส่งแบบประเมินเรียบร้อย ขอบคุณครับ', 'success');
       showThanks();
-    } catch (e) {
-      showToast(e.message, 'error');
-    } finally {
-      state.submitting = false;
-    }
+    } catch (e) { showToast(e.message, 'error'); }
+    finally { state.submitting = false; }
   }
 
   /* ── Events ── */
@@ -268,6 +276,7 @@
       let arr = Array.isArray(state.answers[qid]) ? state.answers[qid].slice() : [];
       const idx = arr.indexOf(opt);
       if (idx >= 0) arr.splice(idx, 1);
+      else if (max === 1) arr = [opt];
       else if (arr.length >= max) { showToast(`เลือกได้สูงสุด ${max} รายการ`, 'warning'); return; }
       else arr.push(opt);
       state.answers[qid] = arr;
@@ -287,20 +296,6 @@
   body.addEventListener('input', (e) => {
     const t = e.target.closest('[data-text]');
     if (t) state.answers[t.dataset.text] = t.value;
-  });
-  body.addEventListener('submit', async (e) => {
-    const form = e.target.closest('[data-code-form]');
-    if (!form) return;
-    e.preventDefault();
-    const code = (document.getElementById('voicePublicCode').value || '').trim();
-    if (!code) return;
-    try {
-      const data = await apiGet('getVoiceEvaluation', { code });
-      if (!data || !data.ok) throw new Error((data && data.error) || 'ไม่พบรหัสนี้');
-      start(data);
-    } catch (err) {
-      showToast(err.message, 'error');
-    }
   });
 
   document.addEventListener('DOMContentLoaded', init);

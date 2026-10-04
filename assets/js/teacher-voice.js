@@ -8,12 +8,17 @@
  * ═══════════════════════════════════════════════════════════════
  */
 (function () {
-  const TEMPLATES = [
-    { id: 'cv-semester', name: 'Semester Reflection (6 ส่วน)' },
-    { id: 'cv-midterm', name: 'Midterm Pulse (กลางภาค)' },
-    { id: 'cv-exit', name: 'Exit Feedback (สั้น 3 ข้อ)' },
-    { id: 'cv-activity', name: 'Activity Feedback (กิจกรรม)' },
+  const CATEGORIES = [
+    { type: 'media', name: '🎬 การประเมินสื่อการเรียนรู้' },
+    { type: 'activity', name: '🎯 การประเมินกิจกรรมการเรียนรู้' },
+    { type: 'exit', name: '🚪 Exit Ticket ท้ายคาบ' },
+    { type: 'semester', name: '📖 การประเมินรายภาคเรียน' },
   ];
+  const CATEGORY_LABEL = { media: '🎬 สื่อการเรียนรู้', activity: '🎯 กิจกรรม', exit: '🚪 Exit Ticket', semester: '📖 รายภาคเรียน' };
+  function allRooms() {
+    const rooms = (window.CLEAR_ROOMS || []).map(r => r.room);
+    return rooms.length ? rooms : ['6/1', '6/2', '6/5', '6/5 Add', '6/6', '6/7', '6/8', '6/9'];
+  }
   const state = { data: null, initialized: false };
   let posterStyleInjected = false;
 
@@ -98,7 +103,62 @@
         <p style="color:var(--text-muted);font-size:0.9rem;">เมื่อนักเรียนส่งแบบประเมิน ผลวิเคราะห์จะแสดงที่นี่</p></div>`;
       return;
     }
-    area.innerHTML = quickStats(s) + emojiAndImpressions(s) + dimensionsBlock(s) + selfAndActivities(s) + voiceBoard(s);
+    const hasDims = s.dimensions && s.dimensions.some(d => d.count > 0);
+    area.innerHTML = activeSwitcher(s) + quickStats(s) + emojiAndImpressions(s) + ratingsBlock(s) + choicesBlock(s) + (hasDims ? dimensionsBlock(s) : '') + selfAndActivities(s) + voiceBoard(s);
+  }
+
+  function activeSwitcher(s) {
+    const rooms = allRooms();
+    const activeMap = {};
+    (s.activeByRoom || []).forEach(a => { activeMap[a.room] = a; });
+    const cards = rooms.map(r => {
+      const cvKey = r.replace(/^6\//, '');
+      const a = activeMap[cvKey] || activeMap[r];
+      const active = !!a;
+      return `<div class="clear-card" style="padding:0.9rem;border-left:4px solid ${active ? '#10b981' : 'var(--border-subtle)'};">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;">
+          <strong style="font-size:0.95rem;">${esc(roomLabel(r))}</strong>
+          <span class="clear-badge ${active ? 'badge-emerald' : 'badge-amber'}">${active ? 'เปิดอยู่' : 'ปิดรับ'}</span>
+        </div>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.35rem;min-height:2.4em;">${active ? esc((CATEGORY_LABEL[a.category] || '') + ' · ' + a.title) : 'ปิดรับการประเมิน'}</p>
+        ${active ? `<button class="clear-btn clear-btn-secondary" style="width:100%;font-size:0.78rem;color:var(--brand-rose);" onclick="toggleVoiceRoomStatus('${esc(r)}','closed')"><i class="fa-solid fa-stop"></i> ปิดการประเมิน</button>` : ''}
+      </div>`;
+    }).join('');
+    return `<div class="clear-card" style="margin-bottom:1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.6rem;">
+        <h4 style="font-size:1rem;font-weight:800;margin:0;"><i class="fa-solid fa-toggle-on" style="color:#10b981;"></i> สถานะการเปิดประเมินรายห้อง</h4>
+        <button class="clear-btn clear-btn-secondary" style="font-size:0.8rem;color:var(--brand-rose);" onclick="closeAllVoiceEvaluations()"><i class="fa-solid fa-stop"></i> ปิดทุกห้อง</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.75rem;margin-top:1rem;">${cards}</div>
+    </div>`;
+  }
+
+  function ratingsBlock(s) {
+    if (!s.ratings || !s.ratings.length) return '';
+    const rows = s.ratings.map(r => {
+      const pct = Math.round((r.avg / 5) * 100);
+      return `<div style="margin-bottom:0.7rem;">
+        <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:3px;"><span>${esc(r.question)}</span><span style="font-weight:700;color:#7c3aed;">${fmt(r.avg, 2)}/5</span></div>
+        <div style="height:9px;border-radius:99px;background:var(--border-subtle);overflow:hidden;"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#a78bfa,#7c3aed);border-radius:99px;"></div></div>
+      </div>`;
+    }).join('');
+    return `<div class="clear-card" style="margin-bottom:1.5rem;"><h4 style="font-size:1rem;font-weight:800;margin-bottom:1rem;"><i class="fa-solid fa-star-half-stroke" style="color:#8b5cf6;"></i> คะแนนเฉลี่ยรายข้อ (สเกล 1–5)</h4>${rows}</div>`;
+  }
+
+  function choicesBlock(s) {
+    if (!s.choices || !s.choices.length) return '';
+    const blocks = s.choices.map(c => {
+      const total = c.options.reduce((a, o) => a + o.count, 0) || 1;
+      const rows = c.options.map(o => {
+        const pct = Math.round((o.count / total) * 100);
+        return `<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;">
+          <span style="font-size:0.8rem;flex:1;">${esc(o.label)}</span>
+          <span style="font-size:0.78rem;font-weight:700;color:#0ea5e9;min-width:52px;text-align:right;">${o.count} (${pct}%)</span>
+        </div><div style="height:7px;border-radius:99px;background:var(--border-subtle);overflow:hidden;margin-bottom:0.5rem;"><div style="height:100%;width:${pct}%;background:#0ea5e9;"></div></div>`;
+      }).join('');
+      return `<div style="margin-bottom:1rem;"><div style="font-size:0.85rem;font-weight:700;margin-bottom:0.5rem;">${esc(c.question)}</div>${rows}</div>`;
+    }).join('');
+    return `<div class="clear-card" style="margin-bottom:1.5rem;"><h4 style="font-size:1rem;font-weight:800;margin-bottom:1rem;"><i class="fa-solid fa-list-ul" style="color:#0ea5e9;"></i> ผลการเลือกตอบ</h4>${blocks}</div>`;
   }
 
   function quickStats(s) {
@@ -262,47 +322,73 @@
 
   /* ── Create round modal ── */
   function openVoiceRoundModal() {
-    const rooms = (window.CLEAR_ROOMS || []).map(r => r.room);
-    const list = rooms.length ? rooms : ['6/1', '6/2', '6/5', '6/5 Add', '6/6', '6/7', '6/8', '6/9'];
+    const rooms = allRooms();
     const modal = document.createElement('div');
     modal.id = 'voiceRoundModal';
     modal.className = 'clear-modal-backdrop open';
     modal.innerHTML = `
-      <div class="clear-modal-content" style="max-width:520px;">
+      <div class="clear-modal-content" style="max-width:560px;max-height:90vh;overflow-y:auto;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
-          <h3 style="margin:0;font-size:1.15rem;font-weight:800;"><i class="fa-solid fa-plus" style="color:#8b5cf6;"></i> สร้างรอบประเมินใหม่</h3>
+          <h3 style="margin:0;font-size:1.15rem;font-weight:800;"><i class="fa-solid fa-plus" style="color:#8b5cf6;"></i> สร้างการประเมินใหม่</h3>
           <button onclick="closeVoiceRoundModal()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-dim);">&times;</button>
         </div>
-        <div class="clear-input-group"><label class="clear-label">แม่แบบ</label>
-          <select id="vrTemplate" class="clear-input">${TEMPLATES.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('')}</select></div>
-        <div class="clear-input-group"><label class="clear-label">ห้องเรียน</label>
-          <select id="vrRoom" class="clear-input">${list.map(r => `<option value="${esc(r)}">${esc(roomLabel(r))}</option>`).join('')}</select></div>
-        <div class="clear-input-group"><label class="clear-label">ชื่อรอบประเมิน</label>
-          <input type="text" id="vrTitle" class="clear-input" placeholder="เช่น เสียงสะท้อนปลายภาค 1/2569"></div>
-        <div class="clear-input-group"><label class="clear-label">รหัสสาธารณะ (เว้นว่าง = สุ่มให้อัตโนมัติ)</label>
-          <input type="text" id="vrCode" class="clear-input" placeholder="เช่น DEMO2569" style="text-transform:uppercase;"></div>
-        <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1rem;">
+        <div class="clear-input-group"><label class="clear-label">ประเภทการประเมิน</label>
+          <select id="vrCategory" class="clear-input">${CATEGORIES.map(c => `<option value="${c.type}">${esc(c.name)}</option>`).join('')}</select></div>
+        <div class="clear-input-group"><label class="clear-label">ชื่อเรื่อง / ชื่อสื่อ / ชื่อกิจกรรม</label>
+          <input type="text" id="vrTitle" class="clear-input" placeholder="เช่น วิดีโอถอดคำประพันธ์ ขุนช้างขุนแผน"></div>
+        <div class="clear-input-group"><label class="clear-label">คำชี้แจงจากครู (ทางเลือก)</label>
+          <textarea id="vrDesc" class="clear-input" rows="2" placeholder="เช่น ดูคลิปแล้วช่วยสะท้อนว่าสื่อนี้ช่วยให้เข้าใจบทเรียนแค่ไหน"></textarea></div>
+        <div class="clear-input-group"><label class="clear-label">ห้องเรียนที่เปิดประเมิน</label>
+          <div style="display:flex;gap:0.5rem;margin-bottom:0.6rem;">
+            <button type="button" class="clear-btn clear-btn-secondary" style="padding:0.35rem 0.7rem;font-size:0.8rem;" onclick="voiceSelectAllRooms(true)">✅ เลือกทุกห้อง</button>
+            <button type="button" class="clear-btn clear-btn-secondary" style="padding:0.35rem 0.7rem;font-size:0.8rem;" onclick="voiceSelectAllRooms(false)">❌ ล้างการเลือก</button>
+          </div>
+          <div id="vrRooms" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0.4rem;font-size:0.9rem;">
+            ${rooms.map(r => `<label style="display:flex;align-items:center;gap:0.4rem;"><input type="checkbox" class="vr-room" value="${esc(r)}" checked> ${esc(roomLabel(r))}</label>`).join('')}
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1.25rem;">
           <button class="clear-btn clear-btn-secondary" onclick="closeVoiceRoundModal()">ยกเลิก</button>
-          <button class="clear-btn clear-btn-primary" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);" onclick="createVoiceRound()"><i class="fa-solid fa-check"></i> สร้างรอบประเมิน</button>
+          <button class="clear-btn clear-btn-primary" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);" onclick="createVoiceRound()"><i class="fa-solid fa-check"></i> บันทึกและเปิดใช้งานทันที</button>
         </div>
       </div>`;
     document.body.appendChild(modal);
   }
   function closeVoiceRoundModal() { const m = document.getElementById('voiceRoundModal'); if (m) m.remove(); }
+  function voiceSelectAllRooms(on) { document.querySelectorAll('#vrRooms .vr-room').forEach(cb => { cb.checked = on; }); }
 
   async function createVoiceRound() {
-    const templateId = document.getElementById('vrTemplate').value;
-    const room = document.getElementById('vrRoom').value;
+    const templateType = document.getElementById('vrCategory').value;
     const title = document.getElementById('vrTitle').value.trim();
-    const publicCode = document.getElementById('vrCode').value.trim();
-    if (!title) { showToast('กรุณาระบุชื่อรอบประเมิน', 'warning'); return; }
+    const description = document.getElementById('vrDesc').value.trim();
+    const targetRooms = Array.from(document.querySelectorAll('#vrRooms .vr-room:checked')).map(cb => cb.value);
+    if (!title) { showToast('กรุณาระบุชื่อเรื่อง/ชื่อสื่อ', 'warning'); return; }
+    if (!targetRooms.length) { showToast('กรุณาเลือกห้องเรียนอย่างน้อย 1 ห้อง', 'warning'); return; }
     try {
-      const res = await apiPost({ action: 'createVoiceEvaluation', templateId, room, title, publicCode });
-      if (!res || !res.ok) throw new Error((res && res.error) || 'สร้างรอบประเมินไม่สำเร็จ');
-      showToast(`สร้างรอบประเมินแล้ว · รหัสสาธารณะ ${res.publicCode}`, 'success');
+      const res = await apiPost({ action: 'createVoiceEvaluation', templateType, title, description, targetRooms, activateImmediately: true });
+      if (!res || !res.ok) throw new Error((res && res.error) || 'สร้างการประเมินไม่สำเร็จ');
+      showToast('เปิดการประเมิน ' + res.count + ' ห้องเรียนแล้ว', 'success');
       closeVoiceRoundModal();
       const evalSel = document.getElementById('voiceEvalFilter');
       if (evalSel) evalSel.value = 'all';
+      await loadVoiceDashboard();
+    } catch (e) { showToast(e.message, 'error'); }
+  }
+
+  async function toggleVoiceRoomStatus(room, status) {
+    try {
+      const res = await apiPost({ action: 'toggleVoiceEvaluationStatus', room, status });
+      if (!res || !res.ok) throw new Error((res && res.error) || 'อัปเดตสถานะไม่สำเร็จ');
+      showToast(status === 'closed' ? 'ปิดการประเมินแล้ว' : 'เปิดการประเมินแล้ว', 'success');
+      await loadVoiceDashboard();
+    } catch (e) { showToast(e.message, 'error'); }
+  }
+  async function closeAllVoiceEvaluations() {
+    if (!window.confirm('ปิดการประเมินที่เปิดอยู่ทุกห้องใช่หรือไม่?')) return;
+    try {
+      const res = await apiPost({ action: 'toggleVoiceEvaluationStatus', all: true, status: 'closed' });
+      if (!res || !res.ok) throw new Error((res && res.error) || 'ปิดไม่สำเร็จ');
+      showToast('ปิดการประเมินทุกห้องแล้ว', 'success');
       await loadVoiceDashboard();
     } catch (e) { showToast(e.message, 'error'); }
   }
@@ -354,7 +440,10 @@
   window.filterVoiceBoard = filterVoiceBoard;
   window.openVoiceRoundModal = openVoiceRoundModal;
   window.closeVoiceRoundModal = closeVoiceRoundModal;
+  window.voiceSelectAllRooms = voiceSelectAllRooms;
   window.createVoiceRound = createVoiceRound;
+  window.toggleVoiceRoomStatus = toggleVoiceRoomStatus;
+  window.closeAllVoiceEvaluations = closeAllVoiceEvaluations;
   window.showVoicePoster = showVoicePoster;
   window.closeVoicePoster = closeVoicePoster;
 })();
