@@ -2,48 +2,172 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CLEAR AR — สื่อการเรียนรู้วรรณคดีสามมิติ | Project CLEAR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#eafbf4">
+  <title>CLEAR AR — ส่องสื่อ เปิดโลกการเรียนรู้ | Project CLEAR</title>
   <link rel="stylesheet" href="../assets/css/theme.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <style>
-    .ar-card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem;
+    body { background: radial-gradient(circle at 50% -10%, rgba(16,185,129,0.12), transparent 60%), var(--bg-primary); }
+
+    /* ── Hero ── */
+    .ar-hero {
+      max-width: 520px;
+      margin: 1.5rem auto 0;
+      text-align: center;
+      padding: 2.75rem 2rem;
     }
-    .ar-visual-card {
-      border-radius: var(--radius-lg);
-      background: var(--surface-card);
-      border: 1px solid var(--border-glass);
+    .ar-hero-icon {
+      width: 92px; height: 92px;
+      border-radius: 28px;
+      margin: 0 auto 1.5rem;
+      display: grid; place-items: center;
+      font-size: 2.6rem; color: #fff;
+      background: linear-gradient(135deg, #10b981, #0ea5e9 60%, #06b6d4);
+      box-shadow: 0 16px 38px -10px rgba(16,185,129,0.65), inset 0 2px 0 rgba(255,255,255,0.35);
+      position: relative;
       overflow: hidden;
-      box-shadow: var(--shadow-md);
-      transition: all 0.25s ease;
-      display: flex;
-      flex-direction: column;
     }
-    .ar-visual-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
-      border-color: var(--brand-cyan);
+    .ar-hero-icon::after {
+      content: '';
+      position: absolute; top: -50%; left: -60%; width: 40%; height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transform: rotate(25deg);
+      animation: metallicShine 4.5s cubic-bezier(0.4,0,0.2,1) infinite;
     }
-    .ar-image-holder {
-      height: 180px;
-      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-      display: grid;
-      place-items: center;
-      color: white;
-      font-size: 3rem;
+    .ar-room-chip {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.4rem 0.95rem; border-radius: 999px;
+      font-size: 0.85rem; font-weight: 700;
+      background: rgba(16,185,129,0.12); color: #047857;
+      border: 1px solid rgba(16,185,129,0.3);
+      margin-bottom: 1.5rem;
+    }
+    .ar-camera-btn {
+      width: 100%;
+      padding: 1.05rem 1.25rem;
+      font-size: 1.15rem;
+      border-radius: 18px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+    }
+    .ar-note {
+      margin-top: 1.25rem; padding: 0.85rem 1rem; border-radius: 12px;
+      background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.4);
+      color: #b45309; font-size: 0.88rem; font-weight: 600; text-align: left;
+    }
+
+    /* ── Camera / Scan UI ── */
+    #arSceneSlot { position: fixed; inset: 0; z-index: 3000; display: none; }
+    #arSceneSlot.active { display: block; }
+    #arSceneSlot a-scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+    #arSceneSlot video { object-fit: cover !important; }
+
+    .ar-scan-ui {
+      position: fixed; inset: 0; z-index: 3100; pointer-events: none;
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .ar-scan-ui.active { display: flex; }
+    .ar-scan-top {
+      position: absolute; top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: max(14px, env(safe-area-inset-top)) 16px 12px;
+      background: linear-gradient(180deg, rgba(2,20,16,0.72), transparent);
+      pointer-events: auto;
+    }
+    .ar-scan-close {
+      width: 44px; height: 44px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(0,0,0,0.35); backdrop-filter: blur(8px);
+      color: #fff; font-size: 1.1rem; cursor: pointer;
+      display: grid; place-items: center;
+    }
+    .ar-scan-title { color: #fff; font-weight: 700; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .ar-scan-title i { color: #6ee7b7; }
+
+    .ar-reticle {
+      width: min(72vw, 320px);
+      aspect-ratio: 3 / 4;
       position: relative;
     }
-    .ar-image-holder img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .ar-reticle span {
+      position: absolute; width: 34px; height: 34px;
+      border: 4px solid #34d399;
+      filter: drop-shadow(0 0 8px rgba(52,211,153,0.8));
     }
-    .ar-badge-corner {
-      position: absolute;
-      top: 12px; right: 12px;
+    .ar-reticle span:nth-child(1) { top: 0; left: 0; border-right: 0; border-bottom: 0; border-top-left-radius: 12px; }
+    .ar-reticle span:nth-child(2) { top: 0; right: 0; border-left: 0; border-bottom: 0; border-top-right-radius: 12px; }
+    .ar-reticle span:nth-child(3) { bottom: 0; left: 0; border-right: 0; border-top: 0; border-bottom-left-radius: 12px; }
+    .ar-reticle span:nth-child(4) { bottom: 0; right: 0; border-left: 0; border-top: 0; border-bottom-right-radius: 12px; }
+
+    .ar-scan-status {
+      position: absolute; bottom: max(28px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.35rem;
+      background: rgba(2,20,16,0.7); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; padding: 0.7rem 1.4rem; border-radius: 999px; text-align: center;
+      min-width: 220px;
+    }
+    .ar-scan-status strong { font-size: 0.95rem; }
+    .ar-scan-status small { color: #a7f3d0; font-size: 0.78rem; }
+    .ar-scan-status .dot {
+      width: 9px; height: 9px; border-radius: 50%; background: #34d399;
+      animation: arPulse 1.2s ease-in-out infinite;
+    }
+    .ar-scan-status.found .dot { background: #fbbf24; }
+    @keyframes arPulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
+
+    /* ── Result overlay ── */
+    .ar-result {
+      position: fixed; inset: 0; z-index: 3200;
+      display: none; align-items: flex-start; justify-content: center;
+      padding: max(20px, env(safe-area-inset-top)) 16px 24px;
+      background: linear-gradient(180deg, rgba(2,20,16,0.92), rgba(2,20,16,0.98));
+      backdrop-filter: blur(10px);
+      overflow-y: auto;
+    }
+    .ar-result.active { display: flex; }
+    .ar-result-card {
+      width: 100%; max-width: 520px;
+      background: var(--surface-card); color: var(--text-main);
+      border-radius: 24px; padding: 1.75rem;
+      border: 1px solid rgba(16,185,129,0.3);
+      box-shadow: 0 28px 70px rgba(0,0,0,0.5);
+      position: relative; overflow: hidden;
+      animation: arRise 0.4s cubic-bezier(0.2,0,0,1) both;
+    }
+    @keyframes arRise { from { opacity: 0; transform: translateY(28px) scale(0.98); } to { opacity: 1; transform: none; } }
+    .ar-result-card::before {
+      content: ''; position: absolute; inset: 0 0 auto 0; height: 6px;
+      background: linear-gradient(90deg, #10b981, #0ea5e9, #06b6d4);
+    }
+    .ar-result-code {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.3rem 0.85rem; border-radius: 999px;
+      background: rgba(16,185,129,0.14); color: #047857;
+      font-weight: 800; font-size: 0.82rem; letter-spacing: 0.03em;
+      margin-bottom: 0.85rem;
+    }
+    .ar-result-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.85rem; line-height: 1.3; }
+    .ar-result-desc { font-size: 0.98rem; line-height: 1.75; color: var(--text-muted); white-space: pre-wrap; margin-bottom: 1.25rem; }
+    .ar-prompt-box {
+      border-radius: 14px; padding: 1rem 1.1rem; margin-bottom: 1.25rem;
+      background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.28);
+    }
+    .ar-prompt-box h4 { font-size: 0.85rem; font-weight: 700; color: #6366f1; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem; }
+    .ar-prompt-text { font-size: 0.9rem; color: var(--text-main); white-space: pre-wrap; margin-bottom: 0.75rem; }
+    .ar-points {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.4rem 0.9rem; border-radius: 999px;
+      background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;
+      font-weight: 800; font-size: 0.9rem; margin-bottom: 1.25rem;
+      box-shadow: 0 6px 16px -6px rgba(245,158,11,0.7);
+    }
+    .ar-result-actions { display: flex; gap: 0.75rem; }
+    .ar-result-actions .clear-btn { flex: 1; }
+    .clear-btn-ghost {
+      background: transparent; border: 1px solid var(--border-subtle); color: var(--text-muted);
     }
   </style>
 </head>
@@ -55,11 +179,10 @@
     <div class="clear-nav-inner">
       <div class="brand-badge">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #0284c7, #06b6d4);"><i class="fa-solid fa-vr-cardboard"></i></div>
+          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #10b981, #06b6d4);"><i class="fa-solid fa-vr-cardboard"></i></div>
           <span>CLEAR AR</span>
         </div>
       </div>
-
       <nav class="nav-links">
         <button type="button" class="nav-btn" onclick="returnToScores()" title="กลับหน้าคะแนนของฉัน">
           <i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span>
@@ -70,126 +193,327 @@
   </header>
 
   <main class="clear-container">
-    <div style="margin-bottom: 2rem; text-align: center;">
-        <span class="clear-badge badge-metallic" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-vr-cardboard"></i> CLEAR AR · เทคโนโลยีเสมือนจริง</span>
-        <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main);">CLEAR AR</h1>
-        <p style="color: var(--text-muted); font-size: 0.95rem;">สื่อการเรียนรู้วรรณคดีสามมิติเสมือนจริง — เรือพระราชพิธีจำลอง 3D บัตรเบาะแส และมินิเกมจิ๊กซอว์ปริศนา</p>
-    </div>
-
-    <!-- AR Filter Tabs -->
-    <div style="display: flex; justify-content: center; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap;">
-      <button class="clear-btn clear-btn-primary" onclick="filterAr('all')">ทั้งหมด</button>
-      <button class="clear-btn clear-btn-secondary" onclick="filterAr('boat')">เรือพระราชพิธี</button>
-      <button class="clear-btn clear-btn-secondary" onclick="filterAr('puzzle')">จิ๊กซอว์ปริศนา</button>
-      <button class="clear-btn clear-btn-secondary" onclick="filterAr('clue')">บัตรเบาะแส</button>
-    </div>
-
-    <div class="ar-card-grid">
-      <!-- Card 1 -->
-      <div class="ar-visual-card" data-category="boat">
-        <div class="ar-image-holder" style="background: linear-gradient(135deg, #0284c7, #2563eb);">
-          <i class="fa-solid fa-ship"></i>
-          <span class="clear-badge badge-amber ar-badge-corner">AR 3D Model</span>
-        </div>
-        <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-          <div>
-            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">เรือพระที่นั่งสุวรรณหงส์</h3>
-            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
-              "สุวรรณหงส์ทรงพู่ห้อย งามชดช้อยลอยหลังสินธุ์" ส่องกล้อง AR สัมผัสความงามโขนเรือรูปหงส์ทอง 3 มิติ
-            </p>
-          </div>
-          <button onclick="launchArViewer('เรือพระที่นั่งสุวรรณหงส์')" class="clear-btn clear-btn-primary" style="width: 100%;">
-            <i class="fa-solid fa-camera"></i> <span>เปิดกล้องสแกน AR</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Card 2 -->
-      <div class="ar-visual-card" data-category="boat">
-        <div class="ar-image-holder" style="background: linear-gradient(135deg, #b45309, #d97706);">
-          <i class="fa-solid fa-dragon"></i>
-          <span class="clear-badge badge-amber ar-badge-corner">AR 3D Model</span>
-        </div>
-        <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-          <div>
-            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">เรือครุฑยุดนาค</h3>
-            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
-              "เรือครุฑยุดนาคหิ้ว ลิ่วลอยมาพาผันผยอง" ชมโขนเรือพญาครุฑกางปีกยุดจับนาคา ทรงอานุภาพ
-            </p>
-          </div>
-          <button onclick="launchArViewer('เรือครุฑยุดนาค')" class="clear-btn clear-btn-amber" style="width: 100%;">
-            <i class="fa-solid fa-camera"></i> <span>เปิดกล้องสแกน AR</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Card 3 -->
-      <div class="ar-visual-card" data-category="puzzle">
-        <div class="ar-image-holder" style="background: linear-gradient(135deg, #10b981, #059669);">
-          <i class="fa-solid fa-puzzle-piece"></i>
-          <span class="clear-badge badge-emerald ar-badge-corner">มินิเกม</span>
-        </div>
-        <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-          <div>
-            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">จิ๊กซอว์ปริศนาแห่งสายน้ำ</h3>
-            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
-              ต่อชิ้นส่วนภาพกระบวนพยุหยาตราทางชลมารค 3 ระดับความยาก เพื่อปลดล็อกโค้ดคะแนนลับ
-            </p>
-          </div>
-          <button onclick="launchPuzzle()" class="clear-btn clear-btn-emerald" style="width: 100%;">
-            <i class="fa-solid fa-gamepad"></i> <span>เล่นเกมจิ๊กซอว์</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Card 4 -->
-      <div class="ar-visual-card" data-category="clue">
-        <div class="ar-image-holder" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <span class="clear-badge badge-purple ar-badge-corner">บัตรเบาะแส</span>
-        </div>
-        <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-          <div>
-            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem;">บัตรเบาะแสวรรณคดี CLEAR AR</h3>
-            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
-              ไขรหัสคำใบ้ ถอดความบทเห่ชมปลา ชมไม้ และชมนก พร้อมสแกนเบาะแสที่ซ่อนอยู่ตามห้องเรียน
-            </p>
-          </div>
-          <button onclick="launchClueCard()" class="clear-btn clear-btn-secondary" style="width: 100%;">
-            <i class="fa-solid fa-eye"></i> <span>เปิดบัตรเบาะแส</span>
-          </button>
-        </div>
-      </div>
-    </div>
+    <!-- Hero (ก่อนเปิดกล้อง) -->
+    <section id="arHero" class="clear-card card-metallic ar-hero">
+      <div class="ar-hero-icon"><i class="fa-solid fa-camera"></i></div>
+      <span class="badge-metallic" style="margin-bottom: 0.9rem;"><i class="fa-solid fa-wand-magic-sparkles"></i> WebAR · MindAR</span>
+      <h1 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem;">ส่องสื่อ เปิดโลกการเรียนรู้</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.25rem;">
+        ยกกล้องส่องไปที่การ์ดหรือภาพเป้าหมาย เพื่อเปิดเนื้อหาวรรณคดี 3 มิติแบบเรียลไทม์
+      </p>
+      <div id="arRoomChip" class="ar-room-chip"><i class="fa-solid fa-door-open"></i> <span id="arRoomText">กำลังเชื่อมต่อคลังสื่อ…</span></div>
+      <button id="arStartBtn" class="clear-btn clear-btn-primary btn-metallic ar-camera-btn shimmer-manifest" type="button">
+        <i class="fa-solid fa-camera"></i> <span>เปิดกล้องสแกน AR</span>
+      </button>
+      <div id="arHeroNote" class="ar-note" style="display: none;"></div>
+    </section>
   </main>
+
+  <!-- Camera scene slot (MindAR) -->
+  <div id="arSceneSlot"></div>
+
+  <!-- Scanning HUD -->
+  <div id="arScanUI" class="ar-scan-ui">
+    <div class="ar-scan-top">
+      <button id="arCloseCamera" class="ar-scan-close" type="button" aria-label="ปิดกล้อง"><i class="fa-solid fa-arrow-left"></i></button>
+      <span class="ar-scan-title"><i class="fa-solid fa-vr-cardboard"></i> CLEAR AR</span>
+      <span style="width: 44px;"></span>
+    </div>
+    <div class="ar-reticle" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <div id="arScanStatus" class="ar-scan-status">
+      <span class="dot"></span>
+      <strong id="arStatusText">กำลังค้นหาสื่อ…</strong>
+      <small id="arScanTip">ขยับกล้องช้า ๆ ให้ภาพเป้าหมายอยู่ในการ์ด</small>
+    </div>
+  </div>
+
+  <!-- Result stage -->
+  <div id="arResult" class="ar-result" role="dialog" aria-modal="true">
+    <article class="ar-result-card">
+      <span id="arResultCode" class="ar-result-code"><i class="fa-solid fa-qrcode"></i> <span id="arResultCodeText"></span></span>
+      <h1 id="arResultTitle" class="ar-result-title"></h1>
+      <div id="arResultDesc" class="ar-result-desc"></div>
+      <div id="arPromptBox" class="ar-prompt-box" style="display: none;">
+        <h4><i class="fa-solid fa-robot"></i> พรอมต์ AI สำหรับต่อยอด</h4>
+        <div id="arPromptText" class="ar-prompt-text"></div>
+        <button id="arCopyPrompt" class="clear-btn clear-btn-secondary" style="font-size: 0.82rem; padding: 0.45rem 0.85rem;" type="button">
+          <i class="fa-solid fa-copy"></i> <span>คัดลอกพรอมต์</span>
+        </button>
+      </div>
+      <div id="arPointsBadge" class="ar-points" style="display: none;"><i class="fa-solid fa-star"></i> <span id="arPointsText"></span></div>
+      <div class="ar-result-actions">
+        <button id="arRescanBtn" class="clear-btn clear-btn-primary btn-metallic" type="button">
+          <i class="fa-solid fa-rotate-right"></i> <span>สแกนสื่อชิ้นใหม่</span>
+        </button>
+        <button id="arResultClose" class="clear-btn clear-btn-ghost" type="button">
+          <i class="fa-solid fa-house"></i> <span>กลับ</span>
+        </button>
+      </div>
+    </article>
+  </div>
 
   <footer class="clear-footer">
     <p>© 2026 Project CLEAR — รายวิชาภาษาไทย ครูรามิล ปัญญพัทธ์</p>
   </footer>
 
+  <script src="../assets/js/student-map.js"></script>
   <script src="../assets/js/shared.js"></script>
   <script>
-    function filterAr(category) {
-      document.querySelectorAll('.ar-visual-card').forEach(card => {
-        if (category === 'all' || card.dataset.category === category) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
+    (function () {
+      const $ = (id) => document.getElementById(id);
+      const AR = {
+        room: null,
+        cards: [],
+        targetsUrl: '',
+        scene: null,
+        started: false,
+        resultOpen: false,
+        lostTimer: null,
+        pauseTimer: null,
+        scanReadyAt: 0
+      };
+
+      /* ── Room scope (Zero-Leak) ── */
+      function resolveRoom(value) {
+        if (!value) return null;
+        const v = String(value).trim();
+        const rooms = window.CLEAR_ROOMS || [];
+        return rooms.find(r => r.slug === v || r.room === v || r.slug.toLowerCase() === v.toLowerCase()) || null;
+      }
+      function detectRoom() {
+        try {
+          for (let i = 0; i < sessionStorage.length; i++) {
+            const k = sessionStorage.key(i);
+            const m = k && k.match(/^clear_auth_student_(.+)$/);
+            if (m) { const r = resolveRoom(m[1]); if (r) return r; }
+          }
+        } catch (e) {}
+        const ls = resolveRoom(localStorage.getItem('clear_current_room'));
+        if (ls) return ls;
+        try { return resolveRoom(new URLSearchParams(location.search).get('room')); } catch (e) { return null; }
+      }
+
+      /* ── Data ── */
+      async function loadArData() {
+        const roomKey = AR.room ? AR.room.room : '';
+        if (!roomKey) return;
+        try {
+          const url = `${CLEAR_API_BASE}?action=getArCards&room=${encodeURIComponent(roomKey)}&t=${Date.now()}`;
+          const res = await fetch(url, { cache: 'no-store' });
+          const data = await res.json();
+          if (data && data.ok) {
+            AR.cards = (data.cards || []).filter(c => c.targetIndex != null);
+            AR.targetsUrl = data.targetsUrl || '';
+          }
+        } catch (e) {
+          console.warn('CLEAR AR: โหลดข้อมูลไม่สำเร็จ', e);
         }
+      }
+
+      function renderHero() {
+        const roomChip = $('arRoomChip');
+        const roomText = $('arRoomText');
+        const note = $('arHeroNote');
+        if (!AR.room) {
+          roomText.textContent = 'ไม่พบข้อมูลห้องเรียน';
+          note.style.display = 'block';
+          note.textContent = 'กรุณาเปิดใช้งาน CLEAR AR จากหน้าห้องเรียนของคุณ เพื่อสแกนเฉพาะสื่อที่ครูกำหนดสิทธิ์ให้ห้องคุณ';
+          $('arStartBtn').disabled = true;
+          return;
+        }
+        roomText.textContent = `กำลังเชื่อมต่อคลังสื่อห้อง ${AR.room.room}`;
+        if (!AR.cards.length) {
+          note.style.display = 'block';
+          note.textContent = `ยังไม่มีสื่อ AR สำหรับห้อง ${AR.room.room} ในขณะนี้ กรุณารอครูอัปโหลดและคอมไพล์สื่อ`;
+          $('arStartBtn').disabled = true;
+          return;
+        }
+        if (!AR.targetsUrl) {
+          note.style.display = 'block';
+          note.textContent = 'ยังไม่มีไฟล์สแกน (targets.mind) สำหรับห้องนี้ กรุณาแจ้งครูให้คอมไพล์ระบบสแกนก่อนใช้งาน';
+          $('arStartBtn').disabled = true;
+          return;
+        }
+        note.style.display = 'none';
+      }
+
+      /* ── Scene ── */
+      const getArSystem = () => (AR.scene ? AR.scene.systems['mindar-image-system'] : null);
+
+      function setSearching() {
+        const status = $('arScanStatus');
+        status.classList.remove('found');
+        $('arStatusText').textContent = 'กำลังค้นหาสื่อ…';
+        $('arScanTip').textContent = 'ขยับกล้องช้า ๆ ให้ภาพเป้าหมายอยู่ในการ์ด';
+      }
+
+      function waitForScene(el) {
+        return new Promise((resolve) => {
+          if (el.hasLoaded) resolve();
+          else el.addEventListener('loaded', resolve, { once: true });
+        });
+      }
+
+      function buildScene() {
+        const slot = $('arSceneSlot');
+        slot.innerHTML = '';
+        const el = document.createElement('a-scene');
+        el.setAttribute('mindar-image', `imageTargetSrc: ${AR.targetsUrl}; autoStart: false; uiLoading: no; uiScanning: no; uiError: no; filterMinCF: 0.001; filterBeta: 1; warmupTolerance: 5; missTolerance: 5;`);
+        el.setAttribute('color-space', 'sRGB');
+        el.setAttribute('renderer', 'colorManagement: true; physicallyCorrectLights: true; antialias: true; alpha: true;');
+        el.setAttribute('vr-mode-ui', 'enabled: false');
+        el.setAttribute('device-orientation-permission-ui', 'enabled: false');
+        el.setAttribute('embedded', '');
+        const camera = document.createElement('a-camera');
+        camera.setAttribute('position', '0 0 0');
+        camera.setAttribute('look-controls', 'enabled: false');
+        el.appendChild(camera);
+        AR.cards.forEach(card => {
+          const anchor = document.createElement('a-entity');
+          anchor.id = 'ar-target-' + card.targetIndex;
+          anchor.setAttribute('mindar-image-target', `targetIndex: ${card.targetIndex}`);
+          el.appendChild(anchor);
+        });
+        el.addEventListener('arError', () => {
+          $('arStatusText').textContent = 'เปิดกล้องไม่สำเร็จ';
+          $('arScanTip').textContent = 'กรุณาอนุญาตใช้กล้อง หรือกดปุ่มย้อนกลับ';
+        });
+        slot.appendChild(el);
+        slot.classList.add('active');
+        AR.scene = el;
+        return el;
+      }
+
+      function bindCard(card) {
+        const target = document.getElementById('ar-target-' + card.targetIndex);
+        if (!target) return;
+        target.addEventListener('targetFound', () => {
+          if (AR.resultOpen || Date.now() < AR.scanReadyAt) return;
+          AR.resultOpen = true;
+          clearTimeout(AR.lostTimer);
+          $('arScanStatus').classList.add('found');
+          $('arStatusText').textContent = `ตรวจพบ ${card.code || card.title}`;
+          $('arScanTip').textContent = 'กำลังเปิดผลลัพธ์…';
+          setTimeout(() => showResult(card), 220);
+        });
+        target.addEventListener('targetLost', () => {
+          if (AR.resultOpen) return;
+          clearTimeout(AR.lostTimer);
+          AR.lostTimer = setTimeout(setSearching, 500);
+        });
+      }
+
+      /* ── Result ── */
+      function showResult(card) {
+        $('arResultCodeText').textContent = card.code || 'AR';
+        $('arResultCode').style.display = card.code ? 'inline-flex' : 'none';
+        $('arResultTitle').textContent = card.title || 'สื่อการเรียนรู้';
+        $('arResultDesc').textContent = card.description || '';
+        if (card.prompt) {
+          $('arPromptBox').style.display = 'block';
+          $('arPromptText').textContent = card.prompt;
+        } else {
+          $('arPromptBox').style.display = 'none';
+        }
+        if (Number(card.points) > 0) {
+          $('arPointsBadge').style.display = 'inline-flex';
+          $('arPointsText').textContent = `รับ ${card.points} แต้ม PUM`;
+        } else {
+          $('arPointsBadge').style.display = 'none';
+        }
+        $('arResult').classList.add('active');
+        AR.pauseTimer = setTimeout(() => {
+          try { getArSystem().pause(true); } catch (e) { console.warn(e); }
+        }, 120);
+      }
+
+      function rescan() {
+        clearTimeout(AR.pauseTimer);
+        AR.scanReadyAt = Date.now() + 1000;
+        AR.resultOpen = false;
+        $('arResult').classList.remove('active');
+        setSearching();
+        if (AR.started) {
+          try { getArSystem().unpause(); } catch (e) { console.warn(e); }
+        }
+      }
+
+      function stopCamera() {
+        const sys = getArSystem();
+        try {
+          if (sys) {
+            if (sys.controller && sys.video && sys.video.srcObject) sys.stop();
+            else {
+              sys.video?.srcObject?.getTracks().forEach(t => t.stop());
+              sys.video?.remove();
+              sys.video = null;
+            }
+          }
+        } catch (e) { console.warn('stop camera', e); }
+        const slot = $('arSceneSlot');
+        slot.classList.remove('active');
+        slot.innerHTML = '';
+        AR.scene = null;
+        AR.started = false;
+      }
+
+      function closeCamera() {
+        clearTimeout(AR.lostTimer);
+        clearTimeout(AR.pauseTimer);
+        AR.resultOpen = false;
+        $('arResult').classList.remove('active');
+        $('arScanUI').classList.remove('active');
+        if (AR.started || AR.scene) stopCamera();
+        $('arHero').style.display = '';
+        setSearching();
+      }
+
+      async function startScan() {
+        if (!AR.cards.length || !AR.targetsUrl) { renderHero(); return; }
+        $('arStartBtn').disabled = true;
+        $('arHero').style.display = 'none';
+        $('arScanUI').classList.add('active');
+        $('arStatusText').textContent = 'กำลังเปิดกล้อง…';
+        $('arScanTip').textContent = 'กรุณาอนุญาตการใช้กล้อง';
+        try {
+          const scene = buildScene();
+          await waitForScene(scene);
+          AR.cards.forEach(bindCard);
+          getArSystem().start();
+          AR.started = true;
+          setSearching();
+        } catch (e) {
+          console.error(e);
+          $('arStatusText').textContent = 'เปิดกล้องไม่สำเร็จ';
+          $('arScanTip').textContent = 'กรุณาอนุญาตใช้กล้อง หรือกดปุ่มย้อนกลับ';
+        } finally {
+          $('arStartBtn').disabled = false;
+        }
+      }
+
+      /* ── Wire events ── */
+      $('arStartBtn').addEventListener('click', startScan);
+      $('arCloseCamera').addEventListener('click', closeCamera);
+      $('arRescanBtn').addEventListener('click', rescan);
+      $('arResultClose').addEventListener('click', () => {
+        rescan();
+        closeCamera();
       });
-    }
+      $('arCopyPrompt').addEventListener('click', () => {
+        const text = $('arPromptText').textContent || '';
+        copyTextToClipboard(text).then(() => showToast('คัดลอกพรอมต์แล้ว นำไปใช้กับ AI ได้เลย', 'success'))
+          .catch(() => showToast('คัดลอกไม่สำเร็จ กรุณาคัดลอกด้วยตนเอง', 'warning'));
+      });
+      window.addEventListener('pagehide', () => { if (AR.scene) stopCamera(); });
 
-    function launchArViewer(title) {
-      showToast(`กำลังเตรียมกล้อง AR สำหรับ ${title}... นำกล้องส่องที่การ์ดได้เลย`, 'info', '📱 AR Ready');
-    }
-
-    function launchPuzzle() {
-      showToast('เปิดเกมจิ๊กซอว์ปริศนา เรียงภาพให้สมบูรณ์เพื่อรับแต้ม', 'success', '🧩 มินิเกม');
-    }
-
-    function launchClueCard() {
-      showToast('กำลังโหลดบัตรเบาะแสกาพย์เห่เรือชุดที่ 1', 'info', '🔍 บัตรเบาะแส');
-    }
+      /* ── Init ── */
+      document.addEventListener('DOMContentLoaded', async () => {
+        AR.room = detectRoom();
+        $('arRoomText').textContent = AR.room ? `กำลังเชื่อมต่อคลังสื่อห้อง ${AR.room.room}…` : 'ไม่พบข้อมูลห้องเรียน';
+        await loadArData();
+        renderHero();
+      });
+    })();
   </script>
 </body>
 </html>

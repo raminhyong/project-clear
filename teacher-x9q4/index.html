@@ -168,6 +168,7 @@
         <button class="teacher-tab" data-tab="coupons" onclick="switchTab('coupons', this)"><i class="fa-solid fa-ticket"></i> คูปอง CLEAR Point</button>
         <button class="teacher-tab" data-tab="voice" onclick="switchTab('voice', this)"><i class="fa-solid fa-comment-dots"></i> รายงาน CLEAR Voice</button>
         <button class="teacher-tab" data-tab="space" onclick="switchTab('space', this)"><i class="fa-solid fa-book-open"></i> คลัง CLEAR Space</button>
+        <button class="teacher-tab" data-tab="ar" onclick="switchTab('ar', this); if (typeof loadArAdmin === 'function') loadArAdmin();"><i class="fa-solid fa-vr-cardboard"></i> จัดการ CLEAR AR</button>
       </div>
 
       <!-- Tab: room cards -->
@@ -266,8 +267,116 @@
           </a>
         </div>
       </div>
+
+      <!-- Tab: CLEAR AR management -->
+      <div id="tab-ar" class="teacher-tab-panel">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:1rem; margin-bottom:1.25rem;">
+          <div class="clear-card card-metallic" style="text-align:center;">
+            <div id="arStatTotal" style="font-size:2rem; font-weight:800; color:var(--brand-emerald);">0</div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">สื่อ AR ทั้งหมด</div>
+          </div>
+          <div class="clear-card card-metallic" style="text-align:center;">
+            <div id="arStatReady" style="font-size:2rem; font-weight:800; color:var(--brand-blue);">0</div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">พร้อมสแกน (มีภาพเป้าหมาย)</div>
+          </div>
+          <div class="clear-card card-metallic" style="text-align:center;">
+            <div id="arStatCompile" style="font-size:2rem; font-weight:800; color:var(--brand-amber);">—</div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">สถานะไฟล์สแกน (.mind)</div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem;">
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+            <button class="clear-btn clear-btn-primary" onclick="openArCardModal()"><i class="fa-solid fa-plus"></i> <span>เพิ่มสื่อ AR ใหม่</span></button>
+            <button class="clear-btn clear-btn-amber" id="arCompileBtn" onclick="compileArTargets()"><i class="fa-solid fa-bolt"></i> <span>คอมไพล์ระบบสแกน (.mind)</span></button>
+          </div>
+          <span id="arTargetsInfo" style="font-size:0.82rem; color:var(--text-muted);"></span>
+        </div>
+
+        <div id="arCompileProgress" style="display:none; margin-bottom:1rem;">
+          <div style="height:10px; border-radius:999px; background:var(--border-subtle); overflow:hidden;">
+            <div id="arCompileBar" style="height:100%; width:0%; background:linear-gradient(90deg,#10b981,#0ea5e9); transition:width 0.3s ease;"></div>
+          </div>
+          <p id="arCompileText" style="font-size:0.82rem; color:var(--text-muted); margin-top:0.4rem;"></p>
+        </div>
+
+        <div class="clear-card" style="padding:0; overflow-x:auto;">
+          <table class="teacher-table">
+            <thead>
+              <tr>
+                <th>ภาพเป้าหมาย</th>
+                <th>รหัส</th>
+                <th style="text-align:left; padding-left:1rem;">ชื่อสื่อ</th>
+                <th>สิทธิ์ห้องเรียน</th>
+                <th>สถานะ</th>
+                <th>PUM</th>
+                <th>เครื่องมือ</th>
+              </tr>
+            </thead>
+            <tbody id="arTableBody">
+              <tr><td colspan="7" style="padding: 3rem; color: var(--text-muted);">กำลังโหลดข้อมูล...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </main>
+
+  <!-- CLEAR AR card editor modal -->
+  <div id="arCardModal" class="clear-modal-backdrop">
+    <div class="clear-modal-content" style="max-width:600px; max-height:90vh; overflow-y:auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+        <h3 id="arModalTitle" style="font-size:1.2rem; font-weight:800; margin:0; display:flex; align-items:center; gap:0.5rem;">
+          <i class="fa-solid fa-vr-cardboard" style="color:var(--brand-emerald);"></i> เพิ่มสื่อ AR
+        </h3>
+        <button onclick="closeArCardModal()" style="background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--text-dim);">&times;</button>
+      </div>
+      <input type="hidden" id="arCardId">
+      <div class="clear-input-group">
+        <label class="clear-label">ภาพเป้าหมาย (Target Image)</label>
+        <div style="display:flex; gap:1rem; align-items:center;">
+          <div id="arImagePreview" style="width:96px; height:96px; border-radius:12px; background:var(--brand-blue-light); display:grid; place-items:center; overflow:hidden; flex:none; color:var(--text-dim);"><i class="fa-solid fa-image"></i></div>
+          <div style="flex:1;">
+            <input type="file" id="arImageInput" accept="image/jpeg,image/png,image/webp" class="clear-input" style="padding:0.5rem;">
+            <small style="color:var(--text-muted); font-size:0.75rem; display:block; margin-top:0.35rem;">ใช้ภาพที่มีลวดลายหรือขอบชัดเจน เพื่อให้กล้องจับเป้าหมายได้ง่าย</small>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; gap:0.75rem;">
+        <div class="clear-input-group" style="flex:1;">
+          <label class="clear-label" for="arCode">รหัสสื่อ</label>
+          <input type="text" id="arCode" class="clear-input" placeholder="เช่น C01">
+        </div>
+        <div class="clear-input-group" style="flex:2;">
+          <label class="clear-label" for="arTitle">ชื่อสื่อ</label>
+          <input type="text" id="arTitle" class="clear-input" placeholder="เช่น เรือพระที่นั่งสุวรรณหงส์">
+        </div>
+      </div>
+      <div class="clear-input-group">
+        <label class="clear-label" for="arDesc">เนื้อหาความรู้ / บทกลอน / คำอธิบาย</label>
+        <textarea id="arDesc" class="clear-input" rows="4"></textarea>
+      </div>
+      <div class="clear-input-group">
+        <label class="clear-label" for="arPrompt">พรอมต์ AI (ทางเลือก)</label>
+        <textarea id="arPrompt" class="clear-input" rows="2" placeholder="พรอมต์สำหรับต่อยอดบทเรียนด้วย AI"></textarea>
+      </div>
+      <div class="clear-input-group" style="max-width:220px;">
+        <label class="clear-label" for="arPoints">แต้ม PUM โบนัสเมื่อสแกนพบ</label>
+        <input type="number" id="arPoints" class="clear-input" min="0" max="1000" value="0">
+      </div>
+      <div class="clear-input-group">
+        <label class="clear-label">สิทธิ์ห้องเรียนที่เข้าถึงได้</label>
+        <label style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem; font-weight:700;">
+          <input type="checkbox" id="arRoomAll" onchange="toggleArAllRooms()"> ทุกห้อง
+        </label>
+        <div id="arRoomChecks" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:0.4rem; font-size:0.9rem;"></div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
+        <button type="button" class="clear-btn clear-btn-secondary" onclick="closeArCardModal()">ยกเลิก</button>
+        <button type="button" class="clear-btn clear-btn-primary" onclick="saveArCardForm()"><i class="fa-solid fa-floppy-disk"></i> <span>บันทึกสื่อ AR</span></button>
+      </div>
+    </div>
+  </div>
 
   <footer class="clear-footer">
     <p>© 2026 Project CLEAR — รายวิชาภาษาไทย ครูรามิล ปัญญพัทธ์</p>
@@ -604,5 +713,6 @@
       }
     });
   </script>
+  <script src="../assets/js/teacher-ar.js"></script>
 </body>
 </html>
