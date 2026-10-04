@@ -277,7 +277,7 @@ async function renderStudentDashboard(config, student, fullData) {
 
   const code = String(student.code);
   const activityCards = [
-    { key: 'traveler', title: 'Traveler', desc: 'สะสมไอเทมกาพย์เห่เรือ', icon: 'fa-compass', grad: 'linear-gradient(135deg,#10b981,#059669)', url: '../../traveler/index.html' },
+    { key: 'traveler', title: 'Traveler', desc: 'สะสมไอเทมกาพย์เห่เรือ', icon: 'fa-compass', grad: 'linear-gradient(135deg,#10b981,#059669)', url: `../../traveler/index.html?code=${encodeURIComponent(code)}` },
     { key: 'exam', title: 'ข้อสอบเสริมก่อนสอบ', desc: 'แบบทดสอบพร้อมเฉลยทันที', icon: 'fa-file-pen', grad: 'linear-gradient(135deg,#f59e0b,#d97706)', url: '../../exam-prep/index.html' },
     { key: 'selfpoint', title: 'Self Point', desc: 'รับแต้มและสแกน QR Code', icon: 'fa-gem', grad: 'linear-gradient(135deg,#10b981,#0ea5e9)', url: `../../self-point/index.html?code=${encodeURIComponent(code)}` },
     { key: 'ar', title: 'สื่อ AR กาพย์เห่เรือ', desc: 'สแกนการ์ด AR 3D', icon: 'fa-cube', grad: 'linear-gradient(135deg,#0284c7,#06b6d4)', url: '../../ar/index.html' },

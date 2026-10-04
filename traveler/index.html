@@ -2,220 +2,873 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="นักเดินทางแห่งกาพย์เห่เรือ">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>นักเดินทางแห่งกาพย์เห่เรือ (Traveler) | Project CLEAR</title>
-  <link rel="stylesheet" href="../assets/css/theme.css">
+  <meta name="theme-color" content="#071b32">
+  <title>นักเดินทางแห่งกาพย์เห่เรือ | Project CLEAR</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;600;700&family=Prompt:wght@300;400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
-    .traveler-shell {
-      width: 100%;
-      max-width: 680px;
-      margin: 0 auto;
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: 0 16px 48px rgba(0,0,0,0.18);
-      background: var(--surface-card);
-      border: 1px solid var(--border-glass);
+    :root {
+      --navy: #071b32;
+      --navy-2: #102a43;
+      --gold: #f6c453;
+      --gold-2: #d89216;
+      --cream: #fff9e9;
+      --ink: #173042;
+      --emerald: #10b981;
+      --shadow: 0 18px 55px rgba(4, 24, 44, 0.32);
     }
-    .map-stage {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-      background: #17324b;
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 50% -10%, rgba(76, 119, 162, 0.45), transparent 36rem),
+        linear-gradient(180deg, #071a32, #102a43 55%, #173f5f);
+      font-family: 'Prompt', Tahoma, sans-serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
-    .map-image {
-      display: block;
-      width: 100%;
-      height: auto;
-      user-select: none;
+    button, input { font-family: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+    .hidden { display: none !important; }
+
+    /* Topbar */
+    .topbar {
+      position: fixed;
+      z-index: 50;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 100%; max-width: 680px;
+      padding: max(10px, env(safe-area-inset-top)) 14px 10px;
+      background: linear-gradient(180deg, rgba(6, 24, 43, 0.96), rgba(10, 38, 65, 0.88));
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
     }
-    .inventory-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 0.85rem;
-      padding: 1rem 0;
+    .topbar-row { display: flex; align-items: center; gap: 10px; }
+    .close-btn {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0; border-radius: 12px;
+      padding: 6px 10px; font-size: 13px; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; gap: 6px;
+      transition: all 0.2s ease; flex: none;
     }
-    .item-card {
-      background: var(--bg-primary);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 0.75rem 0.5rem;
+    .close-btn:hover { background: rgba(239, 68, 68, 0.25); border-color: rgba(239, 68, 68, 0.5); color: #fca5a5; }
+    .logo {
+      width: 38px; height: 38px; flex: none; border-radius: 12px;
+      display: grid; place-items: center; font-size: 20px;
+      background: linear-gradient(145deg, #fff6c6, #f6b72a);
+      box-shadow: inset 0 1px white, 0 6px 14px rgba(246, 183, 42, 0.3);
+    }
+    .identity { min-width: 0; flex: 1; color: white; }
+    .identity strong { display: block; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .identity small { display: block; color: #b9d4e8; font-size: 11px; margin-top: 1px; }
+    .balance-pill, .inventory-btn {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: white; border-radius: 14px; padding: 6px 10px;
+      min-width: 60px; text-align: center; flex: none;
+    }
+    .balance-pill b { display: block; color: #ffe079; font-size: 16px; line-height: 1; font-family: 'Inter', sans-serif; }
+    .balance-pill span { font-size: 9px; opacity: 0.85; }
+    .inventory-btn { cursor: pointer; min-width: 44px; font-size: 18px; transition: transform 0.15s ease; }
+    .inventory-btn:hover { transform: scale(1.06); background: rgba(255, 255, 255, 0.18); }
+    .progress-track { height: 7px; margin-top: 9px; border-radius: 99px; overflow: hidden; background: rgba(255, 255, 255, 0.15); }
+    .progress-fill { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #10b981, #ffe079); transition: width 0.6s ease; }
+    .progress-caption { display: flex; justify-content: space-between; color: #c8dbea; font-size: 10px; margin-top: 4px; font-weight: 500; }
+
+    /* Shell & Map */
+    .shell {
+      width: 100%; max-width: 680px; margin: 0 auto;
+      padding-top: 92px; background: #0a223a;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.45);
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      min-height: 100vh;
+    }
+    .map-stage { position: relative; width: 100%; aspect-ratio: 96 / 1000; overflow: hidden; background: #17324b; }
+    .map-image { display: block; width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
+    .map-vignette { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 45px rgba(6, 22, 39, 0.35); }
+
+    /* Collectibles Layer */
+    .collected-items-layer { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
+    .map-collectible {
+      --glow: #ffe07a; --aura: rgba(255, 211, 84, 0.42);
+      position: absolute; width: 86px; height: 72px; padding: 0; border: 0;
+      transform: translate(-50%, -50%); background: transparent; cursor: pointer;
+      pointer-events: auto; isolation: isolate;
+      animation: collectibleFloat 3.4s ease-in-out infinite;
+      animation-delay: calc(var(--step) * -0.17s);
+    }
+    .map-collectible::before {
+      content: ""; position: absolute; z-index: -1; inset: 8% -4%; border-radius: 50%;
+      background: radial-gradient(ellipse, var(--aura) 0%, rgba(255, 255, 255, 0.16) 38%, transparent 72%);
+      filter: blur(7px); opacity: 0.9; animation: radiance 2.6s ease-in-out infinite alternate;
+    }
+    .map-collectible img {
+      display: block; width: 100%; height: 100%; object-fit: contain;
+      filter: drop-shadow(0 0 5px #fff) drop-shadow(0 0 10px var(--glow)) drop-shadow(0 7px 6px rgba(5, 25, 40, 0.36));
+      transition: filter 0.2s ease, scale 0.2s ease;
+    }
+    .map-collectible:hover img, .map-collectible:focus-visible img {
+      scale: 1.12; filter: drop-shadow(0 0 8px #fff) drop-shadow(0 0 18px var(--glow)) drop-shadow(0 8px 7px rgba(5, 25, 40, 0.45));
+    }
+    .map-collectible:focus-visible { outline: 2px solid white; outline-offset: 4px; border-radius: 18px; }
+    .map-collectible.boat { --glow: #ffbd39; --aura: rgba(255, 175, 39, 0.48); width: 124px; height: 76px; }
+    .map-collectible.fish { --glow: #42ddff; --aura: rgba(42, 205, 255, 0.46); width: 88px; height: 70px; }
+    .map-collectible.flower { --glow: #ff78c8; --aura: rgba(255, 102, 190, 0.43); width: 82px; height: 76px; }
+    .map-collectible.bird { --glow: #c38aff; --aura: rgba(157, 119, 255, 0.46); width: 92px; height: 82px; }
+    .map-collectible.just-unlocked { animation: itemArrive 0.8s cubic-bezier(0.2, 1.7, 0.45, 1), collectibleFloat 3.4s 0.8s ease-in-out infinite; }
+
+    @keyframes collectibleFloat {
+      0%, 100% { transform: translate(-50%, -50%) translateY(0) rotate(-1deg); }
+      50% { transform: translate(-50%, -50%) translateY(-7px) rotate(1deg); }
+    }
+    @keyframes radiance { from { opacity: 0.58; transform: scale(0.86); } to { opacity: 1; transform: scale(1.12); } }
+    @keyframes itemArrive {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.15) rotate(-12deg); }
+      70% { opacity: 1; transform: translate(-50%, -50%) scale(1.18) rotate(3deg); }
+      100% { transform: translate(-50%, -50%) scale(1) rotate(0); }
+    }
+
+    /* Landmark & Phase Labels */
+    .place-label, .phase-label {
+      position: absolute; z-index: 4; transform: translate(-50%, -50%);
+      color: white; text-align: center; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+      pointer-events: none;
+    }
+    .place-label {
+      padding: 8px 14px; border: 1px solid rgba(255, 255, 255, 0.42);
+      border-radius: 18px; background: rgba(10, 40, 59, 0.7); backdrop-filter: blur(8px);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
+    }
+    .place-label strong { display: block; font-size: 15px; }
+    .place-label small { display: block; font-size: 10px; opacity: 0.9; margin-top: 2px; }
+    .destination-label {
+      width: min(88%, 520px); padding: 12px 16px;
+      border-color: rgba(255, 220, 132, 0.6);
+      background: rgba(7, 29, 53, 0.82);
+      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.35), inset 0 0 18px rgba(255, 204, 92, 0.12);
+    }
+    .destination-label strong { color: #ffe39a; font-size: 15px; }
+    .destination-label small { color: #fff; font-size: 10.5px; line-height: 1.55; opacity: 0.96; margin-top: 4px; }
+    .origin-label {
+      width: min(88%, 520px); padding: 12px 16px;
+      border-color: rgba(255, 224, 143, 0.6);
+      background: rgba(37, 65, 35, 0.82);
+      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.3), inset 0 0 18px rgba(255, 216, 111, 0.12);
+    }
+    .origin-label strong { color: #ffe39a; font-size: 15px; }
+    .origin-label small { color: #fff; font-size: 10.5px; line-height: 1.55; opacity: 0.96; margin-top: 4px; }
+    .phase-label { width: auto; white-space: nowrap; }
+    .phase-label span {
+      display: inline-block; padding: 6px 13px; border-radius: 99px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.03em;
+      background: rgba(9, 37, 60, 0.7); border: 1px solid rgba(255, 255, 255, 0.35); backdrop-filter: blur(6px);
+    }
+
+    /* Level Nodes */
+    .level-node {
+      position: absolute; z-index: 10; transform: translate(-50%, -50%);
+      width: 54px; height: 54px; border: none; border-radius: 50%; cursor: pointer;
+      display: grid; place-items: center; color: #fff; font-weight: bold;
+      transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+      filter: drop-shadow(0 8px 8px rgba(4, 20, 36, 0.38));
+    }
+    .level-node::before {
+      content: ""; position: absolute; inset: -5px; border-radius: inherit;
+      border: 2px solid rgba(255, 255, 255, 0.75); box-shadow: inset 0 0 0 2px rgba(13, 56, 78, 0.2);
+    }
+    .level-node:active { transform: translate(-50%, -50%) scale(0.92); }
+    .level-node.done { background: linear-gradient(145deg, #3dd58f, #188b58); }
+    .level-node.current { background: linear-gradient(145deg, #ffd96a, #ed8f19); animation: pulse 1.8s infinite; }
+    .level-node.locked { background: linear-gradient(145deg, #718392, #3d5264); opacity: 0.8; cursor: not-allowed; }
+    .node-icon { font-size: 20px; line-height: 1; }
+    .node-step {
+      position: absolute; bottom: -12px; min-width: 27px; height: 19px; padding: 0 5px;
+      display: grid; place-items: center; border-radius: 9px; color: #173042; background: #fff;
+      font-size: 10px; font-weight: 700; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+    }
+    .node-cost {
+      position: absolute; top: -15px; white-space: nowrap; padding: 3px 6px; border-radius: 8px;
+      color: #6d4900; background: #fff3b6; font-size: 8.5px; font-weight: 700;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255, 211, 76, 0.55); }
+      50% { box-shadow: 0 0 0 14px rgba(255, 211, 76, 0); }
+    }
+
+    /* Traveler Avatar Token */
+    .traveler-token {
+      position: absolute; z-index: 12; transform: translate(-50%, -50%);
+      width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%;
+      color: #6b4300; background: radial-gradient(circle at 35% 30%, #fff, #ffe06b 38%, #e89913 72%);
+      border: 2px solid white; box-shadow: 0 0 0 4px rgba(255, 217, 82, 0.35), 0 8px 14px rgba(0, 0, 0, 0.32);
+      font-size: 18px; pointer-events: none; transition: left 0.2s, top 0.2s;
+    }
+    .traveler-token.moving { animation: tokenGlow 0.65s infinite alternate; }
+    @keyframes tokenGlow { to { box-shadow: 0 0 0 8px rgba(255, 217, 82, 0.25), 0 10px 18px rgba(0, 0, 0, 0.38); } }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed; z-index: 90; inset: 0; display: grid; place-items: center; padding: 18px;
+      background: rgba(3, 19, 34, 0.78); backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .modal-card {
+      position: relative; width: min(100%, 420px); max-height: min(88vh, 720px); overflow: auto;
+      border-radius: 26px; padding: 26px 22px; background: #fffdf7;
+      box-shadow: var(--shadow); text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+    .modal-card h2 { margin: 8px 0 4px; color: #173f5f; font-size: 20px; font-weight: 700; }
+    .modal-card p { color: #637a89; font-size: 13.5px; line-height: 1.6; margin: 4px 0 12px; }
+    .modal-close {
+      position: absolute; top: 12px; right: 12px; width: 34px; height: 34px;
+      border: 0; border-radius: 50%; background: #edf2f5; color: #4c6272;
+      cursor: pointer; font-size: 14px; font-weight: bold;
+      transition: background 0.15s;
+    }
+    .modal-close:hover { background: #e2e8f0; color: #1e293b; }
+    .item-image-wrap {
+      width: 190px; aspect-ratio: 1; margin: 8px auto 14px; border-radius: 24px; overflow: hidden;
+      display: grid; place-items: center; background: linear-gradient(145deg, #fff, #f0f5f7); border: 1px solid #e7ecef;
+      box-shadow: 0 12px 28px rgba(15, 61, 83, 0.14);
+    }
+    .item-image-wrap img { width: 100%; height: 100%; object-fit: contain; }
+    .reward-image { animation: rewardPop 0.6s cubic-bezier(0.16, 0.9, 0.25, 1.2); }
+    @keyframes rewardPop { from { opacity: 0; transform: scale(0.55) rotate(-5deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
+    .reward-poem {
+      position: relative; margin: 14px 0 18px; padding: 16px 20px;
+      border: 1px solid rgba(186, 132, 31, 0.25); border-radius: 18px;
+      color: #6f4d20; background: linear-gradient(145deg, #fff8df, #fffdf6);
+      font-family: 'Noto Serif Thai', serif; font-size: 15px; line-height: 1.8;
+      white-space: pre-line;
+      box-shadow: inset 0 0 18px rgba(255, 213, 105, 0.15);
+    }
+    .reward-poem::before, .reward-poem::after { position: absolute; color: #d5a635; font-size: 22px; line-height: 1; }
+    .reward-poem::before { content: "❧"; left: 8px; top: 6px; }
+    .reward-poem::after { content: "❧"; right: 8px; bottom: 6px; transform: rotate(180deg); }
+    .cost-box {
+      margin: 15px 0; padding: 12px; border-radius: 16px;
+      background: #fff4c9; color: #735100; font-size: 13px; font-weight: 500;
+    }
+    .modal-actions { display: grid; grid-template-columns: 1fr 1.35fr; gap: 10px; margin-top: 16px; }
+
+    /* Inventory */
+    .inventory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin-top: 17px; }
+    .inventory-slot {
+      aspect-ratio: 1; border-radius: 15px; display: grid; place-items: center;
+      overflow: hidden; background: #e9eef1; border: 1px solid #dce4e8;
+      position: relative; cursor: pointer; transition: transform 0.15s;
+    }
+    .inventory-slot:hover { transform: scale(1.04); }
+    .inventory-slot img { width: 100%; height: 100%; object-fit: contain; }
+    .inventory-slot.locked { cursor: not-allowed; }
+    .inventory-slot.locked:hover { transform: none; }
+    .inventory-slot.locked::after { content: "🔒"; font-size: 18px; opacity: 0.45; }
+    .inventory-slot small {
+      position: absolute; left: 3px; bottom: 3px; padding: 2px 4px;
+      border-radius: 5px; font-size: 8px; color: #fff; background: rgba(9, 35, 54, 0.72);
+      font-family: 'Inter', sans-serif; font-weight: bold;
+    }
+    .inventory-summary { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .summary-chip { padding: 5px 9px; border-radius: 99px; background: #edf4f6; color: #44606f; font-size: 10px; font-weight: 600; }
+
+    /* Buttons */
+    .primary-btn, .secondary-btn {
+      width: 100%; border: none; border-radius: 15px; padding: 14px 16px;
+      cursor: pointer; font-weight: bold; font-size: 14px;
+    }
+    .primary-btn {
+      color: #fff; background: linear-gradient(135deg, #1f9c70, #147c8c);
+      min-height: 48px;
+      box-shadow: inset 0 2px rgba(255, 255, 255, 0.25), inset 0 -3px rgba(0, 0, 0, 0.16), 0 5px 0 #07586a, 0 10px 20px rgba(24, 133, 118, 0.28);
+      transition: 0.15s;
+    }
+    .primary-btn:active { transform: translateY(3px); box-shadow: inset 0 2px rgba(255, 255, 255, 0.2), 0 2px 0 #07586a, 0 5px 10px rgba(24, 133, 118, 0.24); }
+    .primary-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+    .secondary-btn { color: #385366; background: #edf3f6; }
+    .secondary-btn:hover { background: #e2e8f0; }
+
+    /* Toast */
+    .toast {
+      position: fixed; z-index: 150; left: 50%; bottom: max(18px, env(safe-area-inset-bottom));
+      transform: translate(-50%, 20px); width: min(calc(100% - 30px), 430px); padding: 12px 16px;
+      border-radius: 14px; color: #fff; background: #173f5f; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+      font-size: 13px; font-weight: 500; opacity: 0; pointer-events: none; transition: 0.25s ease;
       text-align: center;
-      transition: all 0.2s ease;
-      cursor: pointer;
     }
-    .item-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--brand-emerald);
-      box-shadow: 0 6px 16px rgba(16,185,129,0.15);
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .preview-badge {
+      position: fixed; z-index: 70; left: 12px; bottom: 12px;
+      padding: 6px 11px; border-radius: 10px; color: #624500; background: #ffed9f;
+      font-size: 10.5px; font-weight: 700; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
     }
-    .item-card img {
-      width: 64px;
-      height: 64px;
-      object-fit: contain;
-      margin-bottom: 0.4rem;
+
+    @media (min-width: 601px) {
+      .level-node { width: 62px; height: 62px; }
+      .node-icon { font-size: 23px; }
     }
-    .category-pill {
-      padding: 0.4rem 0.85rem;
-      border-radius: var(--radius-full);
-      font-size: 0.85rem;
-      font-weight: 600;
-      border: 1px solid var(--border-subtle);
-      background: var(--surface-card);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .category-pill.active {
-      background: var(--brand-emerald);
-      color: white;
-      border-color: var(--brand-emerald);
+    @media (max-width: 600px) {
+      .topbar { padding: max(8px, env(safe-area-inset-top)) 10px 8px; }
+      .close-btn span { display: none; }
     }
   </style>
+  <link rel="stylesheet" href="assets/traveler-luxury.css">
 </head>
 <body>
-  <!-- Ambient background glow -->
-  <div class="ambient-glow ambient-1"></div>
-  <div class="ambient-glow ambient-2"></div>
 
-  <!-- Navbar -->
-  <header class="clear-navbar">
-    <div class="clear-nav-inner">
-      <div class="brand-badge">
-        <a href="../index.html" style="display: flex; align-items: center; gap: 0.75rem;">
-          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-compass"></i></div>
-          <span>PROJECT CLEAR</span>
-        </a>
+  <!-- Topbar -->
+  <header class="topbar hidden" id="topbar">
+    <div class="topbar-row">
+      <button class="close-btn" id="closeTravelerBtn" aria-label="ปิดหน้าต่าง">
+        <i class="fa-solid fa-xmark"></i>
+        <span>ปิด / กลับห้องเรียน</span>
+      </button>
+      <div class="logo">🧭</div>
+      <div class="identity">
+        <strong id="studentName">นักเดินทางแห่งสายน้ำ</strong>
+        <small id="studentMeta">กาพย์เห่เรือ · อยุธยาสู่สระบุรี</small>
       </div>
-
-      <nav class="nav-links">
-        <a href="../index.html" class="nav-btn"><i class="fa-solid fa-house nav-btn-icon"></i> <span>หน้าหลัก</span></a>
-        <a href="#inventory" onclick="openInventoryModal()" class="nav-btn active"><i class="fa-solid fa-box-archive nav-btn-icon"></i> <span>คลังไอเทม</span></a>
-        <button id="themeToggleBtn" class="nav-btn" title="สลับโหมด"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
-      </nav>
+      <div class="balance-pill"><b id="pumBalance">0</b><span>ปั๊มคงเหลือ</span></div>
+      <button class="inventory-btn" id="openInventory" aria-label="เปิดคลังสะสม">🎒</button>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-caption">
+      <span id="phaseCaption">เริ่มออกเดินทาง</span>
+      <span id="progressCaption">0/20</span>
     </div>
   </header>
 
-  <main class="clear-container">
-    <div style="margin-bottom: 1.5rem; text-align: center;">
-      <span class="clear-badge badge-emerald" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-trophy"></i> เกมมิฟิเคชันวรรณคดี</span>
-      <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main);">นักเดินทางแห่งกาพย์เห่เรือ</h1>
-      <p style="color: var(--text-muted); font-size: 0.95rem;">สะสมไอเทมนก ปลา ดอกไม้ และเรือพระราชพิธี เพื่อรับแต้มพิเศษ</p>
-    </div>
-
-    <!-- Quick Stats Bar -->
-    <div style="max-width: 680px; margin: 0 auto 1.5rem; display: flex; justify-content: space-between; align-items: center; background: var(--surface-glass); backdrop-filter: blur(16px); padding: 0.85rem 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
-      <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <i class="fa-solid fa-coins" style="color: var(--brand-amber); font-size: 1.25rem;"></i>
-        <div>
-          <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">ไอเทมที่สะสมได้</span>
-          <strong id="collectedCount" style="font-size: 1.1rem; color: var(--text-main);">20 / 20 ชนิด</strong>
-        </div>
+  <!-- Game Shell & Map -->
+  <main class="shell hidden" id="gameShell">
+    <div class="map-stage" id="mapStage">
+      <img class="map-image" src="assets/full-map.webp" alt="แผนที่การเดินทางจากอยุธยาไปสระบุรี">
+      <div class="map-vignette"></div>
+      
+      <div class="place-label destination-label" style="left:50%;top:1.4%">
+        <strong>วัดพระพุทธบาท สระบุรี</strong>
+        <small>ศูนย์รวมศรัทธาอันรุ่งเรืองที่สุดในรัชสมัยสมเด็จพระเจ้าอยู่หัวบรมโกศ ผู้ทรงบูรณะพระมณฑปและฝากยอดฝีมือช่างสลักมุกไว้เป็นตำนานให้ชนรุ่นหลัง</small>
       </div>
-
-      <button onclick="openInventoryModal()" class="clear-btn clear-btn-emerald" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
-        <i class="fa-solid fa-sack-dollar"></i> <span>เปิดกระเป๋า</span>
-      </button>
-    </div>
-
-    <!-- Traveler Stage Shell -->
-    <div class="traveler-shell">
-      <div class="map-stage">
-        <img src="assets/full-map.webp" onerror="this.src='assets/FULL MAP.png'" alt="แผนที่การเดินทาง" class="map-image">
+      
+      <div class="place-label origin-label" style="left:50%;top:98.4%">
+        <strong>กรุงศรีอยุธยา</strong>
+        <small>ในแผ่นดินพระเจ้าอยู่หัวบรมโกศ อยุธยาตอนปลายก้าวสู่ยุคทองแห่งศิลปวัฒนธรรมและการค้า วรรณกรรมเฟื่องฟู วัดวาอารามวิจิตรงดงาม ราวกับแสงตะวันอุษาคเณย์ที่ส่องสว่างที่สุดก่อนจะดับลง</small>
       </div>
+      
+      <div class="phase-label" style="left:20%;top:23.5%"><span>🌙 เย็นชมนก</span></div>
+      <div class="phase-label" style="left:24%;top:48.5%"><span>🌿 บ่ายชมไม้</span></div>
+      <div class="phase-label" style="left:76%;top:73.5%"><span>🐟 สายชมปลา</span></div>
+      <div class="phase-label" style="left:76%;top:92%"><span>🌅 เช้าชมเรือ</span></div>
+      
+      <!-- Collectibles floating on river -->
+      <div class="collected-items-layer" id="collectedItemsLayer"></div>
+      
+      <!-- Interactive Level Nodes -->
+      <div id="nodesLayer"></div>
+      
+      <!-- Moving Token Avatar -->
+      <div class="traveler-token" id="travelerToken" aria-hidden="true">✨</div>
     </div>
   </main>
 
-  <!-- Inventory Modal -->
-  <div id="inventoryModal" class="clear-modal-backdrop">
-    <div class="clear-modal-content" style="max-width: 600px; max-height: 85vh; overflow-y: auto;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-        <h3 style="font-size: 1.35rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
-          <i class="fa-solid fa-box-open" style="color: var(--brand-emerald);"></i> คลังไอเทมวรรณคดี
-        </h3>
-        <button onclick="closeInventoryModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-dim);">&times;</button>
-      </div>
+  <!-- Login Screen (shown when no ?code= is provided) -->
+  <section class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="login-emblem">🧭</div>
+      <div class="login-kicker">วรรณคดีไทย · เส้นทางแห่งสายน้ำ</div>
+      <h1>นักเดินทางแห่งกาพย์เห่เรือ</h1>
+      <p>ล่องตามสายน้ำจากอยุธยาสู่สระบุรี<br>สะสม 20 ไอเทม ด่านละ 10 ปั๊ม</p>
+      
+      <form id="loginForm">
+        <input id="studentCode" class="code-input" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="รหัส 5 หลัก" aria-label="รหัสนักเรียน 5 หลัก">
+        <button class="primary-btn" id="loginButton" type="submit">เริ่มออกเดินทาง</button>
+        <div class="form-error" id="loginError"></div>
+      </form>
+      
+      <button class="share-btn" id="shareTraveler" type="button">📤 แชร์เส้นทางนักเดินทาง</button>
+      <div class="preview-note">ระบบจะบันทึกความคืบหน้าทุกครั้งที่ปลดล็อกด่าน</div>
+    </div>
+  </section>
 
-      <!-- Category Filter -->
-      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
-        <button class="category-pill active" onclick="filterItems('all', this)">ทั้งหมด</button>
-        <button class="category-pill" onclick="filterItems('bird', this)">หมวดนก</button>
-        <button class="category-pill" onclick="filterItems('fish', this)">หมวดปลา</button>
-        <button class="category-pill" onclick="filterItems('flower', this)">หมวดดอกไม้</button>
-        <button class="category-pill" onclick="filterItems('boat', this)">หมวดเรือ</button>
-      </div>
-
-      <div id="inventoryGrid" class="inventory-grid"></div>
-
-      <div style="margin-top: 1.5rem; text-align: right;">
-        <button onclick="closeInventoryModal()" class="clear-btn clear-btn-secondary">ปิดหน้าต่าง</button>
+  <!-- Confirm Unlock Modal -->
+  <section class="modal-backdrop hidden" id="confirmModal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button class="modal-close" data-close="confirmModal" aria-label="ปิด">✕</button>
+      <div class="item-image-wrap"><img id="confirmImage" alt=""></div>
+      <div id="confirmCategory" class="summary-chip" style="display:inline-block"></div>
+      <h2 id="confirmTitle"></h2>
+      <p id="confirmText"></p>
+      <div class="cost-box">ใช้ <strong>10 ปั๊ม</strong> · หลังแลกจะเหลือ <strong id="balanceAfter">0 ปั๊ม</strong></div>
+      <div class="modal-actions">
+        <button class="secondary-btn" data-close="confirmModal">ไว้ก่อน</button>
+        <button class="primary-btn" id="confirmUnlock">ยืนยันการเดินทาง</button>
       </div>
     </div>
-  </div>
+  </section>
 
-  <footer class="clear-footer">
-    <p>© 2026 Project CLEAR — ระบบสะสมไอเทม กาพย์เห่เรือ</p>
-  </footer>
+  <!-- Reward Modal (Show Poem) -->
+  <section class="modal-backdrop hidden" id="rewardModal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button class="modal-close" data-close="rewardModal" aria-label="ปิด">✕</button>
+      <div style="font-size:12px;color:#b2770b;font-weight:bold" id="rewardBadge">ปลดล็อกสำเร็จ ✨</div>
+      <div class="item-image-wrap reward-image"><img id="rewardImage" alt=""></div>
+      <div id="rewardCategory" class="summary-chip" style="display:inline-block"></div>
+      <h2 id="rewardTitle"></h2>
+      <p id="rewardText">เก็บไอเทมชิ้นนี้เข้าคลังนักเดินทางแล้ว</p>
+      <blockquote class="reward-poem"><em id="rewardPoem"></em></blockquote>
+      <button class="primary-btn" data-close="rewardModal">เดินทางต่อ</button>
+    </div>
+  </section>
 
-  <script src="../assets/js/shared.js"></script>
+  <!-- Inventory Modal -->
+  <section class="modal-backdrop hidden" id="inventoryModal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button class="modal-close" data-close="inventoryModal" aria-label="ปิด">✕</button>
+      <h2>🎒 คลังนักเดินทาง</h2>
+      <p>ไอเทมจากการเดินทางตามบทกาพย์เห่เรือ</p>
+      <div class="inventory-summary" id="inventorySummary"></div>
+      <div class="inventory-grid" id="inventoryGrid"></div>
+    </div>
+  </section>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+  <div class="preview-badge hidden" id="previewBadge">โหมดตัวอย่าง · ไม่หักปั๊ม</div>
+
   <script>
-    const ITEMS_DATA = [
-      { id: 'bird_01', type: 'bird', name: 'นกยูง', file: 'assets/bird_01-cutout.webp', desc: 'ขนหางงามวิจิตร เปรียบดั่งความสง่างามของสายน้ำ' },
-      { id: 'bird_02', type: 'bird', name: 'นกดุเหว่า', file: 'assets/bird_02-cutout.webp', desc: 'เสียงร้องก้องไพเราะยามเช้าตรู่' },
-      { id: 'bird_03', type: 'bird', name: 'นกสร้อยทอง', file: 'assets/bird_03-cutout.webp', desc: 'คอคล้องสร้อยดั่งประกายทองคำ' },
-      { id: 'bird_04', type: 'bird', name: 'นกสาริกา', file: 'assets/bird_04-cutout.webp', desc: 'นกสาริการ้องเจื้อยแจ้วจำนรรจา' },
-      { id: 'bird_05', type: 'bird', name: 'นกนางนวล', file: 'assets/bird_05-cutout.webp', desc: 'โบยบินเหนือระลอกคลื่นแห่งเจ้าพระยา' },
-      { id: 'fish_01', type: 'fish', name: 'ปลานวลจันทร์', file: 'assets/fish_01-cutout.webp', desc: 'เกล็ดสีเงินนวลผ่องสะท้อนแสงจันทร์' },
-      { id: 'fish_02', type: 'fish', name: 'ปลาคางเบือน', file: 'assets/fish_02-cutout.webp', desc: 'เบือนหน้าชะแง้แลหาดั่งคนึงถึงยอดดวงใจ' },
-      { id: 'fish_03', type: 'fish', name: 'ปลาตะเพียนทอง', file: 'assets/fish_03-cutout.webp', desc: 'แหวกว่ายตามสายธาราประกายระยับ' },
-      { id: 'fish_04', type: 'fish', name: 'ปลากราย', file: 'assets/fish_04-cutout.webp', desc: 'ว่ายกรายเคลียคลอคู่กันมิห่าง' },
-      { id: 'fish_05', type: 'fish', name: 'ปลาแก้มช้ำ', file: 'assets/fish_05-cutout.webp', desc: 'แก้มช้ำเปรียบประดุจต้องช้ำใจ' },
-      { id: 'flower_01', type: 'flower', name: 'ดอกลำดวน', file: 'assets/flower_01-cutout.webp', desc: 'กลิ่นหอมเย็นรวยรื่นชื่นนาสา' },
-      { id: 'flower_02', type: 'flower', name: 'ดอกจำปา', file: 'assets/flower_02-cutout.webp', desc: 'สีเหลืองทองหอมขจรไกล' },
-      { id: 'flower_03', type: 'flower', name: 'ดอกพิกุล', file: 'assets/flower_03-cutout.webp', desc: 'ดอกแก้วพิกุลหอมอบอวลทั่วไพร' },
-      { id: 'flower_04', type: 'flower', name: 'ดอกมะลิวัลย์', file: 'assets/flower_04-cutout.webp', desc: 'ขาวบริสุทธิ์หอมตรึงใจ' },
-      { id: 'flower_05', type: 'flower', name: 'ดอกสาวหยุด', file: 'assets/flower_05-cutout.webp', desc: 'ยามสายหยุดหอมแต่รักมิรู้คลาย' },
-      { id: 'boat_01', type: 'boat', name: 'เรือสุวรรณหงส์', file: 'assets/boat_01-cutout.webp', desc: 'เรือพระที่นั่งสง่างาม ลอยลำดั่งหงส์เหิน' },
-      { id: 'boat_02', type: 'boat', name: 'เรือครุฑยุดนาค', file: 'assets/boat_02-cutout.webp', desc: 'โผนผยองจับนาคา ทรงอานุภาพเกรียงไกร' },
-      { id: 'boat_03', type: 'boat', name: 'เรือมังกร', file: 'assets/boat_03-cutout.webp', desc: 'มังกรผงาดเล่นคลื่นกลางสายชล' },
-      { id: 'boat_04', type: 'boat', name: 'เรือคชสีห์', file: 'assets/boat_04-cutout.webp', desc: 'ราชสีห์หัวช้าง ดั่งราชรถสะท้านแดน' },
-      { id: 'boat_05', type: 'boat', name: 'เรือนาคา', file: 'assets/boat_05-cutout.webp', desc: 'พญานาคแผ่พังพานพิทักษ์สายธารา' }
+    // ── Dedicated Project CLEAR Backend API ──
+    const API_URL = 'https://project-clear-api.raminhyong.workers.dev';
+    const ASSET_DIR = 'assets/';
+    const COST_PER_STEP = 10;
+    const PREVIEW_MODE = new URLSearchParams(location.search).get('preview') === '1';
+
+    // 20 Complete Literary Items & Verses from Kap He Ruea
+    const ITEMS = [
+      ['boat_02', 'boat', 'เช้าชมเรือ', 'เรือครุฑยุดนาค', 'เรือครุฑยุดนาคหิ้ว\nลิ่วลอยมาพาผันผยอง'],
+      ['boat_01', 'boat', 'เช้าชมเรือ', 'เรือสุวรรณหงส์', 'สุวรรณหงส์ทรงพู่ห้อย\nงามชดช้อยลอยหลังสินธุ์'],
+      ['boat_05', 'boat', 'เช้าชมเรือ', 'เรือคชสีห์', 'คชสีห์ที่ผาดเผ่น\nดูดังเป็นเห็นขบขัน'],
+      ['boat_03', 'boat', 'เช้าชมเรือ', 'เรือนาคา', 'นาคาหน้าดังเป็น\nดูเขม้นเห็นขบขัน'],
+      ['boat_04', 'boat', 'เช้าชมเรือ', 'เรือมังกร', 'มังกรถอนพายพัน\nทันแข่งหน้าวาสุกรี'],
+      ['fish_01', 'fish', 'สายชมปลา', 'ปลานวลจันทร์', 'นวลจันทร์เป็นนวลจริง\nเจ้างามพริ้งยิ่งนวลปลา'],
+      ['fish_02', 'fish', 'สายชมปลา', 'ปลาคางเบือน', 'คางเบือนเบือนหน้ามา\nไม่งามเท่าเจ้าเบือนชาย'],
+      ['fish_03', 'fish', 'สายชมปลา', 'ปลาตะเพียนทอง', 'เพียนทองงามดั่งทอง\nไม่เหมือนน้องห่มตาดพราย'],
+      ['fish_04', 'fish', 'สายชมปลา', 'ปลาแก้มช้ำ', 'แก้มช้ำช้ำใครต้อง\nอันแก้มน้องช้ำเพราะชม'],
+      ['fish_05', 'fish', 'สายชมปลา', 'ปลาเสือ', 'ปลาเสือเหลือที่ตา\nเลื่อมแหลมกว่าปลาทั้งปวง'],
+      ['flower_01', 'flower', 'บ่ายชมไม้', 'ดอกจำปา', 'จำปาหนาแน่นเนื่อง\nคลี่กลีบเหลืองเรืองอร่าม'],
+      ['flower_02', 'flower', 'บ่ายชมไม้', 'ดอกประยงค์', 'ประยงค์ทรงพวงห้อย\nระย้าย้อยห้อยพวงกรอง'],
+      ['flower_03', 'flower', 'บ่ายชมไม้', 'ดอกพิกุล', 'พุดจีบกลีบแสล้ม\nพิกุลแกมแซมสุกรม'],
+      ['flower_05', 'flower', 'บ่ายชมไม้', 'ดอกสาวหยุด', 'สาวหยุดพุทธชาด\nบานเกลื่อนกลาดดาษดาไป'],
+      ['flower_04', 'flower', 'บ่ายชมไม้', 'ดอกบุนนาค', 'พิกุลบุนนาคบาน\nกลิ่นหอมหวานซ่านขจร'],
+      ['bird_01', 'bird', 'เย็นชมนก', 'นกยูง', 'เห็นฝูงยูงรำฟ้อน\nคิดบังอรร่อนรำกราย'],
+      ['bird_02', 'bird', 'เย็นชมนก', 'นกสร้อยทอง', 'สร้อยทองย่องเยื้องชาย\nเหมือนสายสวาดินาดนวยจร'],
+      ['bird_03', 'bird', 'เย็นชมนก', 'นกสาริกา', 'สาลิกามาตามคู่\nชมกันอยู่สู่สมสมร'],
+      ['bird_04', 'bird', 'เย็นชมนก', 'นกนางนวล', 'นางนวลนวลน่ารัก\nไม่นวลพักตร์เหมือนทรามสงวน'],
+      ['bird_05', 'bird', 'เย็นชมนก', 'ไก่ฟ้า', 'ไก่ฟ้ามาตัวเดียว\nเดินท่องเที่ยวเลี้ยวเหลี่ยมเขา']
+    ].map((x, i) => ({
+      step: i + 1,
+      id: x[0],
+      category: x[1],
+      categoryLabel: x[2],
+      name: x[3],
+      poem: x[4],
+      cost: COST_PER_STEP
+    }));
+
+    // Coordinates along Chao Phraya & Pa Sak rivers (Ayutthaya bottom -> Saraburi top)
+    const NODE_POSITIONS = [
+      { x: 20, y: 92.0 }, { x: 70, y: 88.0 }, { x: 39, y: 84.0 }, { x: 66, y: 80.0 }, { x: 41, y: 76.0 },
+      { x: 41, y: 72.0 }, { x: 31, y: 68.0 }, { x: 68, y: 64.0 }, { x: 51, y: 60.0 }, { x: 40, y: 56.0 },
+      { x: 37, y: 52.0 }, { x: 66, y: 48.0 }, { x: 38, y: 44.0 }, { x: 72, y: 40.0 }, { x: 39, y: 36.0 },
+      { x: 49, y: 32.0 }, { x: 29, y: 28.0 }, { x: 69, y: 24.0 }, { x: 23, y: 20.0 }, { x: 66, y: 16.2 }
     ];
+    const COLLECTIBLE_POSITION_OVERRIDES = {
+      19: { x: 65, y: 19.3 },
+      20: { x: 26, y: 15.8 }
+    };
+    const START_POSITION = { x: 50, y: 97.2 };
+    const ICONS = { boat: '⛵', fish: '🐟', flower: '🌸', bird: '🐦' };
 
-    function renderInventory(filterType = 'all') {
-      const grid = document.getElementById('inventoryGrid');
-      const filtered = filterType === 'all' ? ITEMS_DATA : ITEMS_DATA.filter(i => i.type === filterType);
+    let state = {
+      student: null,
+      balance: { earned: 0, midtermSpent: 0, travelerSpent: 0, available: 0 },
+      completedSteps: [],
+      items: ITEMS,
+      selectedStep: null,
+      busy: false,
+      justUnlockedStep: null
+    };
 
-      grid.innerHTML = filtered.map(item => `
-        <div class="item-card" onclick="showItemDetail('${item.name}', '${item.desc}')">
-          <img src="${item.file}" onerror="this.src='../assets/images/placeholder.png'" alt="${item.name}">
-          <strong style="display:block; font-size: 0.85rem; margin-bottom: 2px;">${item.name}</strong>
-          <span class="clear-badge badge-emerald" style="font-size: 0.7rem;">สะสมแล้ว</span>
-        </div>
-      `).join('');
+    const $ = id => document.getElementById(id);
+    const itemImage = item => `${ASSET_DIR}${item.id}-cutout.webp`;
+    const isCompleted = step => state.completedSteps.includes(step);
+    const nextStep = () => {
+      for (let i = 1; i <= state.items.length; i++) {
+        if (!isCompleted(i)) return i;
+      }
+      return state.items.length + 1;
+    };
+
+    function showToast(message) {
+      const el = $('toast');
+      el.textContent = message;
+      el.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => el.classList.remove('show'), 3000);
     }
 
-    function filterItems(type, el) {
-      document.querySelectorAll('.category-pill').forEach(b => b.classList.remove('active'));
-      el.classList.add('active');
-      renderInventory(type);
+    function setLoading(button, loading, text = 'กำลังบันทึก...') {
+      if (!button) return;
+      if (loading) {
+        button.dataset.label = button.textContent;
+        button.textContent = text;
+        button.disabled = true;
+      } else {
+        button.textContent = button.dataset.label || button.textContent;
+        button.disabled = false;
+      }
     }
 
-    function openInventoryModal() {
-      document.getElementById('inventoryModal').classList.add('open');
-      renderInventory('all');
+    async function fetchJson(params) {
+      const query = new URLSearchParams({ ...params, t: Date.now() });
+      const response = await fetch(`${API_URL}/?${query}`);
+      if (!response.ok) throw new Error('ไม่สามารถเชื่อมต่อระบบหลังบ้านได้');
+      const data = await response.json();
+      if (!data.ok) throw new Error(data.error || 'เกิดข้อผิดพลาดในการโหลดข้อมูล');
+      return data;
     }
 
-    function closeInventoryModal() {
-      document.getElementById('inventoryModal').classList.remove('open');
+    async function login(studentCode) {
+      const button = $('loginButton');
+      $('loginError').textContent = '';
+      setLoading(button, true, 'กำลังเชื่อมต่อ...');
+      try {
+        let data;
+        if (PREVIEW_MODE) {
+          data = {
+            student: { code: '00000', name: 'นักเรียนตัวอย่าง (โหมดสาธิต)', room: '6/9' },
+            balance: { earned: 250, midtermSpent: 0, travelerSpent: 70, available: 180 },
+            completedSteps: [1, 2, 3, 4, 5, 6, 7],
+            items: ITEMS
+          };
+        } else {
+          data = await fetchJson({ action: 'getTravelerState', studentCode });
+        }
+        state.student = data.student;
+        state.balance = data.balance;
+        state.completedSteps = (data.completedSteps || []).map(Number);
+        state.items = ITEMS;
+        openGame();
+      } catch (err) {
+        $('loginError').textContent = err.message;
+        $('loginScreen').classList.remove('hidden');
+      } finally {
+        setLoading(button, false);
+      }
     }
 
-    function showItemDetail(name, desc) {
-      showToast(desc, 'info', `✨ ${name}`);
+    function openGame() {
+      $('loginScreen').classList.add('hidden');
+      $('topbar').classList.remove('hidden');
+      $('gameShell').classList.remove('hidden');
+      if (PREVIEW_MODE) $('previewBadge').classList.remove('hidden');
+      renderAll();
+      setTimeout(() => scrollToCurrent(false), 200);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      renderInventory('all');
+    function renderAll() {
+      $('studentName').textContent = state.student.name;
+      $('studentMeta').textContent = `ม.${state.student.room} · รหัส ${state.student.code}`;
+      $('pumBalance').textContent = state.balance.available;
+      
+      const completed = state.completedSteps.length;
+      $('progressFill').style.width = `${(completed / 20) * 100}%`;
+      $('progressCaption').textContent = `${completed}/20`;
+      $('phaseCaption').textContent = completed >= 20 ? 'เดินทางถึงสระบุรีแล้ว 🎉' : state.items[Math.min(completed, 19)].categoryLabel;
+      
+      renderNodes();
+      renderCollectedItems();
+      renderToken();
+      renderInventory();
+    }
+
+    function renderNodes() {
+      const current = nextStep();
+      $('nodesLayer').innerHTML = state.items.map((item, index) => {
+        const pos = NODE_POSITIONS[index];
+        const done = isCompleted(item.step);
+        const active = item.step === current;
+        const status = done ? 'done' : active ? 'current' : 'locked';
+        const icon = done ? ICONS[item.category] : active ? '✨' : '🔒';
+        return `
+          <button class="level-node ${status}" style="left:${pos.x}%;top:${pos.y}%" data-step="${item.step}" ${status === 'locked' ? 'disabled' : ''} aria-label="ด่าน ${item.step} ${item.name}">
+            ${active ? `<span class="node-cost">10 ปั๊ม</span>` : ''}
+            <span class="node-icon">${icon}</span>
+            <span class="node-step">${item.step}</span>
+          </button>
+        `;
+      }).join('');
+
+      document.querySelectorAll('.level-node:not(.locked)').forEach(btn => {
+        btn.addEventListener('click', () => openStep(Number(btn.dataset.step)));
+      });
+    }
+
+    function renderToken() {
+      const completed = state.completedSteps.length;
+      const pos = completed ? NODE_POSITIONS[state.completedSteps[completed - 1] - 1] : START_POSITION;
+      const token = $('travelerToken');
+      token.style.left = `${pos.x}%`;
+      token.style.top = `${pos.y}%`;
+    }
+
+    function renderCollectedItems() {
+      const layer = $('collectedItemsLayer');
+      layer.innerHTML = state.items.filter(item => isCompleted(item.step)).map(item => {
+        const node = NODE_POSITIONS[item.step - 1];
+        const horizontalOffset = item.category === 'boat' ? 20 : 18;
+        const override = COLLECTIBLE_POSITION_OVERRIDES[item.step];
+        const x = override?.x ?? (node.x < 50 ? Math.min(82, node.x + horizontalOffset) : Math.max(18, node.x - horizontalOffset));
+        const y = override?.y ?? Math.max(2.5, Math.min(96, node.y - 0.7));
+        const fresh = item.step === state.justUnlockedStep ? ' just-unlocked' : '';
+        return `
+          <button class="map-collectible ${item.category}${fresh}" style="left:${x}%;top:${y}%;--step:${item.step}" data-step="${item.step}" aria-label="เปิดดู ${item.name}">
+            <img src="${itemImage(item)}" alt="${item.name}" loading="lazy">
+          </button>
+        `;
+      }).join('');
+
+      layer.querySelectorAll('.map-collectible').forEach(button => {
+        button.addEventListener('click', () => showReward(state.items[Number(button.dataset.step) - 1], false));
+      });
+
+      if (state.justUnlockedStep) {
+        clearTimeout(renderCollectedItems.clearFreshTimer);
+        renderCollectedItems.clearFreshTimer = setTimeout(() => {
+          state.justUnlockedStep = null;
+          layer.querySelector('.just-unlocked')?.classList.remove('just-unlocked');
+        }, 1800);
+      }
+    }
+
+    function renderInventory() {
+      $('inventoryGrid').innerHTML = state.items.map(item => {
+        const owned = isCompleted(item.step);
+        return `
+          <button class="inventory-slot ${owned ? '' : 'locked'}" data-step="${item.step}" ${owned ? '' : 'disabled'} aria-label="${owned ? item.name : 'ไอเทมที่ยังไม่ปลดล็อก'}">
+            ${owned ? `<img src="${itemImage(item)}" alt="${item.name}"><small>${item.step}</small>` : ''}
+          </button>
+        `;
+      }).join('');
+
+      const counts = ['boat', 'fish', 'flower', 'bird'].map(cat => {
+        const item = state.items.find(x => x.category === cat);
+        const count = state.items.filter(x => x.category === cat && isCompleted(x.step)).length;
+        return `<span class="summary-chip">${ICONS[cat]} ${item.categoryLabel} ${count}/5</span>`;
+      });
+      $('inventorySummary').innerHTML = counts.join('');
+
+      document.querySelectorAll('.inventory-slot:not(.locked)').forEach(btn => {
+        btn.addEventListener('click', () => showReward(state.items[Number(btn.dataset.step) - 1], false));
+      });
+    }
+
+    function openStep(step) {
+      const item = state.items[step - 1];
+      if (isCompleted(step)) {
+        showReward(item, false);
+        return;
+      }
+      if (step !== nextStep()) {
+        showToast('ต้องผ่านด่านก่อนหน้าก่อนครับ');
+        return;
+      }
+      state.selectedStep = step;
+      $('confirmImage').src = itemImage(item);
+      $('confirmImage').alt = item.name;
+      $('confirmCategory').textContent = `ด่าน ${step} · ${item.categoryLabel}`;
+      $('confirmTitle').textContent = item.name;
+      $('confirmText').textContent = `ปลดล็อก ${item.name} และออกเดินทางไปยังจุดถัดไป`;
+      $('balanceAfter').textContent = `${Math.max(0, state.balance.available - COST_PER_STEP)} ปั๊ม`;
+      $('confirmUnlock').disabled = state.balance.available < COST_PER_STEP;
+      $('confirmUnlock').textContent = state.balance.available < COST_PER_STEP ? 'ปั๊มไม่พอ' : 'ยืนยันการเดินทาง';
+      $('confirmModal').classList.remove('hidden');
+    }
+
+    async function unlockSelectedStep() {
+      if (state.busy || !state.selectedStep) return;
+      const step = state.selectedStep;
+      const item = state.items[step - 1];
+      const from = state.completedSteps.length ? NODE_POSITIONS[state.completedSteps[state.completedSteps.length - 1] - 1] : START_POSITION;
+      const to = NODE_POSITIONS[step - 1];
+      state.busy = true;
+      setLoading($('confirmUnlock'), true, 'กำลังบันทึก...');
+
+      try {
+        let data;
+        if (PREVIEW_MODE) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+          data = {
+            balance: { ...state.balance, travelerSpent: state.balance.travelerSpent + 10, available: state.balance.available - 10 },
+            completedSteps: [...state.completedSteps, step]
+          };
+        } else {
+          data = await fetchJson({ action: 'unlockTravelerStep', studentCode: state.student.code, step });
+        }
+        $('confirmModal').classList.add('hidden');
+        state.balance = data.balance;
+        state.completedSteps = data.completedSteps.map(Number);
+        
+        await animateToken(from, to);
+        state.justUnlockedStep = step;
+        renderAll();
+        showReward(item, true);
+      } catch (err) {
+        showToast(err.message);
+      } finally {
+        state.busy = false;
+        setLoading($('confirmUnlock'), false);
+      }
+    }
+
+    function animateToken(from, to) {
+      return new Promise(resolve => {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          renderToken();
+          resolve();
+          return;
+        }
+        const token = $('travelerToken');
+        token.classList.add('moving');
+        const duration = 2000;
+        const started = performance.now();
+        const bend = (from.x + to.x) / 2 + (to.x > from.x ? -7 : 7);
+
+        function frame(now) {
+          const raw = Math.min(1, (now - started) / duration);
+          const t = raw < 0.5 ? 2 * raw * raw : 1 - Math.pow(-2 * raw + 2, 2) / 2;
+          const one = 1 - t;
+          const x = one * one * from.x + 2 * one * t * bend + t * t * to.x;
+          const y = from.y + (to.y - from.y) * t;
+          token.style.left = `${x}%`;
+          token.style.top = `${y}%`;
+          if (raw < 1) {
+            requestAnimationFrame(frame);
+          } else {
+            token.classList.remove('moving');
+            resolve();
+          }
+        }
+        requestAnimationFrame(frame);
+      });
+    }
+
+    function showReward(item, isNew) {
+      $('rewardImage').src = itemImage(item);
+      $('rewardImage').alt = item.name;
+      $('rewardCategory').textContent = `ด่าน ${item.step} · ${item.categoryLabel}`;
+      $('rewardTitle').textContent = item.name;
+      $('rewardBadge').textContent = isNew ? 'ปลดล็อกสำเร็จ ✨' : 'บันทึกวรรณคดี 📖';
+      $('rewardText').textContent = isNew ? 'เก็บไอเทมชิ้นนี้เข้าคลังนักเดินทางแล้ว' : 'อ่านทบทวนบทประพันธ์กาพย์เห่เรือ';
+      $('rewardPoem').textContent = `"${item.poem}"`;
+      $('rewardModal').classList.remove('hidden');
+    }
+
+    function scrollToCurrent(smooth = true) {
+      const step = Math.min(nextStep(), state.items.length);
+      const pos = NODE_POSITIONS[step - 1];
+      const map = $('mapStage');
+      if (!pos || !map) return;
+      const target = map.offsetTop + (map.offsetHeight * pos.y / 100) - (window.innerHeight * 0.5);
+      const top = Math.max(0, target);
+      if (smooth) {
+        window.scrollTo({ top, behavior: 'smooth' });
+      } else {
+        window.scrollTo(0, top);
+      }
+    }
+
+    // ── Events & Integration ──
+    $('loginForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const code = $('studentCode').value.trim();
+      if (!PREVIEW_MODE && !/^\d{5}$/.test(code)) {
+        $('loginError').textContent = 'กรุณากรอกรหัสนักเรียน 5 หลัก';
+        return;
+      }
+      login(code || '00000');
     });
+
+    $('studentCode').addEventListener('input', event => {
+      event.target.value = event.target.value.replace(/\D/g, '').slice(0, 5);
+    });
+
+    $('shareTraveler').addEventListener('click', async () => {
+      const shareData = {
+        title: 'นักเดินทางแห่งกาพย์เห่เรือ | Project CLEAR',
+        text: 'ร่วมออกเดินทางตามบทกาพย์เห่เรือและสะสม 20 ไอเทมล้ำค่า',
+        url: location.href
+      };
+      try {
+        if (navigator.share) {
+          await navigator.share(shareData);
+          return;
+        }
+        await navigator.clipboard.writeText(location.href);
+        showToast('คัดลอกลิงก์นักเดินทางแล้ว');
+      } catch (err) {
+        if (err.name !== 'AbortError') showToast('แชร์ไม่สำเร็จ กรุณาคัดลอกจากแถบที่อยู่');
+      }
+    });
+
+    $('openInventory').addEventListener('click', () => $('inventoryModal').classList.remove('hidden'));
+    $('confirmUnlock').addEventListener('click', unlockSelectedStep);
+
+    // Close Modals
+    document.querySelectorAll('[data-close]').forEach(button => {
+      button.addEventListener('click', () => $(button.dataset.close).classList.add('hidden'));
+    });
+    document.querySelectorAll('.modal-backdrop').forEach(modal => {
+      modal.addEventListener('click', event => {
+        if (event.target === modal && !state.busy) modal.classList.add('hidden');
+      });
+    });
+
+    // Close button in Topbar (Integrated Overlay support)
+    $('closeTravelerBtn').addEventListener('click', () => {
+      if (window.parent && window.parent !== window && typeof window.parent.closeClearActivityModal === 'function') {
+        window.parent.closeClearActivityModal();
+      } else if (document.referrer && document.referrer.includes('rooms')) {
+        window.location.href = document.referrer;
+      } else {
+        window.location.href = '../index.html';
+      }
+    });
+
+    // ── Auto-Login from Query Param (?code=xxxxx) ──
+    const codeFromUrl = new URLSearchParams(location.search).get('code');
+    if (PREVIEW_MODE) {
+      login('00000');
+    } else if (codeFromUrl && /^\d{5}$/.test(codeFromUrl)) {
+      $('studentCode').value = codeFromUrl;
+      login(codeFromUrl);
+    }
   </script>
 </body>
 </html>
