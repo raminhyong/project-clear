@@ -201,19 +201,18 @@
           <table class="teacher-table">
             <thead>
               <tr>
-                <th>ห้อง</th>
                 <th>เลขที่</th>
                 <th>รหัส</th>
                 <th style="text-align:left; padding-left:1rem;">ชื่อ-สกุล</th>
-                <th>งาน 1-12</th>
-                <th>รวมงาน</th>
-                <th>กลางภาค</th>
-                <th>โบนัส</th>
-                <th>คะแนนรวม</th>
+                <th class="col-tasks">งาน 1-12</th>
+                <th class="col-compact">รวมงาน</th>
+                <th class="col-compact">กลางภาค</th>
+                <th class="col-compact">โบนัส</th>
+                <th class="col-compact">คะแนนรวม</th>
               </tr>
             </thead>
             <tbody id="teacherTableBody">
-              <tr><td colspan="9" style="padding: 3rem; color: var(--text-muted);">กำลังโหลดข้อมูล...</td></tr>
+              <tr><td colspan="8" style="padding: 3rem; color: var(--text-muted);">กำลังโหลดข้อมูล...</td></tr>
             </tbody>
           </table>
         </div>
@@ -693,7 +692,7 @@
     function renderOverviewTable(list) {
       const tbody = document.getElementById('teacherTableBody');
       if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="9" style="padding: 2rem; color: var(--text-muted);">ไม่พบข้อมูลนักเรียน</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="padding: 2rem; color: var(--text-muted);">ไม่พบข้อมูลนักเรียน</td></tr>`;
         return;
       }
 
@@ -709,15 +708,14 @@
         }).join('');
         return `
           <tr data-student-code="${escAttr(s.code)}" data-room="${escAttr(s._room)}">
-            <td><span class="clear-badge ${s._room === '6/5 Add' ? 'badge-purple' : 'badge-blue'}">${roomLabel(s._room)}</span></td>
             <td><strong style="color:var(--text-muted);">${s.id || s.student_no || '-'}</strong></td>
             <td>${escText(s.code)}</td>
             <td style="text-align:left; padding-left:1rem; font-weight:600;">${escText(s.name)}</td>
             <td><div class="score-grid">${taskCells}</div></td>
-            <td><strong class="cell-task-sum" style="color:var(--brand-blue);">${taskSum}</strong></td>
-            <td><span class="score-cell-editable cell-midterm" data-kind="midterm" data-room="${escAttr(s._room)}" data-student-code="${escAttr(s.code)}" data-value="${midtermVal}" title="คะแนนกลางภาค">${midtermVal === '' ? '–' : midtermVal}</span></td>
-            <td><span class="score-cell-editable cell-bonus${bonus > 0 ? ' has-score' : ''}" data-kind="bonus" data-room="${escAttr(s._room)}" data-student-code="${escAttr(s.code)}" data-value="${bonus}" title="คะแนนโบนัส">${bonus > 0 ? '+' + bonus : '0'}</span></td>
-            <td><span class="clear-badge badge-purple cell-total" style="font-size:0.9rem; font-weight:700;">${total}</span></td>
+            <td class="col-compact"><strong class="cell-task-sum" style="color:var(--brand-blue);">${taskSum}</strong></td>
+            <td class="col-compact"><span class="score-cell-editable cell-midterm" data-kind="midterm" data-room="${escAttr(s._room)}" data-student-code="${escAttr(s.code)}" data-value="${midtermVal}" title="คะแนนกลางภาค">${midtermVal === '' ? '–' : midtermVal}</span></td>
+            <td class="col-compact"><span class="score-cell-editable cell-bonus${bonus > 0 ? ' has-score' : ''}" data-kind="bonus" data-room="${escAttr(s._room)}" data-student-code="${escAttr(s.code)}" data-value="${bonus}" title="คะแนนโบนัส">${bonus > 0 ? '+' + bonus : '0'}</span></td>
+            <td class="col-compact"><span class="clear-badge badge-purple cell-total" style="font-size:0.9rem; font-weight:700;">${total}</span></td>
           </tr>
         `;
       }).join('');
