@@ -47,7 +47,7 @@
         <div style="min-width:0;">
           <strong style="font-size:0.9rem;">คาบที่ ${l.lessonNo}</strong>
           <p style="font-size:0.76rem;color:var(--text-muted);margin-top:0.2rem;line-height:1.4;">${esc(l.title)}</p>
-          <span style="font-size:0.72rem;font-weight:700;color:${active ? '#047857' : 'var(--text-dim)'};">${active ? '🔓 เปิดให้ทำ' : '🔒 ปิดอยู่'}</span>
+          <span style="font-size:0.72rem;font-weight:700;color:${active ? 'var(--brand-emerald)' : 'var(--text-dim)'};">${active ? '🔓 เปิดให้ทำ' : '🔒 ปิดอยู่'}</span>
         </div>
         <button type="button" class="clear-btn ${active ? 'clear-btn-secondary' : 'clear-btn-primary'}" style="padding:0.4rem 0.85rem;font-size:0.78rem;white-space:nowrap;${active ? 'color:var(--brand-rose);' : 'background:linear-gradient(135deg,#10b981,#059669);'}" onclick="toggleQuizLesson(${l.lessonNo}, ${active ? 'false' : 'true'})">
           <i class="fa-solid ${active ? 'fa-lock' : 'fa-lock-open'}"></i> ${active ? 'ปิด' : 'เปิด'}

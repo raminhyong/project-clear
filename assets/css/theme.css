@@ -53,6 +53,7 @@
 
 /* Dark Mode Tokens */
 body.dark-mode {
+  color-scheme: dark;
   --bg-primary: #090d16;
   --bg-gradient: radial-gradient(ellipse at 25% 0%, rgba(30, 41, 59, 0.75) 0%, transparent 60%),
                  radial-gradient(circle at 85% 90%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
@@ -65,14 +66,50 @@ body.dark-mode {
   --border-subtle: rgba(51, 65, 85, 0.6);
 
   --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  --text-muted: #cbd5e1;
+  --text-dim: #94a3b8;
+
+  --brand-blue: #60a5fa;
+  --brand-blue-hover: #93c5fd;
+  --brand-purple: #c084fc;
+  --brand-emerald: #34d399;
+  --brand-amber: #fbbf24;
+  --brand-rose: #fb7185;
 
   --brand-blue-light: rgba(37, 99, 235, 0.15);
   --brand-emerald-light: rgba(16, 185, 129, 0.15);
   --brand-amber-light: rgba(245, 158, 11, 0.15);
   --brand-purple-light: rgba(139, 92, 246, 0.15);
   --brand-rose-light: rgba(244, 63, 94, 0.15);
+}
+
+body.dark-mode select.clear-input option {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+body.dark-mode .room-stat > div {
+  border: 1px solid rgba(96, 165, 250, 0.22);
+}
+
+body.dark-mode .teacher-tab {
+  background: rgba(30, 41, 59, 0.75);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #f1f5f9;
+}
+body.dark-mode .teacher-tab:hover {
+  background: rgba(51, 65, 85, 0.9);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+body.dark-mode .teacher-tab.active,
+body.teacher-unicorn-theme.dark-mode .teacher-tab.active {
+  color: #ffffff;
+}
+
+.teacher-tab:hover {
+  background: var(--surface-glass-hover);
+  border-color: var(--border-glass);
 }
 
 /* ── Base Styles ── */
@@ -610,6 +647,7 @@ body.clear-modal-open { overflow: hidden; }
   border-radius: var(--radius-full);
   border: 1px solid var(--border-subtle);
   background: var(--surface-card);
+  color: var(--text-main);
   font-family: var(--font-thai);
   font-weight: 600;
   font-size: 0.9rem;

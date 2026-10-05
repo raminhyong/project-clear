@@ -138,7 +138,7 @@
     const rows = s.ratings.map(r => {
       const pct = Math.round((r.avg / 5) * 100);
       return `<div style="margin-bottom:0.7rem;">
-        <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:3px;"><span>${esc(r.question)}</span><span style="font-weight:700;color:#7c3aed;">${fmt(r.avg, 2)}/5</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:3px;"><span>${esc(r.question)}</span><span style="font-weight:700;color:var(--brand-purple);">${fmt(r.avg, 2)}/5</span></div>
         <div style="height:9px;border-radius:99px;background:var(--border-subtle);overflow:hidden;"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#a78bfa,#7c3aed);border-radius:99px;"></div></div>
       </div>`;
     }).join('');
@@ -203,7 +203,7 @@
       ? s.impressions.map(t => {
         const size = 0.85 + (t.count / max) * 0.75;
         const alpha = 0.5 + (t.count / max) * 0.5;
-        return `<span style="display:inline-block;margin:4px;padding:5px 12px;border-radius:999px;font-weight:700;font-size:${size.toFixed(2)}rem;background:rgba(139,92,246,${(alpha * 0.18).toFixed(2)});color:#6d28d9;border:1px solid rgba(139,92,246,0.3);">${esc(t.tag)} <small style="opacity:0.7;">${t.count}</small></span>`;
+        return `<span style="display:inline-block;margin:4px;padding:5px 12px;border-radius:999px;font-weight:700;font-size:${size.toFixed(2)}rem;background:rgba(139,92,246,${(alpha * 0.18).toFixed(2)});color:var(--brand-purple);border:1px solid rgba(139,92,246,0.3);">${esc(t.tag)} <small style="opacity:0.7;">${t.count}</small></span>`;
       }).join('')
       : '<p style="color:var(--text-dim);font-size:0.85rem;">ไม่มีข้อมูลแท็ก</p>';
 
@@ -222,7 +222,7 @@
       const mark = top3.has(d.dimension) ? ' <span title="จุดเด่น">⭐</span>' : (d.dimension === worst.dimension ? ' <span title="ควรหนุนเสริม">⚠️</span>' : '');
       return `<div class="dim-row" style="margin-bottom:0.7rem;">
         <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:3px;">
-          <span>${esc(d.label)}${mark}</span><span style="font-weight:700;color:#7c3aed;">${fmt(d.avg, 2)}/5</span>
+          <span>${esc(d.label)}${mark}</span><span style="font-weight:700;color:var(--brand-purple);">${fmt(d.avg, 2)}/5</span>
         </div>
         <div style="height:9px;border-radius:99px;background:var(--border-subtle);overflow:hidden;">
           <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#a78bfa,#7c3aed);border-radius:99px;"></div>
@@ -232,7 +232,7 @@
     const topNames = sorted.slice(0, 3).map(d => d.label).join(' · ');
     return `<div class="clear-card" style="margin-bottom:1.5rem;">
       <h4 style="font-size:1rem;font-weight:800;margin-bottom:0.35rem;"><i class="fa-solid fa-chalkboard-user" style="color:#8b5cf6;"></i> ห้องเรียนของเรา 10 มิติ</h4>
-      <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem;">จุดเด่นสูงสุด 3 ด้าน: <strong style="color:#7c3aed;">${esc(topNames)}</strong>${worst ? ` · ควรหนุนเสริม: <strong style="color:#d97706;">${esc(worst.label)}</strong>` : ''}</p>
+      <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem;">จุดเด่นสูงสุด 3 ด้าน: <strong style="color:var(--brand-purple);">${esc(topNames)}</strong>${worst ? ` · ควรหนุนเสริม: <strong style="color:var(--brand-amber);">${esc(worst.label)}</strong>` : ''}</p>
       ${rows}
     </div>`;
   }
@@ -252,16 +252,16 @@
         <h4 style="font-size:1rem;font-weight:800;margin-bottom:0.5rem;"><i class="fa-solid fa-user" style="color:#8b5cf6;"></i> ส่องสะท้อนตัวเอง</h4>
         <div style="display:flex;gap:1rem;margin-bottom:0.75rem;">
           <div style="flex:1;background:var(--brand-purple-light);border-radius:10px;padding:0.6rem;text-align:center;">
-            <div style="font-size:1.4rem;font-weight:800;color:#7c3aed;">${fmt(self.selfAvg, 2)}/5</div>
+            <div style="font-size:1.4rem;font-weight:800;color:var(--brand-purple);">${fmt(self.selfAvg, 2)}/5</div>
             <div style="font-size:0.72rem;color:var(--text-muted);">ความพยายามเฉลี่ย</div>
           </div>
           <div style="flex:1;background:var(--brand-emerald-light);border-radius:10px;padding:0.6rem;text-align:center;">
-            <div style="font-size:1.4rem;font-weight:800;color:#059669;">${fmt(self.selfRatingAvg, 2)}/5</div>
+            <div style="font-size:1.4rem;font-weight:800;color:var(--brand-emerald);">${fmt(self.selfRatingAvg, 2)}/5</div>
             <div style="font-size:0.72rem;color:var(--text-muted);">คะแนนประเมินตนเอง</div>
           </div>
         </div>
-        <div style="font-size:0.78rem;font-weight:700;color:#059669;margin-bottom:0.2rem;">ภูมิใจในตัวเอง</div>${listText(self.proud)}
-        <div style="font-size:0.78rem;font-weight:700;color:#d97706;margin:0.6rem 0 0.2rem;">อยากปรับปรุง</div>${listText(self.change)}
+        <div style="font-size:0.78rem;font-weight:700;color:var(--brand-emerald);margin-bottom:0.2rem;">ภูมิใจในตัวเอง</div>${listText(self.proud)}
+        <div style="font-size:0.78rem;font-weight:700;color:var(--brand-amber);margin:0.6rem 0 0.2rem;">อยากปรับปรุง</div>${listText(self.change)}
       </div>
       <div class="clear-card">
         <h4 style="font-size:1rem;font-weight:800;margin-bottom:0.75rem;"><i class="fa-solid fa-lightbulb" style="color:#f59e0b;"></i> กิจกรรมที่ช่วยให้เรียนรู้ดีที่สุด</h4>
