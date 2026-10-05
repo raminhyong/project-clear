@@ -1065,6 +1065,381 @@ body[data-room] .clear-btn-metallic {
 }
 
 /* =========================================================
+   Room Filter Pills (Teacher overview + Space curator)
+   ========================================================= */
+.room-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+#overviewRoomFilter { margin-bottom: 1rem; }
+
+.room-pill {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-card);
+  color: var(--text-muted);
+  border-radius: 999px;
+  padding: 0.4rem 0.85rem;
+  font-family: var(--font-thai);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+.room-pill:hover {
+  border-color: var(--brand-blue);
+  color: var(--brand-blue);
+  transform: translateY(-1px);
+}
+.room-pill.active {
+  background: var(--brand-blue);
+  border-color: var(--brand-blue);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+}
+
+body.dark-mode .room-pill {
+  background: rgba(30, 41, 59, 0.75);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #cbd5e1;
+}
+body.dark-mode .room-pill:hover {
+  border-color: var(--brand-blue);
+  color: var(--brand-blue);
+}
+body.dark-mode .room-pill.active {
+  background: var(--brand-blue);
+  border-color: var(--brand-blue);
+  color: #0f172a;
+}
+
+/* =========================================================
+   In-table Inline Score Editing
+   ========================================================= */
+.score-grid {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+}
+
+.score-cell-editable {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  min-width: 17px;
+  height: 20px;
+  font-size: 0.72rem;
+  border-radius: 4px;
+  color: var(--text-dim);
+  cursor: text;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+.score-cell-editable:hover {
+  background: var(--brand-blue-light);
+  color: var(--brand-blue);
+  box-shadow: inset 0 0 0 1px var(--brand-blue);
+}
+.score-cell-editable.has-score { color: var(--brand-blue); font-weight: 700; }
+.score-cell-editable.editing { background: var(--surface-glass-hover); }
+
+.teacher-table td .score-cell-editable.cell-midterm,
+.teacher-table td .score-cell-editable.cell-bonus {
+  width: auto;
+  min-width: 34px;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.inline-score-input {
+  width: 46px;
+  padding: 0.1rem 0.2rem;
+  text-align: center;
+  font-family: var(--font-code);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-main);
+  background: var(--surface-card);
+  border: 1.5px solid var(--brand-blue);
+  border-radius: 5px;
+  outline: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.inline-score-input::-webkit-outer-spin-button,
+.inline-score-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+@keyframes scoreSaveFlash {
+  0% { background: rgba(16, 185, 129, 0.55); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.35); }
+  100% { background: transparent; box-shadow: none; }
+}
+.score-save-flash { animation: scoreSaveFlash 1.2s ease; }
+
+/* =========================================================
+   Teacher Space Curator Hub
+   ========================================================= */
+.curator-toolbar { padding: 1.25rem 1.4rem; }
+
+.curator-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+  margin-top: 1rem;
+}
+.curator-search { flex: 1 1 260px; min-width: 200px; }
+.curator-sort { min-width: 170px; }
+
+.curator-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.85rem;
+}
+.curator-filter-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+  min-width: 74px;
+}
+
+.space-curator-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.1rem;
+}
+
+.curator-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+.curator-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--brand-emerald);
+}
+
+.curator-cover {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #0f172a;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.curator-cover-book { aspect-ratio: 210 / 297; }
+.curator-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.curator-cover-empty { color: var(--text-dim); font-size: 2rem; background: var(--brand-blue-light); }
+.curator-cover-hint {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  padding: 3px 8px;
+  background: rgba(0, 0, 0, 0.72);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.curator-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.85rem;
+  flex: 1;
+}
+.curator-card-top { display: flex; justify-content: space-between; align-items: center; gap: 0.4rem; }
+.curator-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+}
+.curator-badge-book { background: var(--brand-emerald-light); color: var(--brand-emerald); }
+.curator-badge-image { background: var(--brand-blue-light); color: var(--brand-blue); }
+.curator-badge-link { background: var(--brand-amber-light); color: var(--brand-amber); }
+.curator-room { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); }
+.curator-title { font-size: 0.92rem; font-weight: 800; line-height: 1.35; margin: 0; }
+.curator-excerpt {
+  font-size: 0.76rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.curator-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-top: auto;
+}
+.curator-react { color: var(--brand-rose); font-weight: 700; }
+.curator-action { width: 100%; justify-content: center; font-size: 0.8rem; margin-top: 0.35rem; }
+
+/* =========================================================
+   Space 3D E-Book Reader Modal
+   ========================================================= */
+.space-reader-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2600;
+  background: rgba(6, 12, 20, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  box-sizing: border-box;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.space-reader-backdrop.open { display: flex; opacity: 1; }
+
+.space-reader-topbar {
+  width: 100%;
+  max-width: 920px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  padding: 6px 12px 10px;
+}
+.space-reader-title {
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.space-reader-close {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-size: 1.15rem;
+  transition: all 0.2s ease;
+}
+.space-reader-close:hover { background: var(--brand-rose); transform: scale(1.06); }
+
+.space-reader-stage-frame {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  height: min(65vh, 600px);
+  aspect-ratio: 210 / 297;
+  margin: 0 auto;
+  padding: 24px;
+  box-sizing: border-box;
+  background: radial-gradient(circle at 50% 30%, #174e3f 0%, #0d3328 60%, #061e17 100%);
+  border-radius: 18px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.space-reader-stage-frame.spread {
+  max-width: 880px;
+  height: min(74vh, 620px);
+  aspect-ratio: 420 / 297;
+  padding: 14px;
+  overflow: hidden;
+}
+.space-reader-stage { position: absolute; inset: 24px; display: flex; align-items: center; justify-content: center; }
+.space-reader-stage-frame.spread .space-reader-stage { inset: 14px; }
+.space-reader-spine {
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  left: 50%;
+  width: 68px;
+  transform: translateX(-50%);
+  background: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.22) 42%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.22) 58%, rgba(0,0,0,0) 100%);
+  pointer-events: none;
+  z-index: 15;
+}
+.space-reader-loading {
+  position: absolute;
+  inset: 14px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.95rem;
+  z-index: 20;
+}
+.space-reader-controls {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(20, 30, 24, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  z-index: 25;
+}
+.space-reader-controls button {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.15rem;
+}
+.space-reader-controls button:hover:not(:disabled) { background: var(--brand-emerald); transform: scale(1.06); }
+.space-reader-controls button:disabled { opacity: 0.35; cursor: not-allowed; }
+.space-reader-page-count { font-size: 0.86rem; color: #fff; font-weight: 700; min-width: 80px; text-align: center; }
+.space-reader-backdrop:fullscreen {
+  background: radial-gradient(circle at 50% 30%, #174e3f 0%, #0d3328 60%, #061e17 100%);
+  width: 100vw;
+  height: 100vh;
+  padding: 16px;
+}
+.space-reader-backdrop:fullscreen .space-reader-stage-frame.spread { height: min(84vh, 760px); max-width: 1120px; }
+
+/* =========================================================
    Mobile Safe Areas & Ergonomics (iOS Safari / Android)
    ========================================================= */
 html {
