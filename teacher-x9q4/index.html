@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ศูนย์ควบคุมครูผู้สอน (Teacher Command Center) | Project CLEAR</title>
-  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="../assets/css/theme.css?v=2.6">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   <style>
@@ -650,6 +650,28 @@
     /* ── Overview table + room filter + cross-room search + inline edit ── */
     let activeRoomFilter = 'all';
     let inlineEditCell = null;
+    let scoreTooltipEl = null;
+
+    function showScoreTooltip(cell) {
+      if (!cell || !cell.dataset.tooltip) return;
+      if (!scoreTooltipEl) {
+        scoreTooltipEl = document.createElement('div');
+        scoreTooltipEl.id = 'clearScoreTooltip';
+        scoreTooltipEl.className = 'floating-score-tooltip';
+        document.body.appendChild(scoreTooltipEl);
+      }
+      scoreTooltipEl.textContent = cell.dataset.tooltip;
+      const rect = cell.getBoundingClientRect();
+      scoreTooltipEl.style.top = (rect.top + window.scrollY - 34) + 'px';
+      scoreTooltipEl.style.left = (rect.left + window.scrollX + rect.width / 2) + 'px';
+      scoreTooltipEl.classList.add('visible');
+    }
+
+    function hideScoreTooltip(force = false) {
+      if (!scoreTooltipEl) return;
+      if (!force && inlineEditCell) return; // หากกำลังพิมพ์แก้คะแนน ให้ป้ายค้างไว้ตลอด
+      scoreTooltipEl.classList.remove('visible');
+    }
 
     function escText(v) {
       return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -704,7 +726,7 @@
         const midtermVal = s.midterm == null ? '' : Number(s.midterm);
         const taskCells = Array.from({ length: 12 }, (_, i) => {
           const sc = Number(scores[i] || 0);
-          return `<span class="score-cell-editable${sc > 0 ? ' has-score' : ''}" data-kind="task" data-room="${escAttr(s._room)}" data-student-id="${escAttr(s.id)}" data-student-code="${escAttr(s.code)}" data-task-index="${i}" data-value="${sc}" title="งาน ${i + 1}">${sc}</span>`;
+          return `<span class="score-cell-editable${sc > 0 ? ' has-score' : ''}" data-kind="task" data-room="${escAttr(s._room)}" data-student-id="${escAttr(s.id)}" data-student-code="${escAttr(s.code)}" data-task-index="${i}" data-value="${sc}" data-tooltip="งานที่ ${i + 1}">${sc}</span>`;
         }).join('');
         return `
           <tr data-student-code="${escAttr(s.code)}" data-room="${escAttr(s._room)}">
@@ -713,8 +735,8 @@
             <td style="text-align:left; padding-left:1rem; font-weight:600;">${escText(s.name)}</td>
             <td><div class="score-grid">${taskCells}</div></td>
             <td class="col-compact"><strong class="cell-task-sum" style="color:var(--brand-blue);">${taskSum}</strong></td>
-            <td class="col-compact"><span class="score-cell-editable cell-midterm" data-kind="midterm" data-room="${escAttr(s._room)}" data-student-code="${escAttr(s.code)}" data-value="${midtermVal}" title="คะแนนกลางภาค">${midtermVal === '' ? '–' : midtermVal}</span></td>
-            <td class="col-compact"><span class="score-cell-editable cell-bonus${bonus > 0 ? ' has-score' : ''}" data-kind="bonus" data-room="${escAttr(s._room)}" data-student-code="${escAttr(s.code)}" data-value="${bonus}" title="คะแนนโบนัส">${bonus > 0 ? '+' + bonus : '0'}</span></td>
+            <td class="col-compact"><span class="score-cell-editable cell-midterm" data-kind="midterm" data-room="${escAttr(s._room)}" data-student-code="${escAttr(s.code)}" data-value="${midtermVal}" data-tooltip="คะแนนกลางภาค">${midtermVal === '' ? '–' : midtermVal}</span></td>
+            <td class="col-compact"><span class="score-cell-editable cell-bonus${bonus > 0 ? ' has-score' : ''}" data-kind="bonus" data-room="${escAttr(s._room)}" data-student-code="${escAttr(s.code)}" data-value="${bonus}" data-tooltip="คะแนนโบนัส">${bonus > 0 ? '+' + bonus : '0'}</span></td>
             <td class="col-compact"><span class="clear-badge badge-purple cell-total" style="font-size:0.9rem; font-weight:700;">${total}</span></td>
           </tr>
         `;
@@ -745,6 +767,7 @@
     function startInlineEdit(cell) {
       if (!cell || cell.querySelector('input')) return;
       if (inlineEditCell && inlineEditCell !== cell) commitInlineEdit(inlineEditCell);
+      showScoreTooltip(cell);
       const input = document.createElement('input');
       input.type = 'number';
       input.className = 'inline-score-input';
@@ -762,6 +785,7 @@
     }
 
     function restoreCell(cell, text) {
+      hideScoreTooltip(true);
       cell.classList.remove('editing');
       if (text != null) cell.textContent = text;
       if (inlineEditCell === cell) inlineEditCell = null;
@@ -829,6 +853,7 @@
         showToast(err.message || 'บันทึกไม่สำเร็จ', 'error');
       } finally {
         delete cell.dataset.saving;
+        hideScoreTooltip(true);
         if (inlineEditCell === cell) inlineEditCell = null;
       }
     }
@@ -866,6 +891,14 @@
         setTimeout(() => {
           if (cell.querySelector('input') && cell.classList.contains('editing')) commitInlineEdit(cell);
         }, 120);
+      });
+      tbody.addEventListener('mouseover', (e) => {
+        const cell = e.target.closest('.score-cell-editable');
+        if (cell) showScoreTooltip(cell);
+      });
+      tbody.addEventListener('mouseout', (e) => {
+        const cell = e.target.closest('.score-cell-editable');
+        if (cell) hideScoreTooltip();
       });
     }
 

@@ -1197,6 +1197,48 @@ body.dark-mode .score-cell-editable {
   white-space: nowrap;
 }
 
+/* ── Global Floating Tooltip for Score Cells ── */
+.floating-score-tooltip {
+  position: absolute;
+  transform: translateX(-50%);
+  background: #0f172a;
+  color: #ffffff;
+  font-family: var(--font-thai);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: opacity 0.12s ease;
+  z-index: 99999;
+}
+.floating-score-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #0f172a;
+}
+.floating-score-tooltip.visible {
+  opacity: 1;
+  visibility: visible;
+}
+body.dark-mode .floating-score-tooltip {
+  background: #1e293b;
+  border-color: rgba(96, 165, 250, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+body.dark-mode .floating-score-tooltip::after {
+  border-top-color: #1e293b;
+}
+
 @keyframes scoreSaveFlash {
   0% { background: rgba(16, 185, 129, 0.55); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.35); }
   100% { background: transparent; box-shadow: none; }
